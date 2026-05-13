@@ -10,9 +10,18 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
+        .asset-blend {
+            mix-blend-mode: screen; /* Keep this to handle the glow assets */
+            image-rendering: -webkit-optimize-contrast;
+        }
+
         .logo-blend {
-            mix-blend-mode: screen;
             filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 20px rgba(34, 211, 238, 0.3));
+        }
+
+        /* Dedicated style for the portrait, ensuring the glow is crisp */
+        .founder-blend {
+            filter: brightness(1.05) contrast(1.05) drop-shadow(0 0 40px rgba(34, 211, 238, 0.4));
         }
 
         .widget-glass {
@@ -43,7 +52,7 @@
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="logo_new2.svg" class="w-10 h-10 object-contain logo-blend" alt="Logo">
+                <img src="logo_new2.svg" class="w-10 h-10 object-contain logo-blend asset-blend" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
@@ -60,42 +69,44 @@
         
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             
-            <div class="md:col-span-8 widget-glass p-12 min-h-[300px]">
-                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter mb-4 text-gradient">Our Mission.</h1>
-                <p class="text-xl md:text-2xl text-slate-400 font-light leading-snug">
-                    Building a healthier St. Louis through character-led public health education and essential resource distribution.
-                </p>
+            <div class="md:col-span-12 widget-glass p-12 min-h-[400px] flex-row items-center gap-12 overflow-hidden relative">
+                <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] opacity-60 asset-blend"></div>
+                <div class="flex-1 space-y-4 relative z-10">
+                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-gradient">Our Mission.</h1>
+                    <p class="text-2xl md:text-3xl text-slate-400 font-light leading-snug max-w-2xl">
+                        Building a healthier St. Louis through character-led public health education and essential resource distribution.
+                    </p>
+                </div>
+                <img src="logo_new2.svg" class="w-64 h-64 object-contain logo-blend asset-blend opacity-80" alt="Symbol Centerpiece">
             </div>
 
-            <div class="md:col-span-4 widget-glass p-12 items-center bg-cyan-500/5">
-                <img src="logo_new2.svg" class="w-32 h-32 object-contain logo-blend" alt="Symbol">
+            <div class="md:col-span-4 widget-glass p-10 items-center justify-end bg-cyan-500/5 min-h-[400px] relative overflow-hidden">
+                <div class="absolute inset-0 bg-[#020617]/50 asset-blend"></div>
+                <img src="founder_portrait.png" class="relative w-full h-full object-cover founder-blend asset-blend transform scale-105" alt="Jershon Vinodh Portrait">
             </div>
 
-            <div class="md:col-span-6 widget-glass p-12 border-t-2 border-t-cyan-500/30">
+            <div class="md:col-span-8 widget-glass p-12 border-l-2 border-l-cyan-500/30 min-h-[400px]">
                 <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-xs mb-6">Leadership</h3>
-                <h2 class="text-4xl font-extrabold text-white mb-4">Jershon Vinodh</h2>
-                <p class="text-slate-400 leading-relaxed">
-                    Founder and Executive Director. A student and community leader dedicated to public health equity in St. Louis. Jershon launched Hygienify to bridge the gap between character education and physical well-being.
-                </p>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Jershon Vinodh</h2>
+                <div class="space-y-4 text-lg text-slate-400 leading-relaxed max-w-2xl">
+                    <p>
+                        Founder and Executive Director. A student and community leader dedicated to public health equity in St. Louis. Jershon launched Hygienify to bridge the gap between character education and physical well-being.
+                    </p>
+                    <p>
+                        Through partnerships with local schools and community centers, he works to ensure that the foundation for a better future is built on both strong values and good health.
+                    </p>
+                </div>
             </div>
 
-            <div class="md:col-span-6 widget-glass p-12">
-                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-6">The Vision</h3>
-                <p class="text-xl font-bold text-white leading-tight">
+            <div class="md:col-span-12 widget-glass p-12 italic bg-[#010409]">
+                <p class="text-2xl md:text-3xl text-slate-200 leading-tight max-w-4xl mx-auto text-center">
                     "It's easy to raise an A+ student, but hard to raise a student of character."
                 </p>
-                <p class="mt-4 text-slate-500 italic">— Jershon's Guiding Principle</p>
-            </div>
-
-            <div class="md:col-span-12 widget-glass p-10 flex-row items-center justify-between gap-8">
-               <div class="flex-1">
-                    <h4 class="text-white font-bold text-2xl">Rooted in St. Louis</h4>
-                    <p class="text-slate-500">Serving schools and community centers across the metropolitan area.</p>
-               </div>
-               <div class="h-10 w-px bg-white/10 hidden md:block"></div>
-               <div class="flex-1 text-right">
-                    <a href="volunteer.html" class="text-cyan-400 font-bold hover:underline">Join the team →</a>
-               </div>
+                <div class="flex items-center gap-4 justify-center mt-8">
+                    <div class="h-px w-8 bg-cyan-500"></div>
+                    <p class="font-bold tracking-widest uppercase text-sm text-cyan-400">Jershon's Guiding Principle</p>
+                    <div class="h-px w-8 bg-cyan-500"></div>
+                </div>
             </div>
 
         </div>

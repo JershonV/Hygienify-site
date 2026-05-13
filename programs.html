@@ -1,47 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programs | Hygienify</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 2.5rem; transition: transform 0.3s ease; }
-        .glass-card:hover { transform: translateY(-5px); border-color: rgba(34, 211, 238, 0.3); }
-        .nav-glass { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-    </style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Programs | Hygienify</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet"><style>body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; } .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); } .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 3rem; } .blend-image { mix-blend-mode: multiply; }</style>
 </head>
 <body>
     <nav class="fixed top-0 w-full z-50 nav-glass">
-        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="image (7).png" class="w-8 h-8" alt="Logo">
-                <span class="font-extrabold text-2xl tracking-tight">Hygienify</span>
+        <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
+            <div class="flex items-center gap-3"><img src="image (7).png" class="w-10 h-10 blend-image"><span class="font-extrabold text-2xl tracking-tighter">Hygienify</span></div>
+            <div class="hidden md:flex gap-12 items-center">
+                <a href="index.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Home</a>
+                <a href="about.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">About</a>
+                <a href="programs.html" class="text-white font-bold text-sm tracking-widest uppercase border-b-2 border-cyan-500">Programs</a>
+                <a href="volunteer.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Volunteer</a>
             </div>
-            <div class="hidden md:flex gap-12 font-semibold text-slate-400 text-xs tracking-[0.2em]">
-                <a href="index.html" class="hover:text-white transition">HOME</a>
-                <a href="about.html" class="hover:text-white transition">ABOUT</a>
-                <a href="programs.html" class="text-cyan-400">PROGRAMS</a>
-                <a href="volunteer.html" class="hover:text-white transition">VOLUNTEER</a>
-            </div>
-            <a href="#" class="bg-cyan-500 text-slate-950 px-8 py-2.5 rounded-full font-bold text-sm">DONATE</a>
         </div>
     </nav>
 
-    <main class="pt-40 pb-20 px-8">
-        <div class="max-w-6xl mx-auto space-y-12">
-            <h1 class="text-6xl font-extrabold tracking-tighter text-center">Active <span class="text-cyan-400">Impact</span></h1>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="glass-card p-10 space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Hygiene Workshops</h2>
-                    <p class="text-slate-400 leading-relaxed">Interactive seminars hosted by Jershon and student leads, teaching younger students the science of health and sanitation.</p>
+    <main class="pt-48 pb-20 px-8">
+        <div class="max-w-7xl mx-auto space-y-20">
+            <h1 class="text-7xl font-extrabold tracking-tighter text-center">Active <span class="text-cyan-400">Impact.</span></h1>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="glass-card p-12">
+                    <h2 class="text-4xl font-bold mb-6">Workshops</h2>
+                    <p class="text-slate-400 text-xl leading-relaxed">Motivational seminars and hygiene education sessions hosted at schools throughout Manchester.</p>
                 </div>
-                <div class="glass-card p-10 space-y-4">
-                    <h2 class="text-3xl font-bold text-white">Supply Logistics</h2>
-                    <p class="text-slate-400 leading-relaxed">Coordinating the collection and distribution of essential hygiene kits to local shelters and Parkway communities.</p>
+                <div class="glass-card p-12">
+                    <h2 class="text-4xl font-bold mb-6">Distribution</h2>
+                    <p class="text-slate-400 text-xl leading-relaxed">Coordinating hygiene kit distribution for students and families in underserved areas.</p>
                 </div>
             </div>
         </div>

@@ -7,23 +7,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
+        
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE "GLOWING GENIE" FIX */
-        .mascot-glow {
-            /* Screen removes the white background perfectly on dark themes */
-            mix-blend-mode: screen; 
-            /* Brightness(2) makes him pop, Contrast(1.2) keeps the lines sharp */
-            filter: brightness(1.8) contrast(1.2) drop-shadow(0 0 40px rgba(34, 211, 238, 0.6));
+        /* THE ULTIMATE GENIE FIX */
+        .mascot-visibility {
+            /* This blend mode forces the white to drop out against dark backgrounds */
+            mix-blend-mode: screen;
+            /* Brightness and Contrast levels tuned to make him pop without looking like a ghost */
+            filter: brightness(1.5) contrast(1.2) drop-shadow(0 0 30px rgba(34, 211, 238, 0.5));
         }
 
+        /* WIDGET GLOW HOVER */
         .widget-glass {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 2.5rem;
-            transition: all 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
+
+        .widget-glass:hover {
+            transform: translateY(-10px);
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(34, 211, 238, 0.05);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+
         .text-gradient {
             background: linear-gradient(to right, #22d3ee, #3b82f6);
             -webkit-background-clip: text;
@@ -36,7 +47,7 @@
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="GenieLogo.png" class="w-10 h-10 object-contain mascot-glow" alt="Logo">
+                <img src="image (7).png" class="w-10 h-10 object-contain mascot-visibility" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
@@ -55,23 +66,23 @@
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase">
                     Serving the St. Louis Community
                 </div>
-                <h1 class="text-7xl md:text-8xl lg:text-[10rem] font-extrabold tracking-tighter leading-[0.85]">
+                <h1 class="text-7xl md:text-8xl lg:text-[9rem] font-extrabold tracking-tighter leading-[0.85]">
                     Better <br><span class="text-gradient">Health.</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light leading-relaxed">
-                    A student-led initiative empowering St. Louis through character-driven public health education.
+                    Empowering St. Louis through character-led public health education and resources.
                 </p>
                 <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-3xl font-black text-xl hover:bg-cyan-400 transition inline-block">Get Involved</a>
             </div>
             
             <div class="flex justify-center relative">
-                <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[120px] opacity-40"></div>
-                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-glow transform scale-110" alt="Mascot">
+                <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[120px] opacity-30"></div>
+                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-visibility transform scale-110" alt="Mascot">
             </div>
         </div>
     </header>
 
-    <section class="py-24 px-8 bg-[#010409]/50">
+    <section class="py-24 px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="widget-glass p-12">
                 <div class="text-6xl font-black text-white mb-4">500+</div>

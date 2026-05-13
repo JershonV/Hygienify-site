@@ -10,11 +10,13 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE IMAGE FIX */
-        .mascot-visibility {
+        /* BOLD LOGO FIX & BACKGROUND REMOVAL */
+        .logo-centerpiece {
+            /* Deletes the white/checkered background while keeping the logo solid */
             mix-blend-mode: screen; 
+            /* Boosts the metallic look to make it bold */
+            filter: brightness(1.2) contrast(1.2) drop-shadow(0 0 40px rgba(34, 211, 238, 0.3));
             image-rendering: -webkit-optimize-contrast;
-            filter: brightness(1.15) contrast(1.1) drop-shadow(0 0 30px rgba(34, 211, 238, 0.5));
         }
 
         .widget-glass {
@@ -43,7 +45,7 @@
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="logo_new2.svg" class="w-10 h-10 object-contain mascot-visibility" alt="Logo">
+                <img src="logo_new2.svg" class="w-10 h-10 object-contain logo-centerpiece" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
@@ -57,23 +59,28 @@
     </nav>
 
     <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
-        <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
-            <div class="space-y-10">
+        <div class="max-w-5xl mx-auto w-full text-center space-y-12">
+            
+            <div class="relative inline-block">
+                <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[100px] opacity-40"></div>
+                <img src="logo_new2.svg" class="relative w-full max-w-[450px] md:max-w-[550px] mx-auto logo-centerpiece transform hover:scale-105 transition-transform duration-700" alt="Hygienify Centerpiece">
+            </div>
+
+            <div class="space-y-8">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase">
                     Serving the St. Louis Community
                 </div>
-                <h1 class="text-7xl md:text-8xl lg:text-[9.5rem] font-extrabold tracking-tighter leading-[0.85]">
-                    Better <br><span class="text-gradient">Health.</span>
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.85] text-white">
+                    Better <span class="text-gradient">Health.</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light leading-relaxed">
+                <p class="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
                     Empowering St. Louis through character-led public health education and resources.
                 </p>
-                <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-3xl font-black text-xl hover:bg-cyan-400 transition inline-block">Get Involved</a>
-            </div>
-            
-            <div class="flex justify-center relative">
-                <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[120px] opacity-30"></div>
-                <img src="logo_new2.svg" class="relative w-full max-w-[550px] mascot-visibility transform scale-110" alt="Mascot">
+                <div class="pt-4">
+                    <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-3xl font-black text-xl hover:bg-cyan-400 transition transform hover:-translate-y-1 inline-block">
+                        Get Involved
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -114,4 +121,7 @@
     <footer class="py-20 border-t border-white/5 text-center">
         <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">Hygienify Organization • St. Louis, MO</p>
     </footer>
+
+</body>
+</html>
 

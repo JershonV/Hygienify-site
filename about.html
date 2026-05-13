@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Hygienify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 2.5rem; }
+        .nav-glass { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .text-gradient { background: linear-gradient(to right, #22d3ee, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .founder-crop { object-position: center 20%; }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 w-full z-50 nav-glass">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="image (7).png" class="w-8 h-8" alt="Logo">
+                <span class="font-extrabold text-2xl tracking-tight">Hygienify</span>
+            </div>
+            <div class="hidden md:flex gap-12 font-semibold text-slate-400 text-xs tracking-[0.2em]">
+                <a href="index.html" class="hover:text-white transition">HOME</a>
+                <a href="about.html" class="text-cyan-400">ABOUT</a>
+                <a href="programs.html" class="hover:text-white transition">PROGRAMS</a>
+                <a href="volunteer.html" class="hover:text-white transition">VOLUNTEER</a>
+            </div>
+            <a href="#" class="bg-cyan-500 text-slate-950 px-8 py-2.5 rounded-full font-bold text-sm">DONATE</a>
+        </div>
+    </nav>
+
+    <main class="pt-40 pb-20 px-8">
+        <div class="max-w-5xl mx-auto space-y-16">
+            <header class="text-center space-y-4">
+                <h1 class="text-6xl font-extrabold tracking-tighter">Our <span class="text-gradient">Story</span></h1>
+                <p class="text-slate-400 text-xl font-light">Founded in 2026 at Parkway West High School.</p>
+            </header>
+
+            <div class="glass-card p-12 flex flex-col md:flex-row gap-12 items-center">
+                <img src="Sophmore VP Campaign - Jershon Vinodh.jpg" class="w-64 h-64 rounded-3xl object-cover founder-crop shadow-2xl" alt="Jershon Vinodh">
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-bold text-cyan-400">Jershon Vinodh</h2>
+                    <p class="text-slate-300 leading-relaxed text-lg">
+                        Based in Manchester, MO, Jershon launched Hygienify to bridge the gap between academic excellence and community character. As an avid tennis and chess player, he understands that the most important moves are the ones that help others.
+                    </p>
+                    <p class="text-slate-300 leading-relaxed text-lg italic border-l-4 border-cyan-500/50 pl-6">
+                        "It's easy to raise an A+ student, but hard to raise a student of character."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -18,11 +18,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* THE CODE-BASED BACKGROUND REMOVER */
+        /* THE HARD CODE FIX: This removes white backgrounds more aggressively */
         .mascot-container {
-            /* This tells the browser: "Make white pixels invisible" */
-            mix-blend-mode: screen; 
-            /* No extra filters, keeps original genie colors */
+            mix-blend-mode: lighten;
+            filter: contrast(1.1) brightness(1.1);
         }
 
         .widget-glass {
@@ -113,5 +112,19 @@
 
     <section class="py-32 px-8">
         <div class="max-w-5xl mx-auto text-center space-y-8">
-            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight">"It's easy to raise an A+ student, but hard to raise a student of character."</h2>
-            <p class="text-xl
+            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight italic">"It's easy to raise an A+ student, but hard to raise a student of character."</h2>
+            <div class="space-y-2">
+                <p class="text-2xl font-bold text-white">Jershon Vinodh</p>
+                <p class="text-lg text-cyan-400 font-bold tracking-[0.3em] uppercase">Founder • Hygienify</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 border-t border-white/5 text-center">
+        <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+            Hygienify Organization • St. Louis, MO
+        </p>
+    </footer>
+
+</body>
+</html>

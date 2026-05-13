@@ -19,60 +19,65 @@
 
     <nav class="flex items-center justify-between px-6 md:px-12 py-6 bg-white/70 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="flex items-center gap-3">
-            <img src="image (7).png" alt="Hygienify Logo" class="w-10 h-10 object-contain">
+            <img src="logo.png" alt="Hygienify" class="w-10 h-10 object-contain" onerror="this.src='https://via.placeholder.com/40?text=H'">
             <span class="text-2xl font-extrabold tracking-tight text-cyan-800">Hygienify</span>
         </div>
         <div class="hidden md:flex gap-8 font-bold text-slate-500 text-sm tracking-wide">
             <a href="#about" class="hover:text-cyan-600 transition">ABOUT</a>
             <a href="#programs" class="hover:text-cyan-600 transition">PROGRAMS</a>
-            <a href="#volunteer" class="hover:text-cyan-600 transition text-cyan-600">VOLUNTEER</a>
+            <a href="#volunteer" class="hover:text-cyan-600 transition">VOLUNTEER</a>
         </div>
-        <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2.5 rounded-full font-bold transition shadow-lg shadow-cyan-100">
-            Donate
-        </button>
+        <button class="bg-cyan-600 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-cyan-100">Donate</button>
     </nav>
 
     <header class="max-w-7xl mx-auto px-6 pt-16 pb-24 lg:flex items-center gap-16">
         <div class="lg:w-1/2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-100 text-cyan-700 text-xs font-bold mb-6 tracking-widest uppercase">
-                Student-Led Impact
-            </div>
-            <h1 class="text-5xl lg:text-7xl font-extrabold leading-[1.1] mb-8">
-                Better Hygiene.<br><span class="text-cyan-600">Stronger</span> Communities.
-            </h1>
-            <p class="text-xl text-slate-600 mb-10 leading-relaxed">
-                Empowering underserved communities through education, resource distribution, and student-led outreach.
-            </p>
-            <div class="flex flex-wrap gap-4">
-                <a href="#volunteer" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 transition shadow-xl">Join Us</a>
-                <a href="#about" class="bg-white border border-slate-200 px-8 py-4 rounded-2xl font-bold text-lg hover:border-cyan-500 transition">Our Story</a>
+            <h1 class="text-5xl lg:text-7xl font-extrabold leading-[1.1] mb-8">Better Hygiene.<br><span class="text-cyan-600">Stronger</span> Communities.</h1>
+            <p class="text-xl text-slate-600 mb-10">Empowering underserved communities through education, resource distribution, and student-led outreach.</p>
+            <div class="flex gap-4">
+                <a href="#volunteer" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-slate-800 transition">Join Us</a>
             </div>
         </div>
-       
         <div class="lg:w-1/2 mt-16 lg:mt-0 relative">
-            <div class="absolute -inset-4 bg-cyan-200/20 rounded-[3rem] blur-3xl"></div>
             <div class="relative bg-white p-4 rounded-[3rem] shadow-2xl border border-white">
                 <div class="aspect-square bg-gradient-to-br from-cyan-50 to-blue-50 rounded-[2.5rem] flex items-center justify-center p-12">
-                    <img src="image (7).png" alt="Hygienify Mascot" class="w-full max-w-[300px] drop-shadow-2xl">
+                    <img src="logo.png" alt="Hygienify Mascot" class="w-full max-w-[300px]" onerror="this.style.display='none';">
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-            <div class="text-5xl font-extrabold text-cyan-600 mb-2">1,000+</div>
-            <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">Kits Distributed</p>
-        </div>
-        <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-            <div class="text-5xl font-extrabold text-blue-600 mb-2">25+</div>
-            <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">Events Hosted</p>
-        </div>
-        <div class="bg-white p-10 rounded-[2rem] shadow-sm border border-slate-100 text-center hover:shadow-md transition">
-            <div class="text-5xl font-extrabold text-indigo-600 mb-2">300+</div>
-            <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">Student Volunteers</p>
+    <section id="about" class="max-w-6xl mx-auto px-6 py-24 border-t border-slate-100">
+        <h2 class="text-4xl font-extrabold mb-6">About Us</h2>
+        <p class="text-lg text-slate-600 leading-relaxed max-w-3xl">Hygienify was founded by students who believe that basic hygiene is a human right. We work to provide the tools and knowledge necessary for every community to thrive.</p>
+    </section>
+
+    <section id="programs" class="max-w-6xl mx-auto px-6 py-24 border-t border-slate-100">
+        <h2 class="text-4xl font-extrabold mb-12">Our Programs</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-3xl border border-slate-100">
+                <h3 class="text-2xl font-bold mb-4 text-cyan-600">Education</h3>
+                <p class="text-slate-600">Interactive workshops for schools on proper handwashing, dental care, and general wellness.</p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border border-slate-100">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Distribution</h3>
+                <p class="text-slate-600">We collect and distribute soap, toothbrushes, and hygiene kits to local shelters and families.</p>
+            </div>
         </div>
     </section>
 
+    <section id="volunteer" class="max-w-6xl mx-auto px-6 py-24 mb-24 bg-cyan-600 rounded-[3rem] text-white">
+        <div class="text-center">
+            <h2 class="text-4xl font-extrabold mb-6">Join the Team</h2>
+            <p class="text-cyan-50 text-xl mb-10 max-w-2xl mx-auto">We are always looking for passionate students to lead donation drives or host workshops.</p>
+            <button class="bg-white text-cyan-600 px-10 py-4 rounded-2xl font-bold text-lg">Sign Up to Volunteer</button>
+        </div>
+    </section>
+
+    <footer class="text-center py-12 text-slate-400 font-medium">
+        © 2026 Hygienify Organization
+    </footer>
+
 </body>
 </html>
+

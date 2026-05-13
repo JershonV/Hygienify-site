@@ -12,9 +12,7 @@
         
         /* BOLD LOGO FIX & BACKGROUND REMOVAL */
         .logo-centerpiece {
-            /* Deletes the white/checkered background while keeping the logo solid */
             mix-blend-mode: screen; 
-            /* Boosts the metallic look to make it bold */
             filter: brightness(1.2) contrast(1.2) drop-shadow(0 0 40px rgba(34, 211, 238, 0.3));
             image-rendering: -webkit-optimize-contrast;
         }
@@ -71,7 +69,7 @@
                     Serving the St. Louis Community
                 </div>
                 <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.85] text-white">
-                    Better <span class="text-gradient">Health.</span>
+                    <span class="text-gradient">Hygienify.</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
                     Empowering St. Louis through character-led public health education and resources.
@@ -120,19 +118,20 @@
 
     <footer class="py-20 border-t border-white/5 text-center">
         <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">Hygienify Organization • St. Louis, MO</p>
-<section class="py-16 px-8">
-        <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
-            <div class="h-px w-16 bg-gradient-to-right from-transparent via-cyan-500/40 to-transparent mb-6"></div>
-            
-            <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-            
-            <a href="mailto:jershonvinodh@gmail.com" 
-               class="text-slate-300 hover:text-white text-lg font-light tracking-wide transition-all duration-500 group relative">
-               jershonvinodh@gmail.com
-               <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
-            </a>
-        </div>
-    </section>
+        
+        <section class="py-16 px-8">
+            <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
+                <div class="h-px w-16 bg-gradient-to-right from-transparent via-cyan-500/40 to-transparent mb-6"></div>
+                
+                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
+                
+                <a href="mailto:jershonvinodh@gmail.com" 
+                   class="text-slate-300 hover:text-white text-lg font-light tracking-wide transition-all duration-500 group relative">
+                    jershonvinodh@gmail.com
+                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+                </a>
+            </div>
+        </section>
     </footer>
 
 </body>

@@ -10,14 +10,11 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE GENIE GLOW FIX */
-        .mascot-visibility {
-            /* Screen keeps the light blue and removes the white background on dark mode */
-            mix-blend-mode: screen;
-            /* High brightness makes the blue neon, drop-shadow creates the actual glow effect */
-            filter: brightness(1.5) contrast(1.2)
-                    drop-shadow(0 0 20px rgba(34, 211, 238, 0.8))
-                    drop-shadow(0 0 40px rgba(34, 211, 238, 0.4));
+        /* THE TRANSPARENT GENIE SETTINGS */
+        .mascot-style {
+            /* No blend modes needed! He's already transparent. */
+            /* We just add a crisp glow to match the Apple aesthetic */
+            filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.4));
         }
 
         .widget-glass {
@@ -27,11 +24,12 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* WIDGET GLOW HOVER RESTORED */
         .widget-glass:hover {
             transform: translateY(-10px);
             border-color: rgba(34, 211, 238, 0.5);
             background: rgba(34, 211, 238, 0.08);
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.2);
         }
 
         .text-gradient {
@@ -46,7 +44,7 @@
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="image (7).png" class="w-10 h-10 object-contain mascot-visibility" alt="Logo">
+                <img src="Gemini_Generated_Image_fcwmigfcwmigfcwm.png" class="w-10 h-10 object-contain mascot-style" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
@@ -76,7 +74,7 @@
             
             <div class="flex justify-center relative">
                 <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[120px] opacity-30"></div>
-                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-visibility transform scale-110" alt="Mascot">
+                <img src="Gemini_Generated_Image_fcwmigfcwmigfcwm.png" class="relative w-full max-w-[550px] mascot-style transform scale-110" alt="Mascot">
             </div>
         </div>
     </header>

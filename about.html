@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us | Hygienify</title>
+    <title>About | Hygienify</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -20,12 +20,15 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 2.5rem;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .widget-glass:hover {
             transform: translateY(-5px);
             border-color: rgba(34, 211, 238, 0.4);
-            background: rgba(34, 211, 238, 0.05);
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
         }
 
         .text-gradient {
@@ -54,31 +57,53 @@
     </nav>
 
     <main class="pt-40 pb-20 px-8 max-w-7xl mx-auto">
-        <div class="widget-glass p-12 md:p-20 mb-12 text-center relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">Our <span class="text-gradient">Mission.</span></h1>
-            <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-light leading-relaxed">
-                We believe that health is the foundation of character. By providing the St. Louis community with essential resources and education, we empower the next generation to lead healthier, more resilient lives.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             
-            <div class="md:col-span-8 widget-glass p-12">
-                <h3 class="text-3xl font-bold mb-6 text-white">Why We Started</h3>
-                <p class="text-lg text-slate-400 leading-relaxed">
-                    Hygienify was born from a simple observation: many students in our community lack access to basic hygiene education and supplies. We realized that "Better Health" isn't just about medicine—it's about the daily habits that build self-esteem and character.
+            <div class="md:col-span-8 widget-glass p-12 min-h-[300px]">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter mb-4 text-gradient">Our Mission.</h1>
+                <p class="text-xl md:text-2xl text-slate-400 font-light leading-snug">
+                    Building a healthier St. Louis through character-led public health education and essential resource distribution.
                 </p>
             </div>
 
-            <div class="md:col-span-4 widget-glass p-12 flex items-center justify-center bg-cyan-500/5">
+            <div class="md:col-span-4 widget-glass p-12 items-center bg-cyan-500/5">
                 <img src="logo_new2.svg" class="w-32 h-32 object-contain logo-blend" alt="Symbol">
             </div>
 
-            <div class="md:col-span-4 widget-glass p-12 border-l-4 border-l-cyan-500">
-                <h4 class="text-cyan-400 font-bold uppercase tracking-widest text-xs mb-4">Our Home</h4>
-                <p class="text-xl font-bold text-white">Rooted in St. Louis, serving families across the metropolitan area.</p>
+            <div class="md:col-span-6 widget-glass p-12 border-t-2 border-t-cyan-500/30">
+                <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-xs mb-6">Leadership</h3>
+                <h2 class="text-4xl font-extrabold text-white mb-4">Jershon Vinodh</h2>
+                <p class="text-slate-400 leading-relaxed">
+                    Founder and Executive Director. A student and community leader dedicated to public health equity in St. Louis. Jershon launched Hygienify to bridge the gap between character education and physical well-being.
+                </p>
             </div>
 
-            <div class="md:col-span-8 widget-glass p-12 italic">
-                <p class="text-2xl text-slate-2
+            <div class="md:col-span-6 widget-glass p-12">
+                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-6">The Vision</h3>
+                <p class="text-xl font-bold text-white leading-tight">
+                    "It's easy to raise an A+ student, but hard to raise a student of character."
+                </p>
+                <p class="mt-4 text-slate-500 italic">— Jershon's Guiding Principle</p>
+            </div>
+
+            <div class="md:col-span-12 widget-glass p-10 flex-row items-center justify-between gap-8">
+               <div class="flex-1">
+                    <h4 class="text-white font-bold text-2xl">Rooted in St. Louis</h4>
+                    <p class="text-slate-500">Serving schools and community centers across the metropolitan area.</p>
+               </div>
+               <div class="h-10 w-px bg-white/10 hidden md:block"></div>
+               <div class="flex-1 text-right">
+                    <a href="volunteer.html" class="text-cyan-400 font-bold hover:underline">Join the team →</a>
+               </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-20 border-t border-white/5 text-center">
+        <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">Hygienify Organization • St. Louis, MO</p>
+    </footer>
+
+</body>
+</html>

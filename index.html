@@ -3,87 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hygienify | Clean Habits, Healthier Lives</title>
+    <title>Hygienify | Founded by Jershon Vinodh</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
-        
-        .bg-mesh {
-            background-color: #f0f9ff; /* Light cyan base */
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.2) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        /* THE MAGIC TRICK: This removes the white background from your image via code */
-        .blend-logo {
-            mix-blend-mode: multiply;
-            filter: contrast(1.1); /* Makes the colors pop since blending can slightly dim them */
-        }
-
-        .section-padding { padding: 120px 0; min-height: 80vh; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .blend-multiply { mix-blend-mode: multiply; }
+        .founder-img { object-position: center 20%; }
+        .widget-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
     </style>
 </head>
-<body class="bg-mesh text-slate-900">
+<body class="text-slate-900">
 
-    <nav class="flex items-center justify-between px-6 md:px-12 py-5 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
-        <div class="flex items-center gap-3">
-            <img src="image (7).png" alt="Logo" class="w-10 h-10 object-contain blend-logo">
-            <span class="text-2xl font-extrabold tracking-tight text-cyan-800">Hygienify</span>
+    <nav class="sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-6xl mx-auto glass rounded-3xl px-8 py-4 flex justify-between items-center widget-shadow">
+            <div class="flex items-center gap-3">
+                <img src="image (7).png" class="w-8 h-8 blend-multiply" alt="Logo">
+                <span class="font-bold text-xl tracking-tight text-cyan-800">Hygienify</span>
+            </div>
+            <div class="hidden md:flex gap-8 font-bold text-slate-500 text-xs tracking-widest">
+                <a href="index.html" class="text-cyan-600">HOME</a>
+                <a href="about.html" class="hover:text-cyan-600 transition">ABOUT</a>
+                <a href="programs.html" class="hover:text-cyan-600 transition">PROGRAMS</a>
+                <a href="volunteer.html" class="hover:text-cyan-600 transition">VOLUNTEER</a>
+            </div>
+            <a href="https://hcb.hackclub.com/donations/start/hygienify" target="_blank" class="bg-cyan-600 text-white px-6 py-2 rounded-2xl font-bold text-sm hover:scale-105 transition">Donate</a>
         </div>
-        <div class="hidden md:flex gap-8 font-bold text-slate-500 text-xs tracking-widest">
-            <a href="#about" class="hover:text-cyan-600 transition">ABOUT</a>
-            <a href="#programs" class="hover:text-cyan-600 transition">PROGRAMS</a>
-            <a href="#volunteer" class="hover:text-cyan-600 transition">VOLUNTEER</a>
-        </div>
-        <button class="bg-cyan-600 text-white px-6 py-2 rounded-full font-bold text-sm">Donate</button>
     </nav>
 
-    <header class="max-w-7xl mx-auto px-6 pt-20 pb-32 lg:flex items-center justify-between">
-        <div class="lg:w-1/2">
-            <div class="inline-block px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 text-[10px] font-black tracking-widest uppercase mb-6">
-                Student-Led Impact
-            </div>
-            <h1 class="text-6xl lg:text-8xl font-extrabold leading-none mb-8 tracking-tighter">
-                Cleaner<br><span class="text-cyan-600">Habits.</span>
-            </h1>
-            <p class="text-xl text-slate-600 mb-10 max-w-md">Improving public health awareness through hygiene education and outreach.</p>
-            <a href="#volunteer" class="inline-block bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition shadow-2xl">Join Our Mission</a>
-        </div>
+    <main class="max-w-6xl mx-auto px-6 py-12">
         
-        <div class="lg:w-1/2 flex justify-center mt-12 lg:mt-0">
-            <img src="image (7).png" alt="Mascot" class="w-full max-w-[550px] blend-logo">
-        </div>
-    </header>
-
-    <section id="about" class="section-padding px-6">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-5xl font-extrabold mb-8 text-cyan-800">Our Story</h2>
-            <p class="text-2xl text-slate-600 leading-relaxed">
-                Hygienify is more than just a name—it's a mission to ensure every community has the basic tools for health. We started in our local schools and are growing every day.
-            </p>
-        </div>
-    </section>
-
-    <section id="programs" class="section-padding bg-slate-900 text-white px-6 rounded-[3rem] mx-4">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-5xl font-extrabold mb-16">Active Programs</h2>
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="border-l-4 border-cyan-500 pl-8">
-                    <h3 class="text-3xl font-bold mb-4">Workshops</h3>
-                    <p class="text-slate-400 text-lg">Teaching kids the science of hygiene through interactive experiments and games.</p>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <div class="md:col-span-7 glass rounded-[3rem] p-10 flex flex-col justify-center widget-shadow overflow-hidden relative">
+                <div class="relative z-10">
+                    <span class="text-cyan-600 font-black text-xs tracking-[0.3em] uppercase">Est. 2026</span>
+                    <h1 class="text-6xl font-extrabold mt-4 leading-tight tracking-tighter">Cleaner Habits.<br><span class="text-slate-400">Healthier Lives.</span></h1>
+                    <p class="mt-6 text-slate-500 text-lg max-w-sm font-medium">Bridging the gap in public health through student-led hygiene education.</p>
                 </div>
-                <div class="border-l-4 border-blue-500 pl-8">
-                    <h3 class="text-3xl font-bold mb-4">Supply Drives</h3>
-                    <p class="text-slate-400 text-lg">Distributing thousands of soap and dental kits to families who need them most.</p>
+                <img src="image (7).png" class="absolute right-[-10%] bottom-[-10%] w-80 blend-multiply opacity-10 pointer-events-none">
+            </div>
+
+            <div class="md:col-span-5 bg-cyan-50 rounded-[3rem] p-6 flex items-center justify-center widget-shadow overflow-hidden">
+                <img src="image (7).png" class="w-full h-auto blend-multiply transform hover:scale-110 transition duration-700" alt="Mascot">
+            </div>
+
+            <div class="md:col-span-5 glass rounded-[3rem] p-8 widget-shadow flex items-center gap-6 border border-cyan-100/50">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                    <img src="Sophmore VP Campaign - Jershon Vinodh.jpg" class="w-full h-full object-cover founder-img" alt="Jershon Vinodh">
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-extrabold text-xl">Jershon Vinodh</h3>
+                    <p class="text-cyan-600 font-bold text-xs uppercase tracking-wider">Founder</p>
+                    <p class="text-slate-500 text-sm mt-2 leading-snug font-medium italic">"Hard to raise a student of character."</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="volunteer" class="section-padding px-6 text-center">
-        <h2 class="text-5xl font-extrabold mb-8">Ready to Help?</h2>
-        <p class="text-xl text-slate-600 mb-12
+            <div class="md:col-span-7 grid grid-cols-3 gap-4">
+                <div class="bg-white rounded-[2.5rem] p-6 text-center widget-shadow border border-slate-100">
+                    <div class="text-3xl font-black text-slate-800">500+</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase mt-1">Kits</div>
+                </div>
+                <div class="bg-cyan-600 rounded-[2.5rem] p-6 text-center widget-shadow">
+                    <div class="text-3xl font-black text-white">1.2k</div>
+                    <div class="text-[10px] font-bold text-cyan-100 uppercase mt-1">Sessions</div>
+                </div>
+                <div class="bg-white rounded-[2.5rem] p-6 text-center widget-shadow border border-slate-100">
+                    <div class="text-3xl font-black text-slate-800">15+</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase mt-1">Schools</div>
+                </div>
+            </div>
+
+            <div class="md:col-span-12 glass rounded-[3rem] p-10 widget-shadow border border-slate-100">
+                <div class="grid md:grid-cols-3 gap-12 items-center">
+                    <div class="md:col-span-1">
+                        <h2 class="text-3xl font-extrabold text-slate-800">The Mission</h2>
+                        <div class="h-1.5 w-12 bg-cyan-500 mt-4 rounded-full"></div>
+                    </div>
+                    <div class="md:col-span-2 text-slate-500 font-medium leading-relaxed">
+                        Jershon Vinodh, a Parkway West High student from Manchester, MO, launched Hygienify to combine his love for outdoors and mentorship. A tennis and chess enthusiast, Jershon focuses on building character alongside health, ensuring younger students have the tools to succeed and the hygiene to stay safe.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-12 text-center text-slate-400 font-bold text-[10px] tracking-[0.3em] uppercase">
+        Hygienify Organization © 2026
+    </footer>
+
+</body>
+</html>
 

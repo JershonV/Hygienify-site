@@ -3,103 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hygienify | Student-Led Public Health</title>
+    <title>Hygienify | Clean Habits, Healthier Lives</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        
         .bg-mesh {
-            background-color: #ffffff;
+            background-color: #f0f9ff; /* Light cyan base */
             background-image: 
-                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0, transparent 40%), 
-                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0, transparent 40%);
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.2) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0, transparent 50%);
             background-attachment: fixed;
         }
-        /* This makes the image look sharper if it's a bit small */
-        .crisp-img { image-rendering: -webkit-optimize-contrast; }
+
+        /* THE MAGIC TRICK: This removes the white background from your image via code */
+        .blend-logo {
+            mix-blend-mode: multiply;
+            filter: contrast(1.1); /* Makes the colors pop since blending can slightly dim them */
+        }
+
+        .section-padding { padding: 120px 0; min-height: 80vh; }
     </style>
 </head>
 <body class="bg-mesh text-slate-900">
 
     <nav class="flex items-center justify-between px-6 md:px-12 py-5 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="flex items-center gap-3">
-            <img src="image (7).png" alt="Logo" class="w-10 h-10 object-contain crisp-img">
-            <span class="text-2xl font-extrabold tracking-tight text-cyan-700">Hygienify</span>
+            <img src="image (7).png" alt="Logo" class="w-10 h-10 object-contain blend-logo">
+            <span class="text-2xl font-extrabold tracking-tight text-cyan-800">Hygienify</span>
         </div>
         <div class="hidden md:flex gap-8 font-bold text-slate-500 text-xs tracking-widest">
-            <a href="#about" class="hover:text-cyan-600 transition uppercase">About</a>
-            <a href="#programs" class="hover:text-cyan-600 transition uppercase">Programs</a>
-            <a href="#volunteer" class="hover:text-cyan-600 transition uppercase">Volunteer</a>
+            <a href="#about" class="hover:text-cyan-600 transition">ABOUT</a>
+            <a href="#programs" class="hover:text-cyan-600 transition">PROGRAMS</a>
+            <a href="#volunteer" class="hover:text-cyan-600 transition">VOLUNTEER</a>
         </div>
-        <a href="#donate" class="bg-cyan-600 text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg shadow-cyan-100 hover:bg-cyan-700 transition">
-            Donate
-        </a>
+        <button class="bg-cyan-600 text-white px-6 py-2 rounded-full font-bold text-sm">Donate</button>
     </nav>
 
-    <header class="max-w-7xl mx-auto px-6 pt-20 pb-32 lg:flex items-center justify-between gap-12">
-        <div class="lg:w-1/2 text-center lg:text-left">
-            <div class="inline-block px-4 py-1.5 rounded-full bg-cyan-50 border border-cyan-100 text-cyan-700 text-[10px] font-black tracking-[0.2em] uppercase mb-8">
-                Official Student Non-Profit
+    <header class="max-w-7xl mx-auto px-6 pt-20 pb-32 lg:flex items-center justify-between">
+        <div class="lg:w-1/2">
+            <div class="inline-block px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 text-[10px] font-black tracking-widest uppercase mb-6">
+                Student-Led Impact
             </div>
-            <h1 class="text-6xl lg:text-8xl font-extrabold leading-[1.05] mb-8 tracking-tight">
-                Cleaner<br><span class="text-cyan-500">Habits.</span>
+            <h1 class="text-6xl lg:text-8xl font-extrabold leading-none mb-8 tracking-tighter">
+                Cleaner<br><span class="text-cyan-600">Habits.</span>
             </h1>
-            <p class="text-xl text-slate-600 mb-10 max-w-lg leading-relaxed">
-                Improving public health awareness through hygiene education and community outreach.
-            </p>
-            <div class="flex flex-wrap justify-center lg:justify-start gap-4">
-                <a href="#volunteer" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl">Join Our Mission</a>
-            </div>
+            <p class="text-xl text-slate-600 mb-10 max-w-md">Improving public health awareness through hygiene education and outreach.</p>
+            <a href="#volunteer" class="inline-block bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition shadow-2xl">Join Our Mission</a>
         </div>
         
-        <div class="lg:w-1/2 mt-16 lg:mt-0 flex justify-center">
-            <div class="relative group">
-                <div class="absolute -inset-10 bg-cyan-400/20 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition duration-1000"></div>
-                <img src="image (7).png" alt="Hygienify Mascot" class="relative w-full max-w-[450px] h-auto crisp-img drop-shadow-[0_20px_50px_rgba(6,182,212,0.3)]">
-            </div>
+        <div class="lg:w-1/2 flex justify-center mt-12 lg:mt-0">
+            <img src="image (7).png" alt="Mascot" class="w-full max-w-[550px] blend-logo">
         </div>
     </header>
 
-    <section id="about" class="min-h-screen flex flex-col justify-center max-w-6xl mx-auto px-6 py-24">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-8">Hygiene is a <span class="text-cyan-500 underline decoration-4 underline-offset-8">right</span>, not a privilege.</h2>
-                <p class="text-lg text-slate-600 leading-relaxed mb-6">
-                    Hygienify is a student-led team dedicated to bridging the gap in public health. We believe that simple education and access to supplies can transform a community's future.
-                </p>
-            </div>
-            <div class="bg-slate-900 rounded-[3rem] p-12 text-white shadow-2xl">
-                <div class="text-5xl font-black text-cyan-400 mb-2">1k+</div>
-                <div class="text-sm font-bold tracking-widest text-slate-400 uppercase mb-8">Kits Distributed</div>
-                <div class="text-5xl font-black text-blue-400 mb-2">300+</div>
-                <div class="text-sm font-bold tracking-widest text-slate-400 uppercase">Volunteers Joined</div>
-            </div>
+    <section id="about" class="section-padding px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-5xl font-extrabold mb-8 text-cyan-800">Our Story</h2>
+            <p class="text-2xl text-slate-600 leading-relaxed">
+                Hygienify is more than just a name—it's a mission to ensure every community has the basic tools for health. We started in our local schools and are growing every day.
+            </p>
         </div>
     </section>
 
-    <section id="programs" class="min-h-screen flex flex-col justify-center bg-slate-50 py-32 px-6">
-        <div class="max-w-6xl mx-auto w-full">
-            <h2 class="text-4xl font-extrabold mb-16 text-center">Our Programs</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-cyan-100 rounded-2xl flex items-center justify-center text-2xl mb-6">📚</div>
-                    <h3 class="text-2xl font-bold mb-4">Education</h3>
-                    <p class="text-slate-500 leading-relaxed text-sm">Interactive hygiene workshops designed specifically for schools and youth groups.</p>
+    <section id="programs" class="section-padding bg-slate-900 text-white px-6 rounded-[3rem] mx-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-extrabold mb-16">Active Programs</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="border-l-4 border-cyan-500 pl-8">
+                    <h3 class="text-3xl font-bold mb-4">Workshops</h3>
+                    <p class="text-slate-400 text-lg">Teaching kids the science of hygiene through interactive experiments and games.</p>
                 </div>
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl mb-6">📦</div>
-                    <h3 class="text-2xl font-bold mb-4">Donations</h3>
-                    <p class="text-slate-500 leading-relaxed text-sm">Organizing drives for soap, toothbrushes, and essential sanitation products.</p>
-                </div>
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-2xl mb-6">🤝</div>
-                    <h3 class="text-2xl font-bold mb-4">Community</h3>
-                    <p class="text-slate-500 leading-relaxed text-sm">Building local partnerships to ensure sustainable health habits for families.</p>
+                <div class="border-l-4 border-blue-500 pl-8">
+                    <h3 class="text-3xl font-bold mb-4">Supply Drives</h3>
+                    <p class="text-slate-400 text-lg">Distributing thousands of soap and dental kits to families who need them most.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="volunteer" class="min-h-[80vh] flex flex-col justify-center max-w-5xl mx-auto px-6 py-24 text-center">
-        <h2 class="text-5xl font-extrab
+    <section id="volunteer" class="section-padding px-6 text-center">
+        <h2 class="text-5xl font-extrabold mb-8">Ready to Help?</h2>
+        <p class="text-xl text-slate-600 mb-12
 

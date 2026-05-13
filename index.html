@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hygienify | Home</title>
+    <title>Hygienify | Empowering St. Louis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #020617; /* Midnight Black */
+            background: #020617; 
             color: #f8fafc;
-            line-height: 1.6;
         }
-        /* Nav styling - Bold and Clear like Chess Cardinals */
-        .nav-link {
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            transition: color 0.3s ease;
+        .nav-glass {
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        /* The "Blend" Magic */
-        .mascot-blend {
-            mix-blend-mode: multiply;
-            filter: contrast(1.1) brightness(1.1);
+        /* New Mascot Styling: Visible but blended */
+        .mascot-container {
+            filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.2));
+            mix-blend-mode: screen; /* Changed from multiply to screen for dark mode visibility */
         }
-        /* Spacious Sections */
-        .section-container {
-            padding-top: 120px;
-            padding-bottom: 120px;
+        .widget-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .widget-glass:hover {
+            border-color: rgba(34, 211, 238, 0.4);
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.07);
         }
         .text-gradient {
             background: linear-gradient(to right, #22d3ee, #3b82f6);
@@ -39,72 +42,86 @@
 </head>
 <body>
 
-    <nav class="fixed top-0 w-full z-50 bg-[#020617]/90 backdrop-blur-md border-b border-white/5">
+    <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="image (7).png" class="w-12 h-12 mascot-blend" alt="Logo">
+                <img src="image (7).png" class="w-10 h-10 object-contain" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
-            
-            <div class="hidden md:flex gap-10">
-                <a href="index.html" class="nav-link text-cyan-400">HOME</a>
-                <a href="about.html" class="nav-link text-slate-400 hover:text-white">ABOUT</a>
-                <a href="programs.html" class="nav-link text-slate-400 hover:text-white">PROGRAMS</a>
-                <a href="volunteer.html" class="nav-link text-slate-400 hover:text-white">VOLUNTEER</a>
+            <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
+                <a href="index.html" class="text-cyan-400">Home</a>
+                <a href="about.html" class="text-slate-400 hover:text-white transition">About</a>
+                <a href="programs.html" class="text-slate-400 hover:text-white transition">Programs</a>
+                <a href="volunteer.html" class="text-slate-400 hover:text-white transition">Volunteer</a>
             </div>
-
             <a href="https://hcb.hackclub.com/donations/start/hygienify" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition shadow-lg shadow-cyan-950/50">
                 DONATE
             </a>
         </div>
     </nav>
 
-    <header class="min-h-screen flex items-center section-container px-8">
+    <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
         <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
             <div class="space-y-10">
-                <h1 class="text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9]">
-                    Better <br><span class="text-gradient">Hygiene.</span>
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                    Serving the St. Louis Community
+                </div>
+                <h1 class="text-7xl md:text-8xl lg:text-[10rem] font-extrabold tracking-tighter leading-[0.85]">
+                    Better <br><span class="text-gradient">Health.</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light">
-                    Empowering Parkway West students and the Manchester community through character-led public health initiatives.
+                <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light leading-relaxed">
+                    A student-led initiative empowering St. Louis through character-driven public health education and essential resources.
                 </p>
-                <div class="flex gap-6">
-                    <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-2xl font-black text-lg hover:bg-cyan-400 transition">
+                <div class="flex gap-6 pt-4">
+                    <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-3xl font-black text-xl hover:bg-cyan-400 transition transform hover:scale-105">
                         Get Involved
                     </a>
                 </div>
             </div>
             
             <div class="flex justify-center relative">
-                <div class="absolute -inset-10 bg-cyan-500/10 rounded-full blur-[100px]"></div>
-                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-blend transform scale-110" alt="Hygienify Mascot">
+                <div class="absolute -inset-20 bg-cyan-500/10 rounded-full blur-[120px] opacity-50"></div>
+                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-container transform scale-110" alt="Hygienify Mascot">
             </div>
         </div>
     </header>
 
-    <section class="section-container bg-[#010409]">
-        <div class="max-w-7xl mx-auto px-8 text-center">
-            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-12">Building a legacy of character.</h2>
-            <div class="grid md:grid-cols-3 gap-12 pt-10">
-                <div class="space-y-4">
-                    <h3 class="text-5xl font-black text-cyan-400">500+</h3>
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Hygiene Kits</p>
+    <section class="py-24 px-8 bg-[#010409]/50">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="widget-glass p-12 text-center md:text-left">
+                    <div class="text-6xl font-black text-white mb-4">500+</div>
+                    <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
+                    <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
                 </div>
-                <div class="space-y-4">
-                    <h3 class="text-5xl font-black text-white">1,200+</h3>
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Students Impacted</p>
+                <div class="widget-glass p-12 text-center md:text-left">
+                    <div class="text-6xl font-black text-white mb-4">1.2k</div>
+                    <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
+                    <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
                 </div>
-                <div class="space-y-4">
-                    <h3 class="text-5xl font-black text-blue-500">2026</h3>
-                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Year Founded</p>
+                <div class="widget-glass p-12 text-center md:text-left">
+                    <div class="text-6xl font-black text-white mb-4">10+</div>
+                    <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">STL Partners</h3>
+                    <p class="mt-4 text-slate-500 font-medium">Collaborating with local schools and organizations to drive impact.</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <section class="py-32 px-8">
+        <div class="max-w-5xl mx-auto text-center space-y-8">
+            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight">"It's easy to raise an A+ student, but hard to raise a student of character."</h2>
+            <p class="text-xl text-slate-500">— Jershon Vinodh, Founder</p>
+        </div>
+    </section>
+
     <footer class="py-20 border-t border-white/5 text-center">
-        <p class="text-slate-500 font-bold text-[10px] tracking-[0.5em] uppercase">
-            Hygienify Organization • Manchester, MO
+        <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+            Hygienify Organization • St. Louis, MO
         </p>
     </footer>
 

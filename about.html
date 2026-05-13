@@ -1,31 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>About | Hygienify</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet"><style>body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; } .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); } .text-gradient { background: linear-gradient(to right, #22d3ee, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .blend-image { mix-blend-mode: multiply; filter: contrast(1.1); }</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Hygienify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
+        .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .logo-blend {
+            mix-blend-mode: screen;
+            filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 20px rgba(34, 211, 238, 0.3));
+        }
+
+        .widget-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .widget-glass:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 211, 238, 0.4);
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
 <body>
+
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
-            <div class="flex items-center gap-3"><img src="image (7).png" class="w-10 h-10 blend-image"><span class="font-extrabold text-2xl tracking-tighter">Hygienify</span></div>
-            <div class="hidden md:flex gap-12 items-center">
-                <a href="index.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Home</a>
-                <a href="about.html" class="text-white font-bold text-sm tracking-widest uppercase border-b-2 border-cyan-500">About</a>
-                <a href="programs.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Programs</a>
-                <a href="volunteer.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Volunteer</a>
+            <div class="flex items-center gap-4">
+                <img src="logo_new2.svg" class="w-10 h-10 object-contain logo-blend" alt="Logo">
+                <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
+            <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
+                <a href="index.html" class="text-slate-400 hover:text-white transition">Home</a>
+                <a href="about.html" class="text-cyan-400">About</a>
+                <a href="programs.html" class="text-slate-400 hover:text-white transition">Programs</a>
+                <a href="volunteer.html" class="text-slate-400 hover:text-white transition">Volunteer</a>
+            </div>
+            <a href="https://hcb.hackclub.com/donations/start/hygienify" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
         </div>
     </nav>
 
-    <main class="pt-48 pb-20 px-8">
-        <div class="max-w-4xl mx-auto space-y-12">
-            <h1 class="text-7xl font-extrabold tracking-tighter">The <span class="text-gradient">Visionary.</span></h1>
-            <p class="text-2xl text-slate-300 leading-relaxed font-light">
-                Jershon Vinodh is a high school student at Parkway West High School, based in Manchester, MO. He loves playing tennis and chess. He also enjoys the outdoors and hosting motivational seminars for younger students.
-            </p>
-            <p class="text-2xl text-slate-300 leading-relaxed font-light">
-                Jershon lives in a family of four, with a younger brother. His motto is: <span class="text-white font-bold">"It's easy to raise an A+ student, but hard to raise a student of character."</span>
+    <main class="pt-40 pb-20 px-8 max-w-7xl mx-auto">
+        <div class="widget-glass p-12 md:p-20 mb-12 text-center relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">Our <span class="text-gradient">Mission.</span></h1>
+            <p class="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-light leading-relaxed">
+                We believe that health is the foundation of character. By providing the St. Louis community with essential resources and education, we empower the next generation to lead healthier, more resilient lives.
             </p>
         </div>
-    </main>
-</body>
-</html>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            
+            <div class="md:col-span-8 widget-glass p-12">
+                <h3 class="text-3xl font-bold mb-6 text-white">Why We Started</h3>
+                <p class="text-lg text-slate-400 leading-relaxed">
+                    Hygienify was born from a simple observation: many students in our community lack access to basic hygiene education and supplies. We realized that "Better Health" isn't just about medicine—it's about the daily habits that build self-esteem and character.
+                </p>
+            </div>
+
+            <div class="md:col-span-4 widget-glass p-12 flex items-center justify-center bg-cyan-500/5">
+                <img src="logo_new2.svg" class="w-32 h-32 object-contain logo-blend" alt="Symbol">
+            </div>
+
+            <div class="md:col-span-4 widget-glass p-12 border-l-4 border-l-cyan-500">
+                <h4 class="text-cyan-400 font-bold uppercase tracking-widest text-xs mb-4">Our Home</h4>
+                <p class="text-xl font-bold text-white">Rooted in St. Louis, serving families across the metropolitan area.</p>
+            </div>
+
+            <div class="md:col-span-8 widget-glass p-12 italic">
+                <p class="text-2xl text-slate-2

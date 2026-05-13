@@ -17,17 +17,12 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        /* THE GENIE OUTLINE FIX */
+
+        /* THE CODE-BASED BACKGROUND REMOVER */
         .mascot-container {
-            mix-blend-mode: lighten; /* 'lighten' preserves the blue/cyan and drops the black/dark */
-            filter: 
-                brightness(1.2) 
-                contrast(1.1) 
-                /* This creates a light "outer glow" that acts as a new outline */
-                drop-shadow(2px 2px 0px rgba(34, 211, 238, 0.5)) 
-                drop-shadow(-2px -2px 0px rgba(34, 211, 238, 0.5))
-                drop-shadow(0 0 15px rgba(34, 211, 238, 0.3));
+            /* This tells the browser: "Make white pixels invisible" */
+            mix-blend-mode: screen; 
+            /* No extra filters, keeps original genie colors */
         }
 
         .widget-glass {
@@ -72,10 +67,6 @@
         <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
             <div class="space-y-10">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-                    </span>
                     Serving the St. Louis Community
                 </div>
                 <h1 class="text-7xl md:text-8xl lg:text-[10rem] font-extrabold tracking-tighter leading-[0.85]">
@@ -123,15 +114,4 @@
     <section class="py-32 px-8">
         <div class="max-w-5xl mx-auto text-center space-y-8">
             <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight">"It's easy to raise an A+ student, but hard to raise a student of character."</h2>
-            <p class="text-xl text-slate-500">— Jershon Vinodh, Founder</p>
-        </div>
-    </section>
-
-    <footer class="py-20 border-t border-white/5 text-center">
-        <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
-            Hygienify Organization • St. Louis, MO
-        </p>
-    </footer>
-
-</body>
-</html>
+            <p class="text-xl

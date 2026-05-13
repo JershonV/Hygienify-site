@@ -7,53 +7,106 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
-        .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 3.5rem; }
-        .blend-image { mix-blend-mode: multiply; filter: contrast(1.1) brightness(1.1); }
-        .text-gradient { background: linear-gradient(to right, #22d3ee, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #020617; /* Midnight Black */
+            color: #f8fafc;
+            line-height: 1.6;
+        }
+        /* Nav styling - Bold and Clear like Chess Cardinals */
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+        }
+        /* The "Blend" Magic */
+        .mascot-blend {
+            mix-blend-mode: multiply;
+            filter: contrast(1.1) brightness(1.1);
+        }
+        /* Spacious Sections */
+        .section-container {
+            padding-top: 120px;
+            padding-bottom: 120px;
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 w-full z-50 nav-glass">
+
+    <nav class="fixed top-0 w-full z-50 bg-[#020617]/90 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="image (7).png" class="w-10 h-10 blend-image" alt="Logo">
-                <span class="font-extrabold text-2xl tracking-tighter">Hygienify</span>
+            <div class="flex items-center gap-4">
+                <img src="image (7).png" class="w-12 h-12 mascot-blend" alt="Logo">
+                <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
-            <div class="hidden md:flex gap-12 items-center">
-                <a href="index.html" class="text-white font-bold text-sm tracking-widest uppercase border-b-2 border-cyan-500">Home</a>
-                <a href="about.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">About</a>
-                <a href="programs.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Programs</a>
-                <a href="volunteer.html" class="text-slate-400 hover:text-white font-bold text-sm tracking-widest uppercase transition">Volunteer</a>
-                <a href="#" class="bg-cyan-500 text-slate-950 px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition">Donate</a>
+            
+            <div class="hidden md:flex gap-10">
+                <a href="index.html" class="nav-link text-cyan-400">HOME</a>
+                <a href="about.html" class="nav-link text-slate-400 hover:text-white">ABOUT</a>
+                <a href="programs.html" class="nav-link text-slate-400 hover:text-white">PROGRAMS</a>
+                <a href="volunteer.html" class="nav-link text-slate-400 hover:text-white">VOLUNTEER</a>
             </div>
+
+            <a href="https://hcb.hackclub.com/donations/start/hygienify" class="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition shadow-lg shadow-cyan-950/50">
+                DONATE
+            </a>
         </div>
     </nav>
 
-    <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
-        <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-20 items-center">
-            <div class="text-center lg:text-left space-y-10">
-                <h1 class="text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.85]">Cleaner <br><span class="text-gradient">Habits.</span></h1>
-                <p class="text-xl md:text-2xl text-slate-400 max-w-lg mx-auto lg:mx-0 font-light">Student-led hygiene awareness for a healthier community.</p>
-                <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-[2rem] font-black text-xl hover:bg-cyan-400 transition inline-block">Join Mission</a>
+    <header class="min-h-screen flex items-center section-container px-8">
+        <div class="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-10">
+                <h1 class="text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9]">
+                    Better <br><span class="text-gradient">Hygiene.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-400 max-w-xl font-light">
+                    Empowering Parkway West students and the Manchester community through character-led public health initiatives.
+                </p>
+                <div class="flex gap-6">
+                    <a href="volunteer.html" class="bg-white text-black px-12 py-5 rounded-2xl font-black text-lg hover:bg-cyan-400 transition">
+                        Get Involved
+                    </a>
+                </div>
             </div>
+            
             <div class="flex justify-center relative">
-                <div class="absolute -inset-20 bg-cyan-500/10 rounded-full blur-[120px]"></div>
-                <img src="image (7).png" class="relative w-full max-w-[500px] blend-image scale-110" alt="Mascot">
+                <div class="absolute -inset-10 bg-cyan-500/10 rounded-full blur-[100px]"></div>
+                <img src="image (7).png" class="relative w-full max-w-[550px] mascot-blend transform scale-110" alt="Hygienify Mascot">
             </div>
         </div>
     </header>
 
-    <section class="py-32 px-8">
-        <div class="max-w-6xl mx-auto glass-card p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-16">
-            <img src="Sophmore VP Campaign - Jershon Vinodh.jpg" class="w-72 h-72 rounded-full object-cover border-4 border-white/10 shadow-2xl" style="object-position: center 20%;" alt="Jershon">
-            <div class="text-center lg:text-left space-y-8 flex-1">
-                <h2 class="text-4xl lg:text-6xl font-black tracking-tight text-white">Jershon Vinodh</h2>
-                <p class="text-2xl font-bold italic text-cyan-400">"It's hard to raise a student of character."</p>
-                <p class="text-xl text-slate-400 font-light leading-relaxed">A Parkway West student dedicated to public health and leadership in Manchester, MO.</p>
+    <section class="section-container bg-[#010409]">
+        <div class="max-w-7xl mx-auto px-8 text-center">
+            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-12">Building a legacy of character.</h2>
+            <div class="grid md:grid-cols-3 gap-12 pt-10">
+                <div class="space-y-4">
+                    <h3 class="text-5xl font-black text-cyan-400">500+</h3>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Hygiene Kits</p>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-5xl font-black text-white">1,200+</h3>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Students Impacted</p>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-5xl font-black text-blue-500">2026</h3>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Year Founded</p>
+                </div>
             </div>
         </div>
     </section>
+
+    <footer class="py-20 border-t border-white/5 text-center">
+        <p class="text-slate-500 font-bold text-[10px] tracking-[0.5em] uppercase">
+            Hygienify Organization • Manchester, MO
+        </p>
+    </footer>
+
 </body>
 </html>

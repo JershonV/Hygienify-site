@@ -10,13 +10,14 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE NEON GENIE FIX */
+        /* THE GENIE GLOW FIX */
         .mascot-visibility {
-            mix-blend-mode: multiply;
-            /* Cranked brightness + Triple Layered Cyan Glow */
-            filter: brightness(3) contrast(1.1) 
-                    drop-shadow(0 0 15px rgba(34, 211, 238, 0.6))
-                    drop-shadow(0 0 30px rgba(34, 211, 238, 0.4));
+            /* Screen keeps the light blue and removes the white background on dark mode */
+            mix-blend-mode: screen;
+            /* High brightness makes the blue neon, drop-shadow creates the actual glow effect */
+            filter: brightness(1.5) contrast(1.2)
+                    drop-shadow(0 0 20px rgba(34, 211, 238, 0.8))
+                    drop-shadow(0 0 40px rgba(34, 211, 238, 0.4));
         }
 
         .widget-glass {
@@ -80,42 +81,4 @@
         </div>
     </header>
 
-    <section class="py-24 px-8">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">500+</div>
-                <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
-                <p class="mt-4 text-slate-500">Distributed across Greater St. Louis.</p>
-            </div>
-            <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">1.2k</div>
-                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
-                <p class="mt-4 text-slate-500">Empowered through health seminars.</p>
-            </div>
-            <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">10+</div>
-                <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">STL Partners</h3>
-                <p class="mt-4 text-slate-500">Collaborating with local schools.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 px-8">
-        <div class="max-w-5xl mx-auto text-center space-y-12">
-            <h2 class="text-4xl md:text-6xl font-light tracking-tight italic leading-tight text-slate-200">
-                "It's easy to raise an A+ student, but hard to raise a student of character."
-            </h2>
-            <div class="space-y-4">
-                <div class="h-px w-24 bg-cyan-500 mx-auto opacity-50"></div>
-                <p class="text-3xl font-black text-white">Jershon Vinodh</p>
-                <p class="text-sm font-black tracking-[0.4em] text-cyan-400 uppercase">Founder & Executive Director</p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="py-20 border-t border-white/5 text-center">
-        <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">Hygienify Organization • St. Louis, MO</p>
-    </footer>
-
-</body>
-</html>
+    <section

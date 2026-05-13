@@ -10,12 +10,10 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE GENIE FIX: Use with image_649818.png */
+        /* THE GENIE FIX */
         .mascot-visibility {
-            /* 'screen' makes the white background of image_649818.png invisible */
-            mix-blend-mode: screen;
-            /* Contrast and Brightness make the blue pop against the dark background */
-            filter: brightness(1.2) contrast(1.1) drop-shadow(0 0 30px rgba(34, 211, 238, 0.6));
+            mix-blend-mode: screen; /* Deletes white background */
+            filter: brightness(1.3) contrast(1.1) drop-shadow(0 0 35px rgba(34, 211, 238, 0.6));
         }
 
         .widget-glass {
@@ -29,7 +27,7 @@
             transform: translateY(-10px);
             border-color: rgba(34, 211, 238, 0.5);
             background: rgba(34, 211, 238, 0.08);
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
         }
 
         .text-gradient {
@@ -44,7 +42,7 @@
     <nav class="fixed top-0 w-full z-50 nav-glass">
         <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="image_649818.png" class="w-10 h-10 object-contain mascot-visibility" alt="Logo">
+                <img src="genie.png" class="w-10 h-10 object-contain mascot-visibility" alt="Logo">
                 <span class="text-2xl font-extrabold tracking-tighter">Hygienify</span>
             </div>
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
@@ -74,7 +72,7 @@
             
             <div class="flex justify-center relative">
                 <div class="absolute -inset-20 bg-cyan-500/20 rounded-full blur-[120px] opacity-30"></div>
-                <img src="image_649818.png" class="relative w-full max-w-[550px] mascot-visibility transform scale-110" alt="Mascot">
+                <img src="genie.png" class="relative w-full max-w-[550px] mascot-visibility transform scale-110" alt="Mascot">
             </div>
         </div>
     </header>

@@ -10,12 +10,13 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* THE HONEST FIX */
+        /* THE NEON GENIE FIX */
         .mascot-visibility {
-            /* Multiply deletes the white background completely */
             mix-blend-mode: multiply;
-            /* We crank brightness to 300% so the blue stays vibrant on the dark bg */
-            filter: brightness(3) contrast(1.1);
+            /* Cranked brightness + Triple Layered Cyan Glow */
+            filter: brightness(3) contrast(1.1) 
+                    drop-shadow(0 0 15px rgba(34, 211, 238, 0.6))
+                    drop-shadow(0 0 30px rgba(34, 211, 238, 0.4));
         }
 
         .widget-glass {
@@ -25,7 +26,6 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* WIDGET HOVER GLOWS */
         .widget-glass:hover {
             transform: translateY(-10px);
             border-color: rgba(34, 211, 238, 0.5);
@@ -102,7 +102,7 @@
 
     <section class="py-32 px-8">
         <div class="max-w-5xl mx-auto text-center space-y-12">
-            <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight italic leading-tight">
+            <h2 class="text-4xl md:text-6xl font-light tracking-tight italic leading-tight text-slate-200">
                 "It's easy to raise an A+ student, but hard to raise a student of character."
             </h2>
             <div class="space-y-4">

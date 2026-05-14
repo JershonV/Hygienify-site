@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Custom Scrollbar - RESTORED */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
@@ -44,7 +44,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* NEW MOBILE WIDGET MENU STYLES */
         #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
         #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
         .menu-card {
@@ -58,7 +57,6 @@
         }
         .nav-link.active { color: #22d3ee !important; }
 
-        /* --- FOOTER COMPONENT STYLES --- */
         .footer-widget {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
@@ -80,33 +78,24 @@
 
         .spotlight {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: -1;
-            background: radial-gradient(
-                600px circle at var(--x) var(--y), 
-                rgba(34, 211, 238, 0.07), 
-                transparent 80%
-            );
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: -1;
+            background: radial-gradient(600px circle at var(--x) var(--y), rgba(34, 211, 238, 0.07), transparent 80%);
         }
 
         /* --- VERTICAL MOTION REVEAL STYLES --- */
         .reveal {
             opacity: 0;
-            transform: translateY(40px); /* Slightly deeper shift for more drama */
-            transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1); /* Ultra smooth ease-out */
+            transform: translateY(40px);
+            transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform, opacity;
         }
 
         .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+            opacity: 1 !important;
+            transform: translateY(0) !important;
         }
 
-        /* Staggered delays for grids */
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
@@ -202,7 +191,7 @@
             <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
         </div>
         <div class="widget-glass p-12 reveal reveal-delay-3">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="12">4</div>
+            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="12">0</div>
             <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
             <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
         </div>
@@ -290,45 +279,45 @@
 <div class="spotlight"></div>
 
 <script>
-    // Vertical Motion Reveal Logic
-    function reveal() {
-        const reveals = document.querySelectorAll(".reveal");
-        reveals.forEach((element) => {
-            const windowHeight = window.innerHeight;
-            const elementTop = element.getBoundingClientRect().top;
-            const elementVisible = 100; // Trigger distance from bottom
-            
-            if (elementTop < windowHeight - elementVisible) {
-                element.classList.add("active");
+    // Modern Intersection Observer for Reveal Logic
+    const revealCallback = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("active");
             }
         });
-    }
+    };
 
-    window.addEventListener("scroll", reveal);
-    window.addEventListener("load", reveal); // Run on load
+    const revealObserver = new IntersectionObserver(revealCallback, { 
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+    });
+
+    document.querySelectorAll(".reveal").forEach(el => {
+        revealObserver.observe(el);
+    });
 
     // Stats Counter
-    document.addEventListener("DOMContentLoaded", () => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const target = entry.target;
-                    const endValue = parseInt(target.getAttribute('data-target'));
-                    let startValue = 0;
-                    const duration = 2000;
-                    if (isNaN(endValue) || endValue === 0) return;
-                    const stepTime = Math.max(duration / endValue, 20);
-                    const timer = setInterval(() => {
-                        startValue += 1;
-                        target.textContent = startValue;
-                        if (startValue >= endValue) { target.textContent = endValue; clearInterval(timer); }
-                    }, stepTime);
-                    observer.unobserve(target);
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.stat-number').forEach((el) => observer.observe(el));
-    });
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const endValue = parseInt(target.getAttribute('data-target'));
+                let startValue = 0;
+                const duration = 2000;
+                if (isNaN(endValue) || endValue === 0) return;
+                const stepTime = Math.max(duration / endValue, 20);
+                const timer = setInterval(() => {
+                    startValue += 1;
+                    target.textContent = startValue;
+                    if (startValue >= endValue) { target.textContent = endValue; clearInterval(timer); }
+                }, stepTime);
+                statsObserver.unobserve(target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
 
     // Spotlight Cursor Follow
     const spotlight = document.querySelector('.spotlight');

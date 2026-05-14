@@ -118,23 +118,23 @@
         <div class="w-full max-w-md grid grid-cols-2 gap-4">
             <a href="index.html" class="menu-card h-32 flex-col gap-2">
                 <span class="text-[10px] opacity-40 uppercase tracking-widest">01</span>
-                <span class="text-lg font-bold">Home</span>
+                <span class="text-lg font-medium">Home</span>
             </a>
             <a href="about.html" class="menu-card h-32 flex-col gap-2">
                 <span class="text-[10px] opacity-40 uppercase tracking-widest">02</span>
-                <span class="text-lg font-bold">About</span>
+                <span class="text-lg font-medium">About</span>
             </a>
             <a href="programs.html" class="menu-card h-32 flex-col gap-2">
                 <span class="text-[10px] opacity-40 uppercase tracking-widest">03</span>
-                <span class="text-lg font-bold">Programs</span>
+                <span class="text-lg font-medium">Programs</span>
             </a>
             <a href="volunteer.html" class="menu-card h-32 flex-col gap-2">
                 <span class="text-[10px] opacity-40 uppercase tracking-widest">04</span>
-                <span class="text-lg font-bold">Volunteer</span>
+                <span class="text-lg font-medium">Volunteer</span>
             </a>
             <a href="goals.html" class="menu-card h-32 col-span-2 flex-col gap-2">
                 <span class="text-[10px] opacity-40 uppercase tracking-widest">05</span>
-                <span class="text-lg font-bold">Our Goals</span>
+                <span class="text-lg font-medium">Our Goals</span>
             </a>
             <a href="https://hcb.hackclub.com/donations/start/hygienify" class="menu-card h-20 col-span-2 bg-cyan-600 border-none text-white font-black uppercase text-sm tracking-widest">
                 Donate
@@ -212,9 +212,10 @@
                 </ul>
             </div>
 
-            <div class="flex flex-col items-center md:items-end">
+            <div class="flex flex-col items-center md:items-end md:text-right">
                 <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-                <a href="mailto:jershonvinodh@gmail.com" class="text-slate-300 hover:text-white text-lg font-light transition-all duration-500 group relative">
+                <a href="mailto:jershonvinodh@gmail.com" 
+                   class="text-slate-300 hover:text-white text-lg font-light tracking-wide transition-all duration-500 group relative">
                     jershonvinodh@gmail.com
                     <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
                 </a>
@@ -236,16 +237,11 @@
         btn.addEventListener('click', () => {
             menu.classList.toggle('active');
             const isOpen = menu.classList.contains('active');
-            
-            // Icon Animate
             menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
             btnLabel.textContent = isOpen ? "Close" : "Menu";
-            
-            // Body scroll lock
             document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         });
 
-        // Auto-highlight active link
         const currentPage = window.location.pathname.split("/").pop() || "about.html";
         document.querySelectorAll('.menu-card, .nav-link').forEach(link => {
             if (link.getAttribute('href') === currentPage) {

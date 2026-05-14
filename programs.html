@@ -96,6 +96,29 @@
         }
 
         .nav-link.active { color: #22d3ee !important; }
+
+        /* --- FOOTER COMPONENT STYLES --- */
+.footer-widget {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-widget:hover {
+    border-color: rgba(34, 211, 238, 0.3);
+    background: rgba(34, 211, 238, 0.05);
+    transform: translateY(-4px);
+}
+
+.qr-container {
+    filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.2));
+    transition: all 0.4s ease;
+}
+
+.footer-widget:hover .qr-container {
+    filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.5));
+}
     </style>
 </head>
 <body>
@@ -243,47 +266,73 @@
         </div>
     </main>
 
-    <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-            <div class="space-y-6 text-center md:text-left">
-                <div class="flex items-center justify-center md:justify-start gap-3">
-                    <img src="logo_new2.svg" class="w-8 h-8 opacity-80" alt="Logo">
-                    <span class="text-xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                </div>
-                <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
-                    Hygienify Organization • St. Louis, MO
-                </p>
+<footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        
+        <div class="footer-widget p-8 flex flex-row items-center gap-8">
+            <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
+                <img src="qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
             </div>
-
-            <div class="flex flex-col items-center">
-                <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-                <ul class="space-y-4 text-slate-500 text-sm font-medium tracking-wide">
-                    <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
-                    <li><a href="programs.html" class="hover:text-cyan-400 transition-colors">Programs</a></li>
-                    <li><a href="volunteer.html" class="hover:text-cyan-400 transition-colors">Volunteer</a></li>
-                    <li><a href="goals.html" class="hover:text-cyan-400 transition-colors">Our Goals</a></li>
-                </ul>
-            </div>
-
-            <div class="flex flex-col items-center md:items-end text-center md:text-right">
-                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-                <a href="mailto:jershonvinodh@gmail.com" class="text-slate-300 hover:text-white text-lg font-light transition-all duration-500 group relative">
-                    jershonvinodh@gmail.com
-                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
-                </a>
-                <div class="mt-8">
-                    <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
-                        Join the Mission
-                    </a>
-                </div>
+            <div>
+                <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
+                <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 text-center">
-            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
-                © 2026 Hygienify • Empowering Community Health
+
+        <a href="https://hcb.hackclub.com/donations/start/hygienify" target="_blank" 
+           class="footer-widget p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
+            <div class="flex-1 pr-0 md:pr-16">
+                <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
+                <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
+                <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+            </div>
+            <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
+                →
+            </div>
+        </a>
+    </div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
+        <div class="space-y-6">
+            <div class="flex items-center justify-center md:justify-start gap-3">
+                <img src="logo_new2.svg" class="w-8 h-8 opacity-80 logo-blend" alt="Logo">
+                <span class="text-xl font-extrabold tracking-tighter text-white">Hygienify</span>
+            </div>
+            <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+                Hygienify Organization • St. Louis, MO
             </p>
         </div>
-    </footer>
+
+        <div class="flex flex-col items-center">
+            <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
+            <ul class="space-y-4 text-slate-500 text-sm font-medium tracking-wide">
+                <li><a href="about.html" class="hover:text-cyan-400 transition-colors">About Us</a></li>
+                <li><a href="programs.html" class="hover:text-cyan-400 transition-colors">Programs</a></li>
+                <li><a href="volunteer.html" class="hover:text-cyan-400 transition-colors">Volunteer</a></li>
+                <li><a href="goals.html" class="hover:text-cyan-400 transition-colors">Our Goals</a></li>
+            </ul>
+        </div>
+
+        <div class="flex flex-col items-center md:items-end">
+            <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
+            <a href="mailto:jershonvinodh@gmail.com" class="text-slate-300 hover:text-white text-lg font-light transition-all duration-500 group relative">
+                jershonvinodh@gmail.com
+                <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+            </a>
+            <div class="mt-8">
+                <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
+                    Join the Mission
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 text-center">
+        <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
+            © 2026 Hygienify • Empowering Community Health
+        </p>
+    </div>
+</footer>
 
     <script>
         const btn = document.getElementById('menu-btn');

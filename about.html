@@ -43,10 +43,12 @@
             justify-content: center;
         }
 
+        /* RESTORED HOVER POP-UP EFFECT */
         .widget-glass:hover {
-            transform: translateY(-5px);
-            border-color: rgba(34, 211, 238, 0.4);
-            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
+            transform: translateY(-10px);
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(34, 211, 238, 0.08);
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
         }
 
         .text-gradient {
@@ -106,7 +108,7 @@
             filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.5));
         }
 
-        /* --- REVEAL EFFECTS --- */
+        /* --- REVEAL EFFECTS (Synced with index.html) --- */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -235,7 +237,7 @@
         </div>
     </main>
 
-<footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617] reveal">
+<footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
         
         <div class="footer-widget p-8 flex flex-row items-center gap-8">
@@ -339,7 +341,6 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add("active");
                 } else {
-                    // Set to remove if you want them to re-animate when scrolling back
                     entry.target.classList.remove("active");
                 }
             });

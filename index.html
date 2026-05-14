@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Custom Scrollbar - RESTORED */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
@@ -44,7 +44,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* MOBILE MENU STYLES - RESTORED */
         #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
         #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
         .menu-card {
@@ -56,9 +55,9 @@
             background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.4);
             box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1); color: #22d3ee;
         }
+        
         .nav-link.active { color: #22d3ee !important; }
 
-        /* FOOTER COMPONENT STYLES - RESTORED */
         .footer-widget {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
@@ -85,7 +84,6 @@
             background: radial-gradient(600px circle at var(--x) var(--y), rgba(34, 211, 238, 0.07), transparent 80%);
         }
 
-        /* REVEAL STYLES - FIXED FOR REPEATABLE ANIMATION */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -117,7 +115,7 @@
         </div>
 
         <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
-            <a href="index.html" class="nav-link text-slate-400 hover:text-white transition">Home</a>
+            <a href="index.html" class="nav-link active text-slate-400 hover:text-white transition">Home</a>
             <a href="about.html" class="nav-link text-slate-400 hover:text-white transition">About</a>
             <a href="programs.html" class="nav-link text-slate-400 hover:text-white transition">Programs</a>
             <a href="volunteer.html" class="nav-link text-slate-400 hover:text-white transition">Volunteer</a>
@@ -137,7 +135,7 @@
 
 <div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
     <div class="w-full max-w-md grid grid-cols-2 gap-4">
-        <a href="index.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">01</span><span class="text-lg font-medium">Home</span></a>
+        <a href="index.html" class="menu-card active h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">01</span><span class="text-lg font-medium">Home</span></a>
         <a href="about.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">02</span><span class="text-lg font-medium">About</span></a>
         <a href="programs.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">03</span><span class="text-lg font-medium">Programs</span></a>
         <a href="volunteer.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">04</span><span class="text-lg font-medium">Volunteer</span></a>
@@ -183,17 +181,17 @@
 <section class="py-24 px-8">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="widget-glass p-12 reveal reveal-delay-1">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="250">0</div>
+            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="0">0</div>
             <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
             <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
         </div>
         <div class="widget-glass p-12 reveal reveal-delay-2">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="150">0</div>
+            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="0">0</div>
             <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
             <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
         </div>
         <div class="widget-glass p-12 reveal reveal-delay-3">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="12">0</div>
+            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="4">0</div>
             <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
             <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
         </div>
@@ -281,13 +279,11 @@
 <div class="spotlight"></div>
 
 <script>
-    // REVEAL OBSERVER - Set to add/remove class for infinite scroll
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add("active");
             } else {
-                // This line makes the animation happen again when scrolling back down
                 entry.target.classList.remove("active");
             }
         });
@@ -300,7 +296,6 @@
         revealObserver.observe(el);
     });
 
-    // STATS COUNTER - Only runs once when seen
     const statsObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -308,8 +303,11 @@
                 const endValue = parseInt(target.getAttribute('data-target'));
                 let startValue = 0;
                 const duration = 2000;
-                if (isNaN(endValue) || endValue === 0) return;
-                const stepTime = Math.max(duration / endValue, 20);
+                if (isNaN(endValue) || endValue === 0) {
+                    target.textContent = endValue || 0;
+                    return;
+                }
+                const stepTime = Math.max(duration / endValue, 50);
                 const timer = setInterval(() => {
                     startValue += 1;
                     target.textContent = startValue;
@@ -322,14 +320,12 @@
 
     document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
 
-    // SPOTLIGHT
     const spotlight = document.querySelector('.spotlight');
     window.addEventListener('mousemove', e => {
         spotlight.style.setProperty('--x', `${e.clientX}px`);
         spotlight.style.setProperty('--y', `${e.clientY}px`);
     });
 
-    // MOBILE MENU
     const btn = document.getElementById('menu-btn');
     const menu = document.getElementById('mobile-menu');
     const menuPath = document.getElementById('menu-path');

@@ -41,26 +41,47 @@
         }
     </style>
 </head>
-        const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            const target = entry.target;
-            const endValue = parseInt(target.getAttribute('data-target'));
-            let startValue = 0;
-            const duration = 2000; // 2 seconds
-            const stepTime = Math.abs(Math.floor(duration / endValue));
-            
-            const timer = setInterval(() => {
-                startValue += 1;
-                target.textContent = startValue;
-                if (startValue == endValue) clearInterval(timer);
-            }, stepTime);
-            observer.unobserve(target);
-        }
-    });
-});
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("Counter script loaded!"); // This checks if the script is running
 
-document.querySelectorAll('.stat-number').forEach((el) => observer.observe(el));
+        const observerOptions = {
+            threshold: 0.1 // Triggers when even 10% of the card is visible
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const endValue = parseInt(target.getAttribute('data-target'));
+                    let startValue = 0;
+                    const duration = 2000; 
+                    
+                    if (isNaN(endValue)) return; 
+
+                    const stepTime = Math.max(duration / endValue, 20); // Prevents crashing on small numbers
+                    
+                    console.log("Starting count for:", endValue);
+
+                    const timer = setInterval(() => {
+                        startValue += 1;
+                        target.textContent = startValue;
+                        if (startValue >= endValue) {
+                            target.textContent = endValue;
+                            clearInterval(timer);
+                        }
+                    }, stepTime);
+                    
+                    observer.unobserve(target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-number').forEach((el) => {
+            observer.observe(el);
+        });
+    });
+</script>
 <body>
 
 <nav class="fixed top-0 w-full z-50 nav-glass">

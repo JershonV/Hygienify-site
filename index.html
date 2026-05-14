@@ -41,6 +41,26 @@
         }
     </style>
 </head>
+        const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            const target = entry.target;
+            const endValue = parseInt(target.getAttribute('data-target'));
+            let startValue = 0;
+            const duration = 2000; // 2 seconds
+            const stepTime = Math.abs(Math.floor(duration / endValue));
+            
+            const timer = setInterval(() => {
+                startValue += 1;
+                target.textContent = startValue;
+                if (startValue == endValue) clearInterval(timer);
+            }, stepTime);
+            observer.unobserve(target);
+        }
+    });
+});
+
+document.querySelectorAll('.stat-number').forEach((el) => observer.observe(el));
 <body>
 
 <nav class="fixed top-0 w-full z-50 nav-glass">
@@ -110,23 +130,27 @@
     </div>
 </header>
 
-    <section class="py-24 px-8">
+<section class="py-24 px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            
             <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">0</div>
+                <div class="text-6xl font-black text-white mb-4 stat-number" data-target="150">0</div>
                 <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
                 <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
             </div>
+
             <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">0</div>
+                <div class="text-6xl font-black text-white mb-4 stat-number" data-target="25">0</div>
                 <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
                 <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
             </div>
+
             <div class="widget-glass p-12">
-                <div class="text-6xl font-black text-white mb-4">4</div>
+                <div class="text-6xl font-black text-white mb-4 stat-number" data-target="4">0</div>
                 <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
                 <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
             </div>
+
         </div>
     </section>
 

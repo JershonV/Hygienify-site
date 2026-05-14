@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - RESTORED */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
@@ -44,6 +44,7 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* MOBILE MENU STYLES - RESTORED */
         #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
         #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
         .menu-card {
@@ -57,6 +58,7 @@
         }
         .nav-link.active { color: #22d3ee !important; }
 
+        /* FOOTER COMPONENT STYLES - RESTORED */
         .footer-widget {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
@@ -83,7 +85,7 @@
             background: radial-gradient(600px circle at var(--x) var(--y), rgba(34, 211, 238, 0.07), transparent 80%);
         }
 
-        /* --- VERTICAL MOTION REVEAL STYLES --- */
+        /* REVEAL STYLES - FIXED FOR REPEATABLE ANIMATION */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -279,16 +281,17 @@
 <div class="spotlight"></div>
 
 <script>
-    // Modern Intersection Observer for Reveal Logic
-    const revealCallback = (entries, observer) => {
+    // REVEAL OBSERVER - Set to add/remove class for infinite scroll
+    const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add("active");
+            } else {
+                // This line makes the animation happen again when scrolling back down
+                entry.target.classList.remove("active");
             }
         });
-    };
-
-    const revealObserver = new IntersectionObserver(revealCallback, { 
+    }, { 
         threshold: 0.1,
         rootMargin: "0px 0px -50px 0px"
     });
@@ -297,7 +300,7 @@
         revealObserver.observe(el);
     });
 
-    // Stats Counter
+    // STATS COUNTER - Only runs once when seen
     const statsObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -312,21 +315,21 @@
                     target.textContent = startValue;
                     if (startValue >= endValue) { target.textContent = endValue; clearInterval(timer); }
                 }, stepTime);
-                statsObserver.unobserve(target);
+                statsObserver.unobserve(target); 
             }
         });
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
 
-    // Spotlight Cursor Follow
+    // SPOTLIGHT
     const spotlight = document.querySelector('.spotlight');
     window.addEventListener('mousemove', e => {
         spotlight.style.setProperty('--x', `${e.clientX}px`);
         spotlight.style.setProperty('--y', `${e.clientY}px`);
     });
 
-    // Mobile Menu Toggle
+    // MOBILE MENU
     const btn = document.getElementById('menu-btn');
     const menu = document.getElementById('mobile-menu');
     const menuPath = document.getElementById('menu-path');

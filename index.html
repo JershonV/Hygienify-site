@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hygienify | Home</title>
-    
     <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - RESTORED */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
@@ -46,21 +44,27 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* NEW MOBILE MENU STYLES */
-        #mobile-menu { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; transform: translateY(-10px); }
-        #mobile-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .mobile-link { transition: all 0.3s ease; position: relative; }
-        .mobile-link.active { color: #22d3ee; text-shadow: 0 0 15px rgba(34, 211, 238, 0.5); }
+        /* NEW MOBILE WIDGET MENU STYLES */
+        #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
+        #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
+        .menu-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px); border-radius: 1.5rem; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; color: #f8fafc;
+        }
+        .menu-card.active {
+            background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1); color: #22d3ee;
+        }
         .nav-link.active { color: #22d3ee !important; }
     </style>
 </head>
 <body>
 
-<nav class="fixed top-0 w-full z-[100] nav-glass px-6 md:px-8 py-4 md:py-6">
+<nav class="fixed top-0 w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-        
         <div class="flex items-center gap-3">
-            <img src="logo_new2.svg" class="w-8 h-8 md:w-10 md:h-10 object-contain logo-blend" alt="Logo">
+            <img src="logo_new2.svg" class="w-8 h-8 md:w-10 md:h-10 object-contain" alt="Logo">
             <span class="text-xl md:text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
         </div>
 
@@ -74,27 +78,28 @@
 
         <a href="https://hcb.hackclub.com/donations/start/hygienify" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
 
-        <button id="menu-btn" class="md:hidden text-white focus:outline-none flex items-center gap-2 z-[110]">
-            <span class="text-[10px] font-black uppercase tracking-[0.2em]">Menu</span>
-            <svg id="menu-icon" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="menu-btn" class="md:hidden text-white flex items-center gap-2 z-[120]">
+            <span id="btn-label" class="text-[10px] font-black uppercase tracking-[0.2em]">Menu</span>
+            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path id="menu-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
         </button>
     </div>
 </nav>
 
-<div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-2xl flex flex-col items-center justify-center space-y-10 text-2xl font-bold uppercase tracking-[0.3em] text-white">
-    <a href="index.html" class="mobile-link">Home</a>
-    <a href="about.html" class="mobile-link">About</a>
-    <a href="programs.html" class="mobile-link">Programs</a>
-    <a href="volunteer.html" class="mobile-link">Volunteer</a>
-    <a href="goals.html" class="mobile-link">Goals</a>
-    <a href="https://hcb.hackclub.com/donations/start/hygienify" class="text-cyan-400 pt-4">Donate</a>
+<div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
+    <div class="w-full max-w-md grid grid-cols-2 gap-4">
+        <a href="index.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">01</span><span class="text-lg font-medium">Home</span></a>
+        <a href="about.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">02</span><span class="text-lg font-medium">About</span></a>
+        <a href="programs.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">03</span><span class="text-lg font-medium">Programs</span></a>
+        <a href="volunteer.html" class="menu-card h-32 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">04</span><span class="text-lg font-medium">Volunteer</span></a>
+        <a href="goals.html" class="menu-card h-32 col-span-2 flex-col gap-2"><span class="text-[10px] opacity-40 uppercase tracking-widest">05</span><span class="text-lg font-medium">Our Goals</span></a>
+        <a href="https://hcb.hackclub.com/donations/start/hygienify" class="menu-card h-20 col-span-2 bg-cyan-600 border-none text-white font-bold uppercase text-sm tracking-widest">Donate</a>
+    </div>
 </div>
 
 <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
     <div class="max-w-5xl mx-auto w-full text-center flex flex-col items-center">
-        
         <div class="relative inline-block mb-16">
             <div class="absolute -inset-10 bg-cyan-500/20 rounded-full blur-[80px] opacity-40"></div>
             <img src="logo_new2.svg" class="relative w-full max-w-[280px] md:max-w-[320px] mx-auto logo-centerpiece transform hover:scale-105 transition-transform duration-700" alt="Hygienify Centerpiece">
@@ -104,7 +109,7 @@
             <div class="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
                 Serving the St. Louis Community
             </div>
-            <a href="volunteer.html" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400 text-cyan-400 text-[10px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all duration-300">
+            <a href="volunteer.html" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400 text-cyan-400 text-[10px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
                 Get Involved
             </a>
         </div>
@@ -113,13 +118,11 @@
             <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-white">
                 <span class="text-gradient">Hygienify</span>
             </h1>
-            
             <div class="pt-16 md:pt-24">
                 <p class="text-slate-500 text-[11px] md:text-xs font-black tracking-[0.6em] uppercase opacity-80">
                     Hygiene • Seminars • Community
                 </p>
             </div>
-            
             <div class="mt-10 w-full max-w-4xl mx-auto">
                 <p class="text-slate-200 text-base md:text-lg font-normal tracking-wide italic opacity-90 leading-relaxed">
                     A non-profit geared toward distributing basic health essentials and improving hygienic practices.
@@ -136,13 +139,11 @@
             <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
             <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
         </div>
-
         <div class="widget-glass p-12">
             <div class="text-6xl font-black text-white mb-4 stat-number" data-target="25">0</div>
             <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
             <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
         </div>
-
         <div class="widget-glass p-12">
             <div class="text-6xl font-black text-white mb-4 stat-number" data-target="4">0</div>
             <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
@@ -165,14 +166,14 @@
 </section>
 
 <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-        <div class="space-y-6 text-center md:text-left">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left">
+        <div class="space-y-6">
             <div class="flex items-center justify-center md:justify-start gap-3">
                 <img src="logo_new2.svg" class="w-8 h-8 opacity-80" alt="Logo">
                 <span class="text-xl font-extrabold tracking-tighter text-white">Hygienify</span>
             </div>
             <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
-                Hygienify Organization <br class="md:hidden"> • St. Louis, MO
+                Hygienify Organization • St. Louis, MO
             </p>
         </div>
 
@@ -186,10 +187,9 @@
             </ul>
         </div>
 
-        <div class="flex flex-col items-center md:items-end text-center md:text-right">
+        <div class="flex flex-col items-center md:items-end">
             <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-            <a href="mailto:jershonvinodh@gmail.com" 
-               class="text-slate-300 hover:text-white text-lg font-light tracking-wide transition-all duration-500 group relative">
+            <a href="mailto:jershonvinodh@gmail.com" class="text-slate-300 hover:text-white text-lg font-light transition-all duration-500 group relative">
                 jershonvinodh@gmail.com
                 <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
             </a>
@@ -208,7 +208,7 @@
 </footer>
 
 <script>
-    // Stats Counter Script
+    // Stats Counter - FULL RESTORED
     document.addEventListener("DOMContentLoaded", () => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -216,60 +216,39 @@
                     const target = entry.target;
                     const endValue = parseInt(target.getAttribute('data-target'));
                     let startValue = 0;
-                    const duration = 2000; 
-                    if (isNaN(endValue) || endValue === 0) return; 
-
+                    const duration = 2000;
+                    if (isNaN(endValue) || endValue === 0) return;
                     const stepTime = Math.max(duration / endValue, 20);
                     const timer = setInterval(() => {
                         startValue += 1;
                         target.textContent = startValue;
-                        if (startValue >= endValue) {
-                            target.textContent = endValue;
-                            clearInterval(timer);
-                        }
+                        if (startValue >= endValue) { target.textContent = endValue; clearInterval(timer); }
                     }, stepTime);
                     observer.unobserve(target);
                 }
             });
         }, { threshold: 0.1 });
-
         document.querySelectorAll('.stat-number').forEach((el) => observer.observe(el));
     });
 
-    // IMPROVED Mobile Menu Script
+    // Mobile Menu Toggle
     const btn = document.getElementById('menu-btn');
     const menu = document.getElementById('mobile-menu');
     const menuPath = document.getElementById('menu-path');
-    const links = document.querySelectorAll('.mobile-link, .nav-link');
-
-    // Highlight Active Page Logic
-    const currentPage = window.location.pathname.split("/").pop() || "index.html";
-    links.forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
-            link.classList.add('active');
-        }
-    });
+    const btnLabel = document.getElementById('btn-label');
 
     btn.addEventListener('click', () => {
         menu.classList.toggle('active');
         const isOpen = menu.classList.contains('active');
-        
-        // Icon Animation (Hamburger to X)
         menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
-        
-        // Prevent scroll when menu is open
+        btnLabel.textContent = isOpen ? "Close" : "Menu";
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     });
 
-    // Close menu on link click
-    document.querySelectorAll('.mobile-link').forEach(link => {
-        link.addEventListener('click', () => {
-            menu.classList.remove('active');
-            menuPath.setAttribute('d', "M4 6h16M4 12h16m-7 6h7");
-            document.body.style.overflow = 'auto';
-        });
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    document.querySelectorAll('.menu-card, .nav-link').forEach(link => {
+        if (link.getAttribute('href') === currentPage) link.classList.add('active');
     });
 </script>
-
 </body>
 </html>

@@ -95,7 +95,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
-    <div class="w-full max-w-xl widget-glass p-12 shadow-2xl">
+    <div id="portal-card" class="w-full max-w-xl widget-glass p-12 shadow-2xl reveal">
         <h2 class="text-3xl font-black mb-2 text-white">Volunteer Roster Portal</h2>
         <p class="text-slate-400 text-sm mb-8">Fill out your public profile details to automatically sync your card onto the Team page.</p>
         
@@ -121,11 +121,25 @@
         </form>
     </div>
 
+    <div class="spotlight"></div>
+
     <script>
         // Initialize connection to your cloud data bucket
         const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // FIXED: Automatically forces the glass container to fade into view as soon as the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('portal-card').classList.add('active');
+        });
+
+        // Spotlight effect logic
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', e => {
+            spotlight.style.setProperty('--x', `${e.clientX}px`);
+            spotlight.style.setProperty('--y', `${e.clientY}px`);
+        });
 
         document.getElementById('portalForm').addEventListener('submit', async (e) => {
             e.preventDefault();

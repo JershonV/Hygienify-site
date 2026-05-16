@@ -96,70 +96,118 @@
         </form>
     </div>
 
-    <script>
-        const APPROVED_EMAILS = [
-            'admin@hygienify.org',
-            'volunteer1@gmail.com',
-            'test@hygienify.org'
-        ];
+<script>
+    // =========================================================================
+    // 🔒 1. XANO CONFIGURATION & MASTER ACCOUNT REGISTER
+    // =========================================================================
+    // 🛑 REPLACE THIS URL with your actual Xano API Endpoint (POST /volunteers/add_volunteer)
+    const XANO_POST_URL = 'https://x8ki-letl-twmt.n7.xano.io/api:volunteers/add_volunteer';
 
-        const authCard = document.getElementById('auth-card');
-        const portalCard = document.getElementById('portal-card');
-        const authForm = document.getElementById('authForm');
+    // Core pre-configured baseline accounts
+    const APPROVED_EMAILS = [
+        'admin@hygienify.org',
+        'volunteer1@gmail.com',
+        'test@hygienify.org'
+    ];
 
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('authEmail').value.trim().toLowerCase();
-            const password = document.getElementById('authPassword').value;
-            const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-            const allVolunteers = { ...APPROVED_EMAILS.reduce((acc, el) => ({...acc, [el]: "password123"}), {}), ...customVolunteers };
+    const authCard = document.getElementById('auth-card');
+    const portalCard = document.getElementById('portal-card');
+    const authForm = document.getElementById('authForm');
+    let loggedInEmail = ""; // Session memory context token holder
 
-            if (!allVolunteers.hasOwnProperty(email)) {
-                alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
-                return;
+    // =========================================================================
+    // 🔑 2. SIGN IN INTERCEPTOR ENGINE
+    // =========================================================================
+    authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('authEmail').value.trim().toLowerCase();
+        const password = document.getElementById('authPassword').value;
+        
+        // Grab custom user signups created in localStorage
+        const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
+        
+        // Combine master base accounts (default password123) with custom signups
+        const allVolunteers = { 
+            ...APPROVED_EMAILS.reduce((acc, el) => ({...acc, [el]: "password123"}), {}), 
+            ...customVolunteers 
+        };
+
+        // Check registry array structures
+        if (!allVolunteers.hasOwnProperty(email)) {
+            alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
+            return;
+        }
+
+        // Validate matching password sequence
+        if (allVolunteers[email] !== password) {
+            alert("❌ Authentication Failed: Incorrect password entered for this account.");
+            return;
+        }
+
+        // Lock user context data state & toggle micro-glass layout boards
+        loggedInEmail = email; 
+        document.getElementById('userBadge').innerText = email;
+        authCard.classList.add('hidden');
+        portalCard.classList.remove('hidden');
+    });
+
+    // =========================================================================
+    // 🌐 3. XANO DATA INGESTION ENGINE (Replaces FileReader)
+    // =========================================================================
+    document.getElementById('portalForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const bio = document.getElementById('bio').value;
+        const fileInput = document.getElementById('imageFileInput');
+        const file = fileInput.files[0];
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+
+        if (!file) {
+            alert("Please select an image file first.");
+            return;
+        }
+
+        // UI Feedback UX lock states
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Publishing Profile...";
+
+        // Pack values into binary multi-part stream objects for Xano
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('bio', bio);
+        formData.append('image', file); 
+
+        try {
+            // Ship payload transmission stream directly to Xano REST architecture
+            const response = await fetch(XANO_POST_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server tracking fault. Status: ${response.status}`);
             }
 
-            document.getElementById('userBadge').innerText = email;
-            authCard.classList.add('hidden');
-            portalCard.classList.remove('hidden');
-        });
+            alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
+            window.location.href = 'team.html';
 
-        // FIXED: Reads the native uploaded file and converts it into a data string format
-        document.getElementById('portalForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const bio = document.getElementById('bio').value;
-            const fileInput = document.getElementById('imageFileInput');
-            const file = fileInput.files[0];
+        } catch (error) {
+            alert("❌ Xano Transmission Error: " + error.message);
+            console.error(error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Publish Updates";
+        }
+    });
 
-            if (!file) {
-                alert("Please select an image file first.");
-                return;
-            }
-
-            const reader = new FileReader();
-            
-            // Fires automatically once the browser finishes scanning the file binary data
-            reader.onloadend = function() {
-                const base64ImageString = reader.result;
-                
-                // You now have access to a clean image data string!
-                alert(`Profile Updated Live!\nName: ${name}\nBio: ${bio}\nImage String Processed successfully.`);
-                console.log("Base64 Output Link String:", base64ImageString);
-                
-                // Optional: redirect to team page after processing
-                // window.location.href = 'team.html';
-            };
-
-            // Command the reader to parse the raw image asset
-            reader.readAsDataURL(file);
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            window.location.reload();
-        });
-    </script>
+    // =========================================================================
+    // 🪵 4. SESSION SYSTEM KILL SWITCH
+    // =========================================================================
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        window.location.reload();
+    });
+</script>
 </body>
 </html>

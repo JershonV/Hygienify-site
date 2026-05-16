@@ -57,7 +57,7 @@
 
         <div class="mt-8 text-center text-sm text-slate-400">
             <span>Already have an account?</span> 
-            <a href="portal.html" class="text-cyan-400 font-bold hover:underline ml-1">Sign in here</a>
+            <a href="portal.html" class="text-cyan-400 font-bold hover:underline ml-1">Sign in</a>
         </div>
     </div>
 
@@ -65,7 +65,6 @@
         // =========================================================================
         // 🔒 EDIT YOUR LIST OF PRE-APPROVED EMAILS HERE
         // =========================================================================
-        // Only emails typed in this array will be allowed to pass the signup step!
         const APPROVED_SIGNUP_EMAILS = [
             "coordinator@hygienify.org",
             "boardmember@hygienify.org",
@@ -79,23 +78,23 @@
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
 
-            // 🛑 EMAIL VALIDATION SECURITY WALL
+            // Retrieve currently registered custom accounts from browser memory map
+            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
+
+            // FIXED Order: 1st, look inside localStorage memory to see if they already exist
+            if (customVolunteers.hasOwnProperty(email)) {
+                alert("ℹ️ Notice: An account with this email address has already been configured. Redirecting you to the sign-in screen.");
+                window.location.href = 'portal.html';
+                return;
+            }
+
+            // 2nd: If they don't exist yet, check if their email is allowed to sign up
             if (!APPROVED_SIGNUP_EMAILS.includes(email)) {
                 alert("⛔ Registration Error: This email address is not pre-approved on our volunteer verification list. Please request access from your director.");
                 return;
             }
 
-            // Retrieve current database object from browser memory map
-            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-
-            // Prevent overwriting an account that already set up their password
-            if (customVolunteers.hasOwnProperty(email)) {
-                alert("ℹ️ Notice: An account with this email address has already been configured. Please head to the login page.");
-                window.location.href = 'portal.html';
-                return;
-            }
-
-            // Write credential parameters to browser storage object safely
+            // 3rd: If email is allowed and doesn't exist, safely create the credentials profile object
             customVolunteers[email] = password;
             localStorage.setItem('registeredVolunteers', JSON.stringify(customVolunteers));
 

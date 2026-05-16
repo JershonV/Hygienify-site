@@ -25,30 +25,21 @@
             image-rendering: -webkit-optimize-contrast;
         }
 
-        /* --- THE UNIFIED LOGIC --- */
+        /* --- THE UNIFIED LOGIC (REVEAL TRANSITIONS REMOVED) --- */
         .widget-glass, .footer-widget {
             --hover-lift: 0px;
-            --reveal-shift: 40px;
-            --reveal-opacity: 0;
             
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 2.5rem;
-            opacity: var(--reveal-opacity);
             
-            /* Combines the scroll position and the hover position */
-            transform: translateY(calc(var(--reveal-shift) + var(--hover-lift)));
+            /* Position uses simple hover transform tracking */
+            transform: translateY(var(--hover-lift));
             
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        opacity 1.2s ease,
                         border-color 0.4s ease, 
                         background 0.4s ease, 
                         box-shadow 0.4s ease;
-        }
-
-        .reveal.active {
-            --reveal-shift: 0px;
-            --reveal-opacity: 1;
         }
 
         .widget-glass:hover, .footer-widget:hover {
@@ -87,15 +78,11 @@
             pointer-events: none; z-index: -1;
             background: radial-gradient(600px circle at var(--x) var(--y), rgba(34, 211, 238, 0.07), transparent 80%);
         }
-
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
-    <div id="portal-card" class="w-full max-w-xl widget-glass p-12 shadow-2xl reveal">
+    <div class="w-full max-w-xl widget-glass p-12 shadow-2xl">
         <h2 class="text-3xl font-black mb-2 text-white">Volunteer Roster Portal</h2>
         <p class="text-slate-400 text-sm mb-8">Fill out your public profile details to automatically sync your card onto the Team page.</p>
         
@@ -128,11 +115,6 @@
         const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // FIXED: Automatically forces the glass container to fade into view as soon as the page loads
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('portal-card').classList.add('active');
-        });
 
         // Spotlight effect logic
         const spotlight = document.querySelector('.spotlight');

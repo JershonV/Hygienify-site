@@ -34,7 +34,8 @@
         <div class="mb-8 text-center">
             <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Internal Access Only</span>
             <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Volunteer Sign In</h2>
-            <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-3">⚠️ This portal is strictly for authorized volunteers only.</p>
+            
+            <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ This portal is strictly for authorized volunteers only.</p>
         </div>
         
         <p class="text-slate-400 text-sm text-center mb-10 max-w-md mx-auto leading-relaxed">
@@ -59,7 +60,7 @@
 
         <div class="mt-8 text-center text-sm text-slate-400">
             <span>Don't have an account?</span> 
-            <button id="signup-notice-btn" class="text-cyan-400 font-bold hover:underline focus:outline-none ml-1">Sign up</button>
+            <a href="signup.html" class="text-cyan-400 font-bold hover:underline ml-1">Sign up</a>
         </div>
     </div>
 
@@ -97,11 +98,8 @@
     </div>
 
     <script>
-        // =========================================================================
-        // 🔑 AUTHORIZED VOLUNTEER CREDENTIALS DIRECTORY
-        // =========================================================================
-        // Simply add or change allowed combinations here!
-        const VOLUNTEER_DIRECTORY = {
+        // Default base accounts hardcoded directly on the front-end
+        const BASE_VOLUNTEERS = {
             "admin@hygienify.org": "password123",
             "volunteer1@gmail.com": "securepass2026",
             "test@hygienify.org": "hygienify2026"
@@ -110,39 +108,37 @@
         const authCard = document.getElementById('auth-card');
         const portalCard = document.getElementById('portal-card');
         const authForm = document.getElementById('authForm');
-        const signupBtn = document.getElementById('signup-notice-btn');
 
-        // Alert message for new sign ups seeking permission
-        signupBtn.addEventListener('click', () => {
-            alert("📝 Account Registration: To protect roster integrity, logins are pre-provisioned. Please message your administrator or coordinator to have your custom credentials added to the system list.");
-        });
-
-        // Sign In Request Validation Block
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const email = document.getElementById('authEmail').value.trim().toLowerCase();
             const password = document.getElementById('authPassword').value;
 
-            // Check if the email exists in our directory list
-            if (!VOLUNTEER_DIRECTORY.hasOwnProperty(email)) {
+            // Load any custom accounts registered via localStorage signup page
+            const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
+            
+            // Combine hardcoded master accounts list with locally registered accounts
+            const allVolunteers = { ...BASE_VOLUNTEERS, ...customVolunteers };
+
+            // Check if user exists anywhere in the aggregated registry directory
+            if (!allVolunteers.hasOwnProperty(email)) {
                 alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
                 return;
             }
 
-            // Check if the matching password is correct
-            if (VOLUNTEER_DIRECTORY[email] !== password) {
-                alert("❌ Authentication Failed: Incorrect password entered for this user account.");
+            // Check password criteria match
+            if (allVolunteers[email] !== password) {
+                alert("❌ Authentication Failed: Incorrect password entered for this account.");
                 return;
             }
 
-            // If clean match, transition screens smoothly
+            // Unlocked transition
             document.getElementById('userBadge').innerText = email;
             authCard.classList.add('hidden');
             portalCard.classList.remove('hidden');
         });
 
-        // Handle profile submit (Adjusted to a simple console logger or custom hook)
         document.getElementById('portalForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('name').value;
@@ -150,10 +146,8 @@
             const imgUrl = document.getElementById('imageUrlInput').value;
             
             alert(`Profile Updated Live!\nName: ${name}\nBio: ${bio}\nImage: ${imgUrl}`);
-            // You can link this data destination wherever you like next!
         });
 
-        // Sign Out Event Listener
         document.getElementById('logoutBtn').addEventListener('click', () => {
             window.location.reload();
         });

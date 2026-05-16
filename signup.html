@@ -61,11 +61,15 @@
         </div>
     </div>
 
-    <script>
+   <script>
         // =========================================================================
-        // 🔒 EDIT YOUR LIST OF PRE-APPROVED EMAILS HERE
+        // 🔒 MASTER LIST OF PRE-APPROVED EMAILS
         // =========================================================================
+        // Keep this list identical to the authorized emails allowed to use the portal
         const APPROVED_SIGNUP_EMAILS = [
+            "admin@hygienify.org",
+            "volunteer1@gmail.com",
+            "test@hygienify.org",
             "coordinator@hygienify.org",
             "boardmember@hygienify.org",
             "stlouis.lead@hygienify.org",
@@ -78,23 +82,26 @@
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
 
-            // Retrieve currently registered custom accounts from browser memory map
-            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-
-            // FIXED Order: 1st, look inside localStorage memory to see if they already exist
-            if (customVolunteers.hasOwnProperty(email)) {
-                alert("ℹ️ Notice: An account with this email address has already been configured. Redirecting you to the sign-in screen.");
-                window.location.href = 'portal.html';
-                return;
-            }
-
-            // 2nd: If they don't exist yet, check if their email is allowed to sign up
+            // 1. First, check if the email is even allowed to be a volunteer
             if (!APPROVED_SIGNUP_EMAILS.includes(email)) {
                 alert("⛔ Registration Error: This email address is not pre-approved on our volunteer verification list. Please request access from your director.");
                 return;
             }
 
-            // 3rd: If email is allowed and doesn't exist, safely create the credentials profile object
+            // 2. Next, load any accounts already saved in the browser memory
+            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
+
+            // 3. Check if they are trying to register an account that is already active
+            // We also check for your core base accounts so they can't be overwritten
+            const defaultAccounts = ["admin@hygienify.org", "volunteer1@gmail.com", "test@hygienify.org"];
+            
+            if (customVolunteers.hasOwnProperty(email) || defaultAccounts.includes(email)) {
+                alert("ℹ️ Notice: An account with this email address has already been configured and is ready to go. Redirecting you to the sign-in screen.");
+                window.location.href = 'portal.html';
+                return;
+            }
+
+            // 4. If it's a fresh, approved email, safely save their new password
             customVolunteers[email] = password;
             localStorage.setItem('registeredVolunteers', JSON.stringify(customVolunteers));
 
@@ -102,5 +109,3 @@
             window.location.href = 'portal.html';
         });
     </script>
-</body>
-</html>

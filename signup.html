@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Registration | Hygienify</title>
+    <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
+        
+        .widget-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+            transform: translateY(0px);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .widget-glass:hover {
+            transform: translateY(-12px);
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(34, 211, 238, 0.04);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+
+    <div class="w-full max-w-2xl widget-glass p-16 shadow-2xl">
+        <div class="mb-8 text-center">
+            <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Account Registration</span>
+            <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Create Account</h2>
+            <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ Verification Required: Your email must be pre-approved to sign up.</p>
+        </div>
+        
+        <p class="text-slate-400 text-sm text-center mb-10 max-w-md mx-auto leading-relaxed">
+            Type your verified volunteer email below to validate your credentials and establish your personal access password.
+        </p>
+        
+        <form id="signupForm" class="space-y-6 max-w-md mx-auto">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Verified Email Address</label>
+                <input type="email" id="regEmail" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder="name@yourdomain.org">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Choose Password</label>
+                <input type="password" id="regPassword" required minlength="6" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder="Minimum 6 characters">
+            </div>
+            
+            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-5 rounded-2xl transition-all shadow-lg">
+                Register & Verify Account
+            </button>
+        </form>
+
+        <div class="mt-8 text-center text-sm text-slate-400">
+            <span>Already have an account?</span> 
+            <a href="portal.html" class="text-cyan-400 font-bold hover:underline ml-1">Sign in here</a>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🔒 EDIT YOUR LIST OF PRE-APPROVED EMAILS HERE
+        // =========================================================================
+        // Only emails typed in this array will be allowed to pass the signup step!
+        const APPROVED_SIGNUP_EMAILS = [
+            "coordinator@hygienify.org",
+            "boardmember@hygienify.org",
+            "stlouis.lead@hygienify.org",
+            "newvolunteer@gmail.com"
+        ];
+
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+
+            // 🛑 EMAIL VALIDATION SECURITY WALL
+            if (!APPROVED_SIGNUP_EMAILS.includes(email)) {
+                alert("⛔ Registration Error: This email address is not pre-approved on our volunteer verification list. Please request access from your director.");
+                return;
+            }
+
+            // Retrieve current database object from browser memory map
+            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
+
+            // Prevent overwriting an account that already set up their password
+            if (customVolunteers.hasOwnProperty(email)) {
+                alert("ℹ️ Notice: An account with this email address has already been configured. Please head to the login page.");
+                window.location.href = 'portal.html';
+                return;
+            }
+
+            // Write credential parameters to browser storage object safely
+            customVolunteers[email] = password;
+            localStorage.setItem('registeredVolunteers', JSON.stringify(customVolunteers));
+
+            alert("🎉 Account Created Successfully! You are now fully verified. Redirecting you to sign in...");
+            window.location.href = 'portal.html';
+        });
+    </script>
+</body>
+</html>

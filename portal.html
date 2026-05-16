@@ -11,47 +11,61 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         
+        /* SCALED & HOVER-READY GLASS LOGIC */
         .widget-glass {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 2.5rem;
-            transition: all 0.4s ease;
+            
+            /* Tracks hover property transformations safely */
+            transform: translateY(0px);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        border-color 0.4s ease, 
+                        background 0.4s ease, 
+                        box-shadow 0.4s ease;
         }
+        
+        /* SMOOTH HOVER LIFT PROPERTY EFFECT */
         .widget-glass:hover {
-            border-color: rgba(34, 211, 238, 0.3);
-            background: rgba(34, 211, 238, 0.02);
+            transform: translateY(-12px); /* Lifts widget on cursor over */
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(34, 211, 238, 0.04);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
         }
+        
         .hidden { display: none !important; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
-    <div id="login-card" class="w-full max-w-md widget-glass p-12 shadow-2xl">
-        <div class="mb-6 text-center">
-            <span class="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">Internal Access Only</span>
-            <h2 class="text-3xl font-black text-white">Volunteer Sign In</h2>
+    <div id="login-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl">
+        <div class="mb-8 text-center">
+            <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Internal Access Only</span>
+            <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Volunteer Sign In</h2>
         </div>
-        <p class="text-slate-400 text-xs text-center mb-8">Authorized emails can request a secure, passwordless magic link to log in.</p>
+        <p class="text-slate-400 text-sm text-center mb-10 max-w-md mx-auto leading-relaxed">
+            Authorized organizational emails can request a secure, passwordless magic link to instantly authenticate and enter the dashboard.
+        </p>
         
-        <form id="loginForm" class="space-y-4">
+        <form id="loginForm" class="space-y-6 max-w-md mx-auto">
             <div>
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Pre-Approved Email</label>
-                <input type="email" id="loginEmail" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-500 transition text-sm" placeholder="name@hygienify.org">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Pre-Approved Email Address</label>
+                <input type="email" id="loginEmail" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder="name@hygienify.org">
             </div>
-            <button type="submit" id="loginBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all">
+            <button type="submit" id="loginBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-5 rounded-2xl transition-all shadow-lg shadow-cyan-950/20">
                 Send Magic Access Link
             </button>
         </form>
-        <p id="loginMessage" class="mt-4 text-center text-xs font-semibold text-emerald-400 hidden"></p>
+        <p id="loginMessage" class="mt-6 text-center text-sm font-semibold text-emerald-400 hidden"></p>
     </div>
 
-    <div id="portal-card" class="w-full max-w-xl widget-glass p-12 shadow-2xl hidden">
-        <div class="flex justify-between items-start mb-8">
+    <div id="portal-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 border-b border-white/5 pb-6">
             <div>
-                <h2 class="text-3xl font-black text-white">Profile Portal</h2>
-                <p class="text-slate-400 text-xs mt-1">Logged in as: <span id="userBadge" class="text-cyan-400 font-bold"></span></p>
+                <h2 class="text-4xl font-black text-white tracking-tight">Profile Portal</h2>
+                <p class="text-slate-400 text-sm mt-1">Logged in as: <span id="userBadge" class="text-cyan-400 font-bold"></span></p>
             </div>
-            <button id="logoutBtn" class="text-[10px] bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-slate-400 border border-white/10 font-bold uppercase tracking-widest px-4 py-2 rounded-full transition">
+            <button id="logoutBtn" class="text-xs bg-white/5 hover:bg-red-500/20 hover:text-red-400 text-slate-400 border border-white/10 font-bold uppercase tracking-widest px-5 py-3 rounded-xl transition self-start sm:self-auto">
                 Sign Out
             </button>
         </div>
@@ -59,27 +73,26 @@
         <form id="portalForm" class="space-y-6">
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Display Name</label>
-                <input type="text" id="name" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-500 transition">
+                <input type="text" id="name" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base">
             </div>
             
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio (Quotes)</label>
-                <textarea id="bio" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-500 transition" placeholder='"Helping distribute kits across St. Louis..."'></textarea>
+                <textarea id="bio" required rows="4" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder='"Helping distribute kits across St. Louis..."'></textarea>
             </div>
             
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image File</label>
-                <input type="file" id="imageFile" accept="image/*" required class="w-full text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20">
+                <input type="file" id="imageFile" accept="image/*" required class="w-full text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20">
             </div>
 
-            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all">
+            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-5 rounded-2xl transition-all">
                 Publish Updates Live
             </button>
         </form>
     </div>
 
     <script>
-        // Global Supabase Config
         const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -87,7 +100,6 @@
         const loginCard = document.getElementById('login-card');
         const portalCard = document.getElementById('portal-card');
 
-        // Check authentication state on page open
         window.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
@@ -95,13 +107,11 @@
             }
         });
 
-        // Handle Login Submission via Passwordless Magic Links
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const loginBtn = document.getElementById('loginBtn');
 
-            // Verify if the email is present on your custom dashboard allowlist first
             const { data, error } = await supabase
                 .from('allowed_emails')
                 .select('email')
@@ -116,7 +126,6 @@
             loginBtn.disabled = true;
             loginBtn.innerText = "Verifying...";
 
-            // Send passwordless magic link to email
             const { error: authError } = await supabase.auth.signInWithOtp({
                 email: email,
                 options: { redirectTo: window.location.href }
@@ -133,7 +142,6 @@
             }
         });
 
-        // Authorization Gateway Filter
         async function checkAuthorization(user) {
             const { data, error } = await supabase
                 .from('allowed_emails')
@@ -151,7 +159,6 @@
             }
         }
 
-        // Handle Profile Form Upload Submission
         document.getElementById('portalForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const { data: { session } } = await supabase.auth.getSession();
@@ -164,7 +171,6 @@
             const fileExtension = file.name.split('.').pop();
             const fileName = `${Date.now()}-${session.user.id}.${fileExtension}`;
             
-            // Upload to Supabase Storage Bucket
             const { error: uploadError } = await supabase.storage
                 .from('volunteer-portraits')
                 .upload(fileName, file);
@@ -175,7 +181,6 @@
                 .from('volunteer-portraits')
                 .getPublicUrl(fileName);
 
-            // Upsert profile data (inserts new record or updates existing if email matches)
             const { error: dbError } = await supabase
                 .from('volunteers')
                 .upsert([{ 
@@ -194,7 +199,6 @@
             }
         });
 
-        // Logout Event Listener
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.reload();

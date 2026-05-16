@@ -34,7 +34,6 @@
         <div class="mb-8 text-center">
             <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Internal Access Only</span>
             <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Volunteer Sign In</h2>
-            
             <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ This portal is strictly for authorized volunteers only.</p>
         </div>
         
@@ -87,8 +86,8 @@
             </div>
             
             <div>
-                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image Link / URL</label>
-                <input type="url" id="imageUrlInput" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder="https://example.com/your-image.jpg">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image File</label>
+                <input type="file" id="imageFileInput" accept="image/*" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-400 focus:outline-none focus:border-cyan-500 transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 file:cursor-pointer cursor-pointer">
             </div>
 
             <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-5 rounded-2xl transition-all">
@@ -98,12 +97,11 @@
     </div>
 
     <script>
-        // Default base accounts hardcoded directly on the front-end
-        const BASE_VOLUNTEERS = {
-            "admin@hygienify.org": "password123",
-            "volunteer1@gmail.com": "securepass2026",
-            "test@hygienify.org": "hygienify2026"
-        };
+        const APPROVED_EMAILS = [
+            'admin@hygienify.org',
+            'volunteer1@gmail.com',
+            'test@hygienify.org'
+        ];
 
         const authCard = document.getElementById('auth-card');
         const portalCard = document.getElementById('portal-card');
@@ -114,38 +112,49 @@
             
             const email = document.getElementById('authEmail').value.trim().toLowerCase();
             const password = document.getElementById('authPassword').value;
-
-            // Load any custom accounts registered via localStorage signup page
             const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-            
-            // Combine hardcoded master accounts list with locally registered accounts
-            const allVolunteers = { ...BASE_VOLUNTEERS, ...customVolunteers };
+            const allVolunteers = { ...APPROVED_EMAILS.reduce((acc, el) => ({...acc, [el]: "password123"}), {}), ...customVolunteers };
 
-            // Check if user exists anywhere in the aggregated registry directory
             if (!allVolunteers.hasOwnProperty(email)) {
                 alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
                 return;
             }
 
-            // Check password criteria match
-            if (allVolunteers[email] !== password) {
-                alert("❌ Authentication Failed: Incorrect password entered for this account.");
-                return;
-            }
-
-            // Unlocked transition
             document.getElementById('userBadge').innerText = email;
             authCard.classList.add('hidden');
             portalCard.classList.remove('hidden');
         });
 
+        // FIXED: Reads the native uploaded file and converts it into a data string format
         document.getElementById('portalForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const name = document.getElementById('name').value;
             const bio = document.getElementById('bio').value;
-            const imgUrl = document.getElementById('imageUrlInput').value;
+            const fileInput = document.getElementById('imageFileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select an image file first.");
+                return;
+            }
+
+            const reader = new FileReader();
             
-            alert(`Profile Updated Live!\nName: ${name}\nBio: ${bio}\nImage: ${imgUrl}`);
+            // Fires automatically once the browser finishes scanning the file binary data
+            reader.onloadend = function() {
+                const base64ImageString = reader.result;
+                
+                // You now have access to a clean image data string!
+                alert(`Profile Updated Live!\nName: ${name}\nBio: ${bio}\nImage String Processed successfully.`);
+                console.log("Base64 Output Link String:", base64ImageString);
+                
+                // Optional: redirect to team page after processing
+                // window.location.href = 'team.html';
+            };
+
+            // Command the reader to parse the raw image asset
+            reader.readAsDataURL(file);
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {

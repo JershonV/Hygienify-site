@@ -271,6 +271,9 @@
 <div class="spotlight"></div>
 
 <script>
+    // =========================================================================
+    // ✨ 1. YOUR ORIGINAL ANIMATION & NAVIGATION CODE (KEEP THIS)
+    // =========================================================================
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -296,6 +299,55 @@
         menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     });
+
+
+    // =========================================================================
+    // 🌐 2. NEW XANO DATABASE LOADER CODE (PASTE THIS RIGHT HERE)
+    // =========================================================================
+    // 🛑 REPLACE THIS URL with your actual Xano API Endpoint (GET /volunteers/list_volunteers)
+    const XANO_GET_URL = ' https://x8ki-letl-twmt.n7.xano.io/api:volunteers/list_volunteers';
+
+    async function loadXanoVolunteers() {
+        const container = document.getElementById('dynamic-volunteers-grid');
+        if (!container) return;
+        
+        try {
+            const response = await fetch(XANO_GET_URL);
+            if (!response.ok) throw new Error("Could not fetch roster data.");
+            
+            const volunteers = await response.json();
+
+            // Loop through data rows from Xano and append cards
+            volunteers.forEach(volunteer => {
+                // Safely grab the image URL based on Xano's structural summary
+                const imageUrl = volunteer.image && volunteer.image.url ? volunteer.image.url : 'default-avatar.png';
+                
+                const card = document.createElement('div');
+                card.className = "widget-glass p-8 flex flex-col items-center text-center shadow-xl border border-white/10 rounded-[2rem] reveal"; // Added "reveal" class to match your animations!
+                
+                card.innerHTML = `
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-5 border-2 border-cyan-400/30">
+                        <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name}">
+                    </div>
+                    <span class="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 mb-1">Volunteer</span>
+                    <h4 class="text-xl font-extrabold text-white tracking-tight">${volunteer.name}</h4>
+                    <p class="text-slate-400 text-sm mt-3 italic leading-relaxed">
+                        "${volunteer.bio}"
+                    </p>
+                `;
+                
+                container.appendChild(card);
+                
+                // Tell your existing revealObserver engine to watch this new card for scroll animations
+                revealObserver.observe(card);
+            });
+        } catch (error) {
+            console.error("Error loading roster cards:", error);
+        }
+    }
+
+    // Fire the database fetch operation as soon as the page layout finishes loading
+    document.addEventListener('DOMContentLoaded', loadXanoVolunteers);
 </script>
 </body>
 </html>

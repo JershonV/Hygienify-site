@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Portal | Hygienify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #020617; color: #f8fafc; }
+        .widget-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+
+    <div class="w-full max-w-xl widget-glass p-12 shadow-2xl">
+        <h2 class="text-3xl font-black mb-2 text-white">Volunteer Roster Portal</h2>
+        <p class="text-slate-400 text-sm mb-8">Fill out your public profile details to automatically sync your card onto the Team page.</p>
+        
+        <form id="portalForm" class="space-y-6">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">First Name Only</label>
+                <input type="text" id="name" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-500 transition">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio (Quotes)</label>
+                <textarea id="bio" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-500 transition" placeholder='"Helping distribute kits across St. Louis..."'></textarea>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image File</label>
+                <input type="file" id="imageFile" accept="image/*" required class="w-full text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20">
+            </div>
+
+            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold uppercase text-xs tracking-widest py-4 rounded-xl transition-all">
+                Submit Profile Live
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Initialize connection to your cloud data bucket
+        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('portalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const bio = document.getElementById('bio').value;
+            const file = document.getElementById('imageFile').files[0];
+            
+            // 1. Create a clean file name and upload the image to storage
+            const fileExtension = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${name}.${fileExtension}`;
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('volunteer-portraits')
+                .upload(fileName, file);
+                
+            if (uploadError) { alert('Error uploading image!'); return; }
+
+            // 2. Grab the public web URL of that image
+            const { data: urlData } = supabase.storage
+                .from('volunteer-portraits')
+                .getPublicUrl(fileName);
+                
+            const imageUrl = urlData.publicUrl;
+
+            // 3. Save the name, bio, and image link down to the table
+            const { error: dbError } = await supabase
+                .from('volunteers')
+                .insert([{ name, bio, image_url: imageUrl }]);
+
+            if (dbError) {
+                alert('Database Error!');
+            } else {
+                alert('Success! Your profile is now live on the Team page.');
+                window.location.href = 'team.html';
+            }
+        });
+    </script>
+</body>
+</html>

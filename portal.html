@@ -152,55 +152,57 @@
         portalCard.classList.remove('hidden');
     });
 
-    // =========================================================================
-    // 🌐 3. XANO DATA INGESTION ENGINE (Replaces FileReader)
-    // =========================================================================
-    document.getElementById('portalForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('name').value;
-        const bio = document.getElementById('bio').value;
-        const fileInput = document.getElementById('imageFileInput');
-        const file = fileInput.files[0];
-        const submitBtn = e.target.querySelector('button[type="submit"]');
+// =========================================================================
+// 🌐 3. XANO DATA INGESTION ENGINE (BULLETPROOF FILE UPLOAD VERSION)
+// =========================================================================
+document.getElementById('portalForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('name').value.trim();
+    const bio = document.getElementById('bio').value.trim();
+    const fileInput = document.getElementById('imageFileInput');
+    const file = fileInput.files[0];
+    const submitBtn = e.target.querySelector('button[type="submit"]');
 
-        if (!file) {
-            alert("Please select an image file first.");
-            return;
+    if (!file) {
+        alert("Please select an image file first.");
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Publishing Profile...";
+
+    // Create a fresh form payload
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('bio', bio);
+    
+    // Explicitly binding the file name and type so Xano handles it cleanly
+    formData.append('image', file, file.name); 
+
+    try {
+        const response = await fetch(XANO_POST_URL, {
+            method: 'POST',
+            body: formData
+            // Note: DO NOT add 'Content-Type' headers here. 
+            // Letting the browser set it automatically handles the boundary flags perfectly!
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server tracking fault. Status: ${response.status}`);
         }
 
-        // UI Feedback UX lock states
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Publishing Profile...";
+        alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
+        window.location.href = 'team.html';
 
-        // Pack values into binary multi-part stream objects for Xano
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('bio', bio);
-        formData.append('image', file); 
-
-        try {
-            // Ship payload transmission stream directly to Xano REST architecture
-            const response = await fetch(XANO_POST_URL, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server tracking fault. Status: ${response.status}`);
-            }
-
-            alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
-            window.location.href = 'team.html';
-
-        } catch (error) {
-            alert("❌ Xano Transmission Error: " + error.message);
-            console.error(error);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Publish Updates";
-        }
-    });
+    } catch (error) {
+        alert("❌ Xano Transmission Error: " + error.message);
+        console.error(error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Publish Updates";
+    }
+});
 
     // =========================================================================
     // 🪵 4. SESSION SYSTEM KILL SWITCH

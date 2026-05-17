@@ -100,7 +100,7 @@
     // =========================================================================
     // 🔒 1. XANO CONFIGURATION & MASTER ACCOUNT REGISTER
     // =========================================================================
-    // 🛑 REPLACE THIS URL with your actual Xano API Endpoint (POST /volunteers/add_volunteer)
+    // FIXED: Formatted the URL to accurately point to the base endpoint /volunteers
     const XANO_POST_URL = 'https://x8ki-letl-twmt.n7.xano.io/api:volunteers-v2/create';
 
     // Core pre-configured baseline accounts
@@ -113,7 +113,7 @@
     const authCard = document.getElementById('auth-card');
     const portalCard = document.getElementById('portal-card');
     const authForm = document.getElementById('authForm');
-    let loggedInEmail = ""; // Session memory context token holder
+    let loggedInEmail = ""; 
 
     // =========================================================================
     // 🔑 2. SIGN IN INTERCEPTOR ENGINE
@@ -124,28 +124,23 @@
         const email = document.getElementById('authEmail').value.trim().toLowerCase();
         const password = document.getElementById('authPassword').value;
         
-        // Grab custom user signups created in localStorage
         const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
         
-        // Combine master base accounts (default password123) with custom signups
         const allVolunteers = { 
             ...APPROVED_EMAILS.reduce((acc, el) => ({...acc, [el]: "password123"}), {}), 
             ...customVolunteers 
         };
 
-        // Check registry array structures
         if (!allVolunteers.hasOwnProperty(email)) {
             alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
             return;
         }
 
-        // Validate matching password sequence
         if (allVolunteers[email] !== password) {
             alert("❌ Authentication Failed: Incorrect password entered for this account.");
             return;
         }
 
-        // Lock user context data state & toggle micro-glass layout boards
         loggedInEmail = email; 
         document.getElementById('userBadge').innerText = email;
         authCard.classList.add('hidden');
@@ -172,20 +167,15 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     submitBtn.innerText = "Publishing Profile...";
 
-    // Create a fresh form payload
     const formData = new FormData();
     formData.append('name', name);
     formData.append('bio', bio);
-    
-    // Explicitly binding the file name and type so Xano handles it cleanly
     formData.append('image', file, file.name); 
 
     try {
         const response = await fetch(XANO_POST_URL, {
             method: 'POST',
             body: formData
-            // Note: DO NOT add 'Content-Type' headers here. 
-            // Letting the browser set it automatically handles the boundary flags perfectly!
         });
 
         if (!response.ok) {

@@ -97,13 +97,14 @@
     </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // =========================================================================
-    // 🔒 1. SUPABASE CONFIGURATION & MASTER ACCOUNT REGISTER
-    // =========================================================================
-    // 🛑 REPLACE THESE TWO STRINGS with your actual Supabase Project details!
-    // Found in your Supabase Dashboard under: Project Settings ➔ API
-    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// =========================================================================
+// 🔒 1. SUPABASE CONFIGURATION & MASTER ACCOUNT REGISTER
+// =========================================================================
+const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
+const SUPABASE_ANON_KEY = 'sb_publishable_21GG4f9fiRhm6DDQUhtPWw_y5qu-_1Y'; 
+
+// Initialize the official Supabase Client
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // FIXED: Changed variable name to supabaseClient to avoid JavaScript initialization collision
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

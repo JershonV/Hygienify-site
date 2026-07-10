@@ -154,7 +154,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
     });
 
 // =========================================================================
-// 🌐 3. SUPABASE DATA INGESTION ENGINE (CLEAN & RELIABLE MULTIPART)
+// 🌐 3. SUPABASE DATA INGESTION ENGINE (SPACE ALIGNED)
 // =========================================================================
 document.getElementById('portalForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -179,18 +179,18 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         const filePath = `portraits/${uniqueFileName}`;
 
-        // 2. Stream file raw to Supabase Storage Bucket
+        // 2. Stream file raw to Supabase Storage Bucket (WITH SPACE)
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
-            .from('volunteer-portraits')
+            .from('VOLUNTEER INFO')
             .upload(filePath, file);
 
         if (uploadError) {
             throw new Error(`Storage Upload Failed: ${uploadError.message}`);
         }
 
-        // 3. Extract the clean public image file link 
+        // 3. Extract the clean public image file link (WITH SPACE)
         const { data: urlData } = supabaseClient.storage
-            .from('volunteer-portraits')
+            .from('VOLUNTEER INFO')
             .getPublicUrl(filePath);
         
         const publicImageUrl = urlData.publicUrl;
@@ -221,7 +221,6 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         submitBtn.innerText = "Publish Updates";
     }
 });
-
     // =========================================================================
     // 🪵 4. SESSION SYSTEM KILL SWITCH
     // =========================================================================

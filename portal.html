@@ -95,13 +95,18 @@
             </button>
         </form>
     </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     // =========================================================================
-    // 🔒 1. XANO CONFIGURATION & MASTER ACCOUNT REGISTER
+    // 🔒 1. SUPABASE CONFIGURATION & MASTER ACCOUNT REGISTER
     // =========================================================================
-    // FIXED: Formatted the URL to accurately point to the base endpoint /volunteers
-    const XANO_POST_URL = 'https://x8ki-letl-twmt.n7.xano.io/api:volunteers-v2/create';
+    // 🛑 REPLACE THESE TWO STRINGS with your actual Supabase Project details!
+    // Found in your Supabase Dashboard under: Project Settings ➔ API
+    const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    // FIXED: Changed variable name to supabaseClient to avoid JavaScript initialization collision
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Core pre-configured baseline accounts
     const APPROVED_EMAILS = [
@@ -148,7 +153,7 @@
     });
 
 // =========================================================================
-// 🌐 3. XANO DATA INGESTION ENGINE (BULLETPROOF FILE UPLOAD VERSION)
+// 🌐 3. SUPABASE DATA INGESTION ENGINE (CLEAN & RELIABLE MULTIPART)
 // =========================================================================
 document.getElementById('portalForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -167,26 +172,48 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     submitBtn.innerText = "Publishing Profile...";
 
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('bio', bio);
-    formData.append('image', file, file.name); 
-
     try {
-        const response = await fetch(XANO_POST_URL, {
-            method: 'POST',
-            body: formData
-        });
+        // 1. Create a unique file name to avoid file-system collisions
+        const fileExt = file.name.split('.').pop();
+        const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const filePath = `portraits/${uniqueFileName}`;
 
-        if (!response.ok) {
-            throw new Error(`Server tracking fault. Status: ${response.status}`);
+        // 2. Stream file raw to Supabase Storage Bucket
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('volunteer-portraits')
+            .upload(filePath, file);
+
+        if (uploadError) {
+            throw new Error(`Storage Upload Failed: ${uploadError.message}`);
+        }
+
+        // 3. Extract the clean public image file link 
+        const { data: urlData } = supabaseClient.storage
+            .from('volunteer-portraits')
+            .getPublicUrl(filePath);
+        
+        const publicImageUrl = urlData.publicUrl;
+
+        // 4. Insert Text fields alongside the new image link into the database table
+        const { error: dbError } = await supabaseClient
+            .from('volunteers')
+            .insert([
+                { 
+                    name: name, 
+                    bio: bio, 
+                    image_url: publicImageUrl 
+                }
+            ]);
+
+        if (dbError) {
+            throw new Error(`Database Write Failed: ${dbError.message}`);
         }
 
         alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
         window.location.href = 'team.html';
 
     } catch (error) {
-        alert("❌ Xano Transmission Error: " + error.message);
+        alert("❌ Supabase Transmission Error: " + error.message);
         console.error(error);
     } finally {
         submitBtn.disabled = false;
@@ -201,5 +228,4 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         window.location.reload();
     });
 </script>
-</body>
 </html>

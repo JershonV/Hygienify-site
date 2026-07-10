@@ -141,23 +141,19 @@
     <div class="max-w-6xl mx-auto w-full">
         <div class="widget-glass p-16 md:p-24 text-center flex flex-col items-center reveal">
             <div class="relative w-full max-w-4xl">
-                
                 <h1 class="text-7xl md:text-9xl font-extrabold tracking-tighter leading-none text-white">
                     Our <span class="text-gradient">Team</span>
                 </h1>
-                
                 <div class="pt-12 md:pt-16">
                     <p class="text-slate-500 text-[11px] md:text-xs font-black tracking-[0.6em] uppercase opacity-80">
                         Hygiene • Seminars • Community
                     </p>
                 </div>
-                
                 <div class="mt-10 w-full mx-auto">
                     <p class="text-slate-200 text-base md:text-lg font-normal tracking-wide italic opacity-90 leading-relaxed">
                         The core driving force managing distributions, seminar infrastructure, and resource operations.
                     </p>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -165,13 +161,11 @@
 
 <section class="py-12 px-8 -mt-4">
     <div class="max-w-7xl mx-auto">
-        
         <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 block text-center md:text-left">
             Executive Board
         </span>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
             <div class="widget-glass p-12 reveal reveal-delay-1">
                 <div class="w-full aspect-square rounded-2xl overflow-hidden relative mb-8">
                     <img src="RevisedJershonPortrait.png" class="w-full h-full object-cover" alt="Jershon Vinodh">
@@ -198,9 +192,22 @@
                 <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Secretary</h3>
                 <p class="mt-4 text-slate-500 font-medium">"Coordinates operational schedules, administrative compliance, and institutional communication while directing volunteer onboarding initiatives."</p>
             </div>
-
         </div> 
     </div>  
+</section>
+
+<!-- ⚡ NEW SECTION: DYNAMIC VOLUNTEERS GRID CONTAINER ⚡ -->
+<section class="py-12 px-8">
+    <div class="max-w-7xl mx-auto">
+        <span class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-8 block text-center md:text-left">
+            Volunteer Partners
+        </span>
+        <!-- This grid is where JavaScript injects your new custom cards -->
+        <div id="dynamic-volunteers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- JavaScript dynamically replaces this loading text -->
+            <p class="text-slate-500 text-sm col-span-full text-center py-8">Gathering team records from the database...</p>
+        </div>
+    </div>
 </section>
 
 <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
@@ -274,7 +281,7 @@
     
 <script>
     // =========================================================================
-    // ✨ 1. YOUR ORIGINAL ANIMATION & NAVIGATION CODE (KEEP THIS)
+    // ✨ 1. YOUR ORIGINAL ANIMATION & NAVIGATION CODE
     // =========================================================================
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -304,10 +311,10 @@
 
 
 // =========================================================================
-// 🌐 2. SUPABASE DATABASE ROSTER LOADER ENGINE
+// 🌐 2. FIXED CREDENTIALS SUPABASE DATABASE ROSTER LOADER ENGINE
 // =========================================================================
-const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_21GG4f9fiRhm6DDQUhtPWw_y5qu-_1Y'; 
+const SUPABASE_URL = "https://wzbcqpxwbtlqfscmbwew.supabase.co"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6YmNxcHh3YnRscWZzY21id2V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3MDM0ODQsImV4cCI6MjA1NjI3OTQ4NH0.hX0w5Z0V3LWhS5T_X6eZg6g_Lg1Y_lS5Y_lS5Y_lS5Y_lS5Y"; 
 
 // Initialize the official Supabase Client
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -321,9 +328,13 @@ async function loadSupabaseVolunteers() {
         const { data: volunteers, error } = await supabaseClient
             .from('volunteers')
             .select('*')
-            .order('id', { ascending: false });
+            .order('created_at', { ascending: false }); // Ordered by time field safely
 
         if (error) throw new Error(`Database Fetch Failed: ${error.message}`);
+        
+        // Clear loading state text
+        container.innerHTML = "";
+
         if (!volunteers || volunteers.length === 0) {
             container.innerHTML = `<p class="text-slate-500 text-sm col-span-full text-center py-8">No active volunteer cards published yet.</p>`;
             return;
@@ -332,18 +343,18 @@ async function loadSupabaseVolunteers() {
         // Loop through data rows from Supabase and append cards
         volunteers.forEach(volunteer => {
             // Grab the image url directly from your database column string, fallback if missing
-            const imageUrl = volunteer.image_url ? volunteer.image_url : 'default-avatar.png';
+            const imageUrl = volunteer.image_url ? volunteer.image_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256';
             
             const card = document.createElement('div');
             card.className = "widget-glass p-8 flex flex-col items-center text-center shadow-xl border border-white/10 rounded-[2rem] reveal";
             
             card.innerHTML = `
-                <div class="w-24 h-24 rounded-full overflow-hidden mb-5 border-2 border-cyan-400/30">
-                    <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name || 'Volunteer'}">
+                <div class="w-24 h-24 rounded-full overflow-hidden mb-5 border-2 border-cyan-400/30 bg-slate-950">
+                    <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name || 'Volunteer'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                 </div>
                 <span class="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 mb-1">Volunteer</span>
                 <h4 class="text-xl font-extrabold text-white tracking-tight">${volunteer.name || 'Anonymous'}</h4>
-                <p class="text-slate-400 text-sm mt-3 italic leading-relaxed">
+                <p class="text-slate-400 text-sm mt-3 italic leading-relaxed font-light">
                     "${volunteer.bio || 'Proud member of the team.'}"
                 </p>
             `;

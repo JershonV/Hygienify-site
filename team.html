@@ -350,7 +350,7 @@ async function loadSupabaseVolunteers() {
             
             card.innerHTML = `
 <div class="w-32 h-32 rounded-full overflow-hidden mx-auto shadow-md">
-    <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name || 'Volunteer'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+    <img src="${imageUrl}" class="w-full h-full object-cover object-top" alt="${volunteer.name || 'Volunteer'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
 </div>
                 <span class="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 mb-1">Volunteer</span>
                 <h4 class="text-xl font-extrabold text-white tracking-tight">${volunteer.name || 'Anonymous'}</h4>

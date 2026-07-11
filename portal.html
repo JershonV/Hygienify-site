@@ -120,196 +120,174 @@
         </form>
     </div>
 
-    <!-- 🧠 JavaScript Execution Layer -->
-    <script type="module">
-        // Password Visibility Toggle Functionality
-        function initPasswordToggle() {
-            const passwordInput = document.getElementById('authPassword');
-            const toggleButton = document.getElementById('toggle-password');
-            
-            if (!passwordInput || !toggleButton) return;
-            
-            const eyeOpen = toggleButton.querySelector('#eye-open');
-            const eyeClosed = toggleButton.querySelector('#eye-closed');
-
-            toggleButton.addEventListener('click', () => {
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    eyeOpen.classList.remove('hidden');
-                    eyeClosed.classList.add('hidden');
-                } else {
-                    passwordInput.type = 'password';
-                    eyeOpen.classList.add('hidden');
-                    eyeClosed.classList.remove('hidden');
-                }
-            });
-        }
-
-        // Run setup once DOM is fully structural
-        document.addEventListener('DOMContentLoaded', () => {
-            initPasswordToggle();
-        });
-
-        // Form Submission Logic Hook
-        document.getElementById('authForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Your integration handlers/Supabase operations can continue smoothly below...
-        });
-    </script>
-</body>
-</html>
-
+   <!-- 🧠 Updated JavaScript Integration Layer for portal.html -->
 <script type="module">
-// =========================================================================
-// 🔒 1. SUPABASE CONFIGURATION
-// =========================================================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
+    const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
 
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const authCard = document.getElementById('auth-card');
-const portalCard = document.getElementById('portal-card');
-const authForm = document.getElementById('authForm');
-
-// =========================================================================
-// 🔑 2. REAL SUPABASE SIGN IN & SMART ROUTING ENGINE
-// =========================================================================
-authForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    const authCard = document.getElementById('auth-card');
+    const portalCard = document.getElementById('portal-card');
+    const authForm = document.getElementById('authForm');
     
-    const email = document.getElementById('authEmail').value.trim().toLowerCase();
-    const password = document.getElementById('authPassword').value;
-    const submitBtn = e.target.querySelector('button[type="submit"]');
+    let authenticatedUserInstance = null;
 
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Authenticating...";
-    
-    try {
-        // Query Supabase Auth to verify email and password combo securely
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password,
+    function initPasswordToggle() {
+        const passwordInput = document.getElementById('authPassword');
+        const toggleButton = document.getElementById('toggle-password');
+        
+        if (!passwordInput || !toggleButton) return;
+        
+        const eyeOpen = toggleButton.querySelector('#eye-open');
+        const eyeClosed = toggleButton.querySelector('#eye-closed');
+
+        toggleButton.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            }
         });
+    }
 
-        if (error) {
-            alert(`❌ Authentication Failed: ${error.message}`);
+    document.addEventListener('DOMContentLoaded', () => {
+        initPasswordToggle();
+    });
+
+    // 🔒 SECURE AUTOMATED SMART ROUTING ENGINE
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('authEmail').value.trim().toLowerCase();
+        const password = document.getElementById('authPassword').value;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Authenticating...";
+        
+        try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert(`❌ Authentication Failed: ${error.message}`);
+                return;
+            }
+
+            if (data.user) {
+                authenticatedUserInstance = data.user;
+                const loggedInEmail = data.user.email.toLowerCase();
+                const ADMIN_EMAIL = "jershonvinodh@gmail.com";
+
+                if (loggedInEmail === ADMIN_EMAIL) {
+                    window.location.href = "admin.html";
+                    return;
+                }
+
+                // 🔍 FIX: Added proper await validation to see if profile already exists
+                const { data: profile, error: profileErr } = await supabaseClient
+                    .from('volunteer_profiles')
+                    .select('id')
+                    .eq('id', data.user.id)
+                    .maybeSingle();
+
+                if (profile) {
+                    // If they have a profile, bypass registration and send straight to dashboard
+                    window.location.href = "dashboard.html";
+                    return;
+                } else {
+                    // Brand new user profile capture workflow
+                    document.getElementById('userBadge').innerText = data.user.email;
+                    authCard.classList.add('hidden');
+                    portalCard.classList.remove('hidden');
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            alert("💥 An unexpected authentication error occurred.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Sign In";
+        }
+    });
+
+    // 🌐 ANTI-DUPLICATION DATA INGESTION ENGINE
+    document.getElementById('portalForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!authenticatedUserInstance) {
+            alert("Session error. Please refresh and log in again.");
             return;
         }
 
-        // --- SMART ROUTING INJECTION START ---
-        if (data.user) {
-            const loggedInEmail = data.user.email.toLowerCase();
-            const ADMIN_EMAIL = "jershonvinodh@gmail.com";
+        const name = document.getElementById('name').value.trim();
+        const bio = document.getElementById('bio').value.trim();
+        const fileInput = document.getElementById('imageFileInput');
+        const file = fileInput.files[0];
+        const submitBtn = e.target.querySelector('button[type="submit"]');
 
-            // 1. Secret Admin Path: Instantly jump past everything
-            if (loggedInEmail === ADMIN_EMAIL) {
-                window.location.href = "admin.html";
-                return;
-            }
+        let finalAvatarDataString = null;
 
-            // 2. Standard Volunteer Path: Check if they already have an existing profile card
-            const { data: profile } = await supabaseClient
-                .from('volunteers')
-                .select('id')
-                .eq('id', data.user.id)
-                .maybeSingle();
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Publishing Profile...";
 
-            if (profile) {
-                // Already made their profile? Bypass setup and go straight to workspace dashboard
-                window.location.href = "volunteer-dashboard.html";
-                return;
-            } else {
-                // Brand new user? Unhide the image upload profile manager form right here
-                document.getElementById('userBadge').innerText = data.user.email;
-                authCard.classList.add('hidden');
-                portalCard.classList.remove('hidden');
-            }
-        }
-        // --- SMART ROUTING INJECTION END ---
-
-    } catch (err) {
-        console.error(err);
-        alert("💥 An unexpected authentication error occurred.");
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Sign In";
-    }
-});
-
-// =========================================================================
-// 🌐 3. SUPABASE DATA INGESTION ENGINE
-// =========================================================================
-document.getElementById('portalForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById('name').value.trim();
-    const bio = document.getElementById('bio').value.trim();
-    const fileInput = document.getElementById('imageFileInput');
-    const file = fileInput.files[0];
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-
-    if (!file) {
-        alert("Please select an image file first.");
-        return;
-    }
-
-    const MAX_SIZE_KB = 300;
-    const MAX_SIZE_BYTES = MAX_SIZE_KB * 1024;
-    if (file.size > MAX_SIZE_BYTES) {
-        alert(`⛔ File too large! Your image is ${(file.size / 1024).toFixed(0)}KB. Please choose a photo smaller than ${MAX_SIZE_KB}KB.`);
-        return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Publishing Profile...";
-
-    try {
-        const fileExt = file.name.split('.').pop();
-        const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-        const filePath = `portraits/${uniqueFileName}`;
-
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-            .from('volunteer-info') 
-            .upload(filePath, file);
-
-        if (uploadError) {
-            throw new Error(`Storage Upload Failed: ${uploadError.message}`);
-        }
-
-        const { data: urlData } = supabaseClient.storage
-            .from('volunteer-info') 
-            .getPublicUrl(filePath);
-        
-        const publicImageUrl = urlData.publicUrl;
-
-        const { error: dbError } = await supabaseClient
-            .from('volunteers')
-            .insert([
-                { 
-                    name: name, 
-                    bio: bio, 
-                    image_url: publicImageUrl 
+        try {
+            if (file) {
+                const MAX_SIZE_KB = 300;
+                const MAX_SIZE_BYTES = MAX_SIZE_KB * 1024;
+                if (file.size > MAX_SIZE_BYTES) {
+                    alert(`⛔ File too large! Please choose a photo smaller than ${MAX_SIZE_KB}KB.`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Publish Updates";
+                    return;
                 }
-            ], { returning: 'minimal' });
 
-        if (dbError) {
-            throw new Error(`Database Write Failed: ${dbError.message}`);
+                finalAvatarDataString = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => resolve(event.target.result);
+                    reader.onerror = (err) => reject(err);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 🛡️ SECURITY FIX: Changed from .insert() to .upsert() matching user auth ID
+            // This explicitly protects your database from ever creating duplicate rows for 1 user.
+            const { error: dbError } = await supabaseClient
+                .from('volunteer_profiles')
+                .upsert({ 
+                    id: authenticatedUserInstance.id,
+                    full_name: name, 
+                    bio: bio, 
+                    avatar_url: finalAvatarDataString
+                });
+
+            if (dbError) throw dbError;
+
+            alert("🎉 Success! Your profile card is officially published.");
+            window.location.href = 'dashboard.html';
+
+        } catch (error) {
+            alert("❌ Supabase Transmission Error: " + error.message);
+            console.error(error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Publish Updates";
         }
+    });
 
-        alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
-        window.location.href = 'volunteer-dashboard.html'; // Set to go to dashboard now upon initial registration finish
-
-    } catch (error) {
-        alert("❌ Supabase Transmission Error: " + error.message);
-        console.error(error);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Publish Updates";
-    }
-});
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.reload();
+    });
 
 // =========================================================================
 // 🪵 4. SESSION SYSTEM KILL SWITCH

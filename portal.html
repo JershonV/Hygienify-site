@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <!-- This card handles profile creation if they don't have a profile record yet -->
+    <!-- Profile Portal Form -->
     <div id="portal-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 border-b border-white/5 pb-6">
             <div>
@@ -111,7 +111,8 @@
             
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image File</label>
-                <input type="file" id="imageFileInput" accept="image/*" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-400 focus:outline-none focus:border-cyan-500 transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 file:cursor-pointer cursor-pointer">
+                <!-- 🛠️ FIXED: Removed HTML "required" flag so portrait updates are elegantly flexible -->
+                <input type="file" id="imageFileInput" accept="image/*" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-400 focus:outline-none focus:border-cyan-500 transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 file:cursor-pointer cursor-pointer">
             </div>
 
             <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-5 rounded-2xl transition-all">
@@ -120,7 +121,7 @@
         </form>
     </div>
 
-   <!-- 🧠 Updated JavaScript Integration Layer for portal.html -->
+<!-- 🧠 Fully Aligned JavaScript Integration Layer -->
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -193,7 +194,7 @@
                     return;
                 }
 
-                // 🔍 FIX: Added proper await validation to see if profile already exists
+                // Querying the active 'volunteers' table schema setup
                 const { data: profile, error: profileErr } = await supabaseClient
                     .from('volunteers')
                     .select('id')
@@ -201,7 +202,7 @@
                     .maybeSingle();
 
                 if (profile) {
-                    // If they have a profile, bypass registration and send straight to dashboard
+                    // Profile exits, proceed immediately to the main deck
                     window.location.href = "dashboard.html";
                     return;
                 } else {
@@ -229,8 +230,8 @@
             return;
         }
 
-        const name = document.getElementById('name').value.trim();
-        const bio = document.getElementById('bio').value.trim();
+        const volunteerName = document.getElementById('name').value.trim();
+        const volunteerBio = document.getElementById('bio').value.trim();
         const fileInput = document.getElementById('imageFileInput');
         const file = fileInput.files[0];
         const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -245,7 +246,7 @@
                 const MAX_SIZE_KB = 300;
                 const MAX_SIZE_BYTES = MAX_SIZE_KB * 1024;
                 if (file.size > MAX_SIZE_BYTES) {
-                    alert(`⛔ File too large! Please choose a photo smaller than ${300}KB.`);
+                    alert(`⛔ File too large! Please choose a photo smaller than 300KB.`);
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Publish Updates";
                     return;
@@ -259,15 +260,14 @@
                 });
             }
 
-            // 🛡️ SECURITY FIX: Changed from .insert() to .upsert() matching user auth ID
-            // This explicitly protects your database from ever creating duplicate rows for 1 user.
+            // 🛡️ FIXED: Pointing directly to table 'volunteers' and column mapping key 'name'
             const { error: dbError } = await supabaseClient
                 .from('volunteers')
                 .upsert({ 
                     id: authenticatedUserInstance.id,
-                    full_name: name, 
-                    bio: bio, 
-                   image_url: finalAvatarDataString
+                    name: volunteerName, 
+                    bio: volunteerBio, 
+                    image_url: finalAvatarDataString
                 });
 
             if (dbError) throw dbError;
@@ -284,18 +284,11 @@
         }
     });
 
+    // 🪵 SESSION SYSTEM KILL SWITCH
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
         window.location.reload();
     });
-
-// =========================================================================
-// 🪵 4. SESSION SYSTEM KILL SWITCH
-// =========================================================================
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.reload();
-});
 </script>
 </body>
 </html>

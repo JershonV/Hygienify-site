@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Dashboard | Hygienify</title>
-    <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <link class="w-6 h-6" rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -44,7 +44,7 @@
         <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Syncing Environment...</p>
     </div>
 
-    <!-- 📱/💻 SIDEBAR NAVIGATION (Fixed setup) -->
+    <!-- 📱/💻 SIDEBAR NAVIGATION -->
     <aside class="w-full md:w-64 md:h-screen dashboard-glass border-b md:border-b-0 md:border-r border-white/5 p-5 flex flex-row md:flex-col justify-between items-center md:items-stretch z-50 fixed bottom-0 md:top-0 md:bottom-auto">
         <div class="hidden md:flex items-center gap-3 mb-10 px-2">
             <img src="logo_new2.svg" alt="Logo" class="w-6 h-6">
@@ -72,17 +72,26 @@
         </button>
     </aside>
 
-    <!-- 💻 MAIN CONTAINER AREA (Crucial fix: md:pl-64 added here stops elements from diving beneath sidebar) -->
+    <!-- 💻 MAIN CONTAINER AREA -->
     <main class="md:pl-64 min-h-screen w-full flex flex-col pb-24 md:pb-12">
         <div class="p-6 md:p-12 max-w-7xl w-full mx-auto space-y-10">
             
             <!-- HEADER CONTEXT -->
-            <header class="border-b border-white/5 pb-6">
-                <span class="text-[10px] font-extrabold uppercase tracking-[0.35em] text-cyan-400 block mb-1">Workspace Overview</span>
-                <h2 id="userWelcome" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">---</h2>
+            <header class="border-b border-white/5 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-[0.35em] text-cyan-400 block mb-1">Workspace Overview</span>
+                    <h2 id="userWelcome" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">---</h2>
+                </div>
+                <!-- ✏️ EDIT PROFILE TOGGLE BUTTON -->
+                <button id="toggleEditProfileBtn" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-white/10 hover:border-cyan-500/30 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                    </svg>
+                    <span>Edit Profile</span>
+                </button>
             </header>
 
-            <!-- PROFILE INLINE SETUP BANNER (FALLBACK STATE) -->
+            <!-- PROFILE INLINE SETUP & EDIT BANNER -->
             <div id="onboarding-gate" class="hidden w-full">
                 <div class="card-glass p-6 md:p-8 rounded-3xl border-cyan-500/20 bg-gradient-to-br from-cyan-500/[0.02] to-transparent">
                     <div class="flex flex-col md:flex-row gap-8 items-center">
@@ -96,14 +105,17 @@
                         </div>
                         <form id="profileForm" class="flex-1 w-full space-y-4">
                             <div>
-                                <h3 class="text-base font-bold text-white tracking-tight">Setup Missing Configuration</h3>
-                                <p class="text-xs text-slate-400">Complete profile context to unlock active portal logs.</p>
+                                <h3 id="formTitle" class="text-base font-bold text-white tracking-tight">Setup Missing Configuration</h3>
+                                <p id="formSubtitle" class="text-xs text-slate-400">Complete profile context to unlock active portal logs.</p>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input type="text" id="profName" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-xs focus:outline-none focus:border-cyan-500" placeholder="Your Name">
                                 <input type="text" id="profBio" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-xs focus:outline-none focus:border-cyan-500" placeholder="Short Bio description...">
                             </div>
-                            <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold uppercase text-[10px] tracking-wider px-5 py-2 rounded-xl transition-all">Save Details</button>
+                            <div class="flex gap-3">
+                                <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold uppercase text-[10px] tracking-wider px-5 py-2 rounded-xl transition-all">Save Details</button>
+                                <button type="button" id="cancelEditBtn" class="hidden bg-white/5 hover:bg-white/10 text-white font-extrabold uppercase text-[10px] tracking-wider px-5 py-2 rounded-xl transition-all border border-white/10">Cancel</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -146,6 +158,7 @@
 
         let currentUser = null;
         let base64AvatarStr = "";
+        let existingProfile = null; // Store fetched data for edit populating
 
         async function runSecurityGate() {
             try {
@@ -167,8 +180,10 @@
                 const isProfileReady = await checkVolunteerProfile();
                 if (isProfileReady) {
                     document.getElementById('onboarding-gate').classList.add('hidden');
+                    document.getElementById('toggleEditProfileBtn').style.display = 'flex'; // Reveal Edit option
                 } else {
                     document.getElementById('onboarding-gate').classList.remove('hidden');
+                    document.getElementById('toggleEditProfileBtn').style.display = 'none';
                 }
                 
                 await loadWorkspaceFeeds();
@@ -181,17 +196,52 @@
             try {
                 const { data, error } = await supabase
                     .from('volunteer_profiles')
-                    .select('full_name')
+                    .select('full_name, bio, avatar_url')
                     .eq('id', currentUser.id)
                     .maybeSingle();
 
                 if (error || !data) return false;
+                
+                existingProfile = data; // Keep context referenced
                 document.getElementById('userWelcome').textContent = `Welcome back, ${data.full_name}!`;
                 return true;
             } catch (err) {
                 return false;
             }
         }
+
+        // ✏️ EDIT MODE HANDLERS
+        const toggleEditBtn = document.getElementById('toggleEditProfileBtn');
+        const onboardingGate = document.getElementById('onboarding-gate');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+        toggleEditBtn.addEventListener('click', () => {
+            if (existingProfile) {
+                // Populate inputs
+                document.getElementById('profName').value = existingProfile.full_name || '';
+                document.getElementById('profBio').value = existingProfile.bio || '';
+                
+                // Form UI headers adjust to Edit Mode text
+                document.getElementById('formTitle').textContent = "Update Profile Details";
+                document.getElementById('formSubtitle').textContent = "Make adjustments to your public profile workspace context.";
+                
+                if (existingProfile.avatar_url) {
+                    base64AvatarStr = existingProfile.avatar_url;
+                    const imgPreviewNode = document.getElementById('avatarPreview');
+                    imgPreviewNode.src = base64AvatarStr;
+                    imgPreviewNode.classList.remove('hidden');
+                    document.getElementById('avatarPlaceholder').classList.add('hidden');
+                }
+                
+                cancelEditBtn.classList.remove('hidden');
+                onboardingGate.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            onboardingGate.classList.add('hidden');
+        });
 
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
             const uploadedFile = e.target.files[0];
@@ -224,15 +274,22 @@
             const bioTextValue = document.getElementById('profBio').value.trim();
 
             try {
-                const { error } = await supabase.from('volunteer_profiles').insert({
+                // Using 'upsert' instead of insert so existing keys update effortlessly
+                const { error } = await supabase.from('volunteer_profiles').upsert({
                     id: currentUser.id,
                     full_name: fullNameValue,
                     bio: bioTextValue,
                     avatar_url: base64AvatarStr || null
                 });
+                
                 if (error) throw error;
+                
+                // Update local caching instance references 
+                existingProfile = { full_name: fullNameValue, bio: bioTextValue, avatar_url: base64AvatarStr };
+                
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
-                document.getElementById('onboarding-gate').classList.add('hidden');
+                onboardingGate.classList.add('hidden');
+                toggleEditBtn.style.display = 'flex';
                 alert("🎉 Profile configured successfully!");
             } catch (err) {
                 alert(`Error: ${err.message}`);

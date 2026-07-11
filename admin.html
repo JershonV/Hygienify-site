@@ -171,34 +171,16 @@
 
        const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
 
-// This has the fixed letter 'v' right before '2' in the middle section!
-       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
-        
-        const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+Ah, look at what happened here! The entire refreshTerminalContext function has accidently been pasted directly inside the middle of your renderVerificationSystem() function.
 
-        let masterVolunteersArray = [];
-        let rawHoursLogs = [];
-        let aggregatedHoursMap = {};
+Because one function is nested inside another, the browser gets confused. It completely skips running refreshTerminalContext(), which explains why the app is stuck on "Querying..." without tossing an obvious red error message.
 
-        async function securityAudit() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) { window.location.href = "portal.html"; return; }
-            
-            const activeEmail = session.user.email.toLowerCase();
-            if (activeEmail !== ALLOWED_ADMIN.toLowerCase()) {
-                alert("⛔ Firewall Warning: System Access Terminated.");
-                window.location.href = "portal.html";
-                return;
-            }
-            document.getElementById("admin-email").innerText = activeEmail;
-            document.getElementById("admin-body").classList.remove("hidden");
-            
-            refreshTerminalContext();
-        }
-        securityAudit();
+Let's untangle them right now. Here is the perfectly separated code.
 
-        // 📑 Renders the verification queue panel for admin approval processing
+Replace that entire messy middle section of your script with this clean, un-nested block:
+
+JavaScript
+// 📑 Renders the verification queue panel for admin approval processing
 function renderVerificationSystem() {
     // 🔍 Find the UI container where pending requests should live
     const verificationBox = document.getElementById('verification-container');
@@ -214,40 +196,7 @@ function renderVerificationSystem() {
             </div>`;
         return;
     }
-    
-async function refreshTerminalContext() {
-            try {
-                // Fetch ALL volunteers
-                const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
-                if (rErr) throw rErr;
-                masterVolunteersArray = teamRows;
 
-                // Fetch ALL hours logs for computations and audit trails
-                const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
-                if (hErr) throw hErr;
-                rawHoursLogs = hoursRows;
-
-                // 👇 ADD THESE THREE DIAGNOSTIC LINES HERE:
-                console.log("DEBUG - Volunteers Array:", masterVolunteersArray);
-                console.log("DEBUG - Raw Hours Logs:", rawHoursLogs);
-                console.log("DEBUG - Is ledger-container in HTML?:", document.getElementById('ledger-container'));
-
-                // Build performance lookup mapping hashes
-                aggregatedHoursMap = {};
-                rawHoursLogs.forEach(entry => {
-                    const count = parseFloat(entry.hours_count) || 0;
-                    aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
-                });
-
-                renderVerificationSystem();
-                renderActiveRoster();
-                renderAuditLedgerStream();
-
-            } catch (err) {
-                console.error(err);
-                alert("Terminal context refresh crash: " + err.message);
-            }
-        }
     verificationBox.innerHTML = pendingLogs.map(log => {
         const profile = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
         const volunteerName = profile ? profile.name : `Account ID: ${log.volunteer_id}`;
@@ -280,6 +229,43 @@ async function refreshTerminalContext() {
             </div>
         `;
     }).join('');
+}
+
+// 🔄 Main Database Sync Controller (Now safely outside!)
+async function refreshTerminalContext() {
+    try {
+        console.log("Database Sync: Initiating cloud handshake...");
+
+        // Fetch ALL volunteers
+        const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
+        if (rErr) throw rErr;
+        masterVolunteersArray = teamRows || [];
+
+        // Fetch ALL hours logs for computations and audit trails
+        const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
+        if (hErr) throw hErr;
+        rawHoursLogs = hoursRows || [];
+
+        console.log("DEBUG - Volunteers Array:", masterVolunteersArray);
+        console.log("DEBUG - Raw Hours Logs:", rawHoursLogs);
+        console.log("DEBUG - Is ledger-container in HTML?:", document.getElementById('ledger-container'));
+
+        // Build performance lookup mapping hashes
+        aggregatedHoursMap = {};
+        rawHoursLogs.forEach(entry => {
+            const count = parseFloat(entry.hours_count) || 0;
+            aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
+        });
+
+        // Run UI drawing passes
+        renderVerificationSystem();
+        renderActiveRoster();
+        renderAuditLedgerStream();
+
+    } catch (err) {
+        console.error("Database sync failed:", err);
+        alert("Terminal context refresh crash: " + err.message);
+    }
 }
 
 // 👥 Renders the active roster list view showing total aggregated hours for each volunteer

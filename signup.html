@@ -147,11 +147,15 @@
                 return;
             }
 
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                });
+try {
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            // 🎯 Updated to point exactly to your live repository path
+            redirectTo: 'https://jershonv.github.io/Hygienify-site/portal.html'
+        } // <-- Fixed: Added this missing bracket to close options!
+    });
 
                 if (error) {
                     alert(`⛔ Registration Error: ${error.message}`);

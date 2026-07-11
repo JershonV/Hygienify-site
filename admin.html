@@ -144,8 +144,10 @@
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-        const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnv2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
+       const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
+
+// This has the fixed letter 'v' right before '2' in the middle section!
+       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
         
         const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

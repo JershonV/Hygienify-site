@@ -202,7 +202,7 @@
             }
         }
 
-        function renderVerificationSystem() {
+function renderVerificationSystem() {
             const queueBox = document.getElementById('queue-container');
             const queueLoader = document.getElementById('queue-loader');
             queueBox.innerHTML = '';
@@ -241,29 +241,47 @@
                 queueBox.appendChild(node);
             });
 
-            // Bind approval system interactions
-            document.querySelectorAll('.approve-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
+            // FIXED: We scan the queueBox elements specifically right after appending them to ensure they exist
+            queueBox.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.onclick = async (e) => {
                     const id = e.target.getAttribute('data-id');
                     e.target.disabled = true;
+                    e.target.innerText = "Verifying...";
                     try {
-                        const { error } = await supabase.from('volunteers').update({ is_approved: true }).eq('id', id);
+                        const { error } = await supabase
+                            .from('volunteers')
+                            .update({ is_approved: true })
+                            .eq('id', id);
+                        
                         if (error) throw error;
                         refreshTerminalContext();
-                    } catch (err) { alert(err.message); }
-                });
+                    } catch (err) { 
+                        alert("Verification error: " + err.message); 
+                        e.target.disabled = false;
+                        e.target.innerText = "Verify Profile";
+                    }
+                };
             });
 
-            document.querySelectorAll('.deny-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
+            queueBox.querySelectorAll('.deny-btn').forEach(btn => {
+                btn.onclick = async (e) => {
                     const id = e.target.getAttribute('data-id');
                     if (confirm("Reject and permanently wipe this registration attempt?")) {
+                        e.target.disabled = true;
                         try {
-                            await supabase.from('volunteers').delete().eq('id', id);
+                            const { error } = await supabase
+                                .from('volunteers')
+                                .delete()
+                                .eq('id', id);
+                                
+                            if (error) throw error;
                             refreshTerminalContext();
-                        } catch (err) { alert(err.message); }
+                        } catch (err) { 
+                            alert("Error dropping request: " + err.message); 
+                            e.target.disabled = false;
+                        }
                     }
-                });
+                };
             });
         }
 

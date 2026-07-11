@@ -1,142 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hygienify Core Control</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Tailwind CSS for modern dark-mode styling -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Hygienify</title>
+    <!-- Fix #1: Added your official logo favicon link to the browser tab -->
+    <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <!-- Tailwind Engine and Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .admin-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen antialiased">
+<body class="min-h-screen hidden" id="admin-body">
 
-  <!-- Admin Verification Guard -->
-  <script>
-    // Replace this string with your actual admin email address
-    const ADMIN_EMAIL = "your-admin-email@example.com"; 
-
-    async function checkAdminAuth() {
-      // Assuming you initialize Supabase globally or via your config script
-      // If you have a separate config.js, ensure it runs before this check
-      const supabaseUrl = 'YOUR_SUPABASE_URL';
-      const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-      const supabase = supabaseUrl !== 'YOUR_SUPABASE_URL' 
-        ? supabase.createClient(supabaseUrl, supabaseKey)
-        : window.supabase; // Fallback if initialized elsewhere
-
-      if (!supabase) return;
-
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
-      if (error || !user || user.email !== ADMIN_EMAIL) {
-        alert("Access Denied: Admin authorization required.");
-        window.location.href = "portal.html";
-      } else {
-        // Reveal dashboard content once authorized
-        document.getElementById('dashboard-wrapper').classList.remove('hidden');
-        loadVolunteers();
-      }
-    }
-    
-    document.addEventListener('DOMContentLoaded', checkAdminAuth);
-  </script>
-
-  <!-- Main Dashboard UI Wrapper (Hidden until auth passes) -->
-  <div id="dashboard-wrapper" class="hidden">
-    
-    <!-- Top Navigation Bar -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Top Security Nav Wrapper (Responsive padding) -->
+    <nav class="border-b border-white/10 bg-slate-950/50 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-          <span class="text-xl font-black tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            HYGIENIFY CORE
-          </span>
-          <span class="bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-2 py-0.5 rounded border border-cyan-500/20">
-            Control Panel
-          </span>
+            <span class="text-xl px-2 py-1 bg-cyan-500/10 rounded-lg text-cyan-400 font-mono">🛡️</span>
+            <h1 class="text-lg font-black uppercase tracking-widest text-white">Hygienify Core Control</h1>
         </div>
-        <div class="flex items-center gap-4">
-          <span id="admin-display-email" class="text-sm text-slate-400 font-medium"></span>
-          <button onclick="handleSignOut()" class="text-xs bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-all duration-200">
-            Sign Out
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Section Header -->
-      <div class="mb-8">
-        <h1 class="text-2xl font-bold tracking-tight text-white">Volunteer Roster</h1>
-        <p class="text-sm text-slate-400 mt-1">Manage core volunteer details and log service hours in real-time.</p>
-      </div>
-
-      <!-- Main Layout Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
-        <!-- Left: Roster List Cards -->
-        <div class="lg:col-span-2 space-y-4" id="roster-container">
-          <!-- Loading State Placeholder -->
-          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center text-slate-400 animate-pulse">
-            Fetching active records...
-          </div>
-        </div>
-
-        <!-- Right: Floating Hour Logger Panel -->
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 sticky top-24 shadow-xl shadow-black/40">
-          <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-            Log Service Hours
-          </h2>
-          
-          <form id="hours-form" onsubmit="logHours(event)" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Target Volunteer</label>
-              <select id="volunteer-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors">
-                <option value="" disabled selected>Select a volunteer...</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hours Earned</label>
-              <input type="number" id="hours-input" step="0.25" min="0.25" required placeholder="e.g. 2.5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Activity Description</label>
-              <textarea id="description-input" rows="3" required placeholder="Describe their contribution..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors resize-none"></option></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-bold py-2.5 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-cyan-500/10 hover:shadow-cyan-400/20 active:scale-[0.98]">
-              Commit Hours to Ledger
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+            <span id="admin-email" class="text-[11px] sm:text-xs font-bold text-slate-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full truncate max-w-[180px] sm:max-w-xs"></span>
+            <button id="logout-btn" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-xs font-black uppercase tracking-wider px-4 py-2 rounded-xl cursor-pointer transition-all border border-red-500/20">
+                Sign Out
             </button>
-          </form>
+        </div>
+    </nav>
+
+    <!-- Content Workspace Grid (Fix #2: Full Mobile stack to desktop grid support) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
+        
+        <!-- Welcome Jumbotron Hero Banner -->
+        <div class="admin-card rounded-[2rem] p-6 sm:p-10 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">System Authorized</span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">System Administrative Hub</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">Log volunteer action metrics, append community service credit hours, and audit team files from this terminal.</p>
+            </div>
+            <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl px-6 py-4 text-center w-full md:w-auto">
+                <span class="text-xs text-slate-400 uppercase tracking-widest block font-bold mb-1">Total Volunteers</span>
+                <span id="stat-total-volunteers" class="text-3xl font-black text-white font-mono">...</span>
+            </div>
         </div>
 
-      </div>
+        <!-- Section: Active Logs & Operational Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            
+            <!-- Left Panel Column: Volunteer Management Roster Grid -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="admin-card rounded-[2rem] p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
+                        <span class="text-cyan-400">👥</span> Active Enrolled Roster
+                    </h3>
+                    
+                    <div id="roster-loader" class="py-12 text-center text-sm text-slate-500 font-bold">
+                        Querying database tables...
+                    </div>
+                    
+                    <div id="roster-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                        <!-- Hydrated dynamically from data returns -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel Column: Fast Actions Form Panel -->
+            <div class="space-y-6">
+                <div class="admin-card rounded-[2rem] p-4 sm:p-6 lg:sticky lg:top-24">
+                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
+                        <span class="text-amber-400">⏱️</span> Append Service Hours
+                    </h3>
+                    
+                    <form id="hoursForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Select Target Volunteer</label>
+                            <select id="volunteerSelect" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500">
+                                <option value="" disabled selected>Select from team roster...</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Hours to Assign</label>
+                            <input type="number" step="0.5" min="0.5" id="hoursCount" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="e.g. 3.5">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Operation/Event Description</label>
+                            <textarea id="hoursDesc" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g. Clean kit packaging assembly distribution drive"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all shadow-md mt-2 cursor-pointer">
+                            Log Record Entry
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-  </div>
+    <!-- Fix #3: Full integrated script block inside modules to prevent broken variables -->
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-  <!-- Framework Code Logic Placeholder -->
-  <script>
-    // Initialize your Supabase logic here
-    async function loadVolunteers() {
-      // 1. Fetch volunteers from 'public.volunteers'
-      // 2. Aggregate total hours dynamically from 'public.hours_log'
-      // 3. Render into UI cards inside '#roster-container'
-      // 4. Populate '#volunteer-select' dropdown options
-    }
+        const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
+        
+        const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function logHours(event) {
-      event.preventDefault();
-      // 1. Grab inputs, execute supabase insert into 'public.hours_log'
-      // 2. Clear inputs, trigger loadVolunteers() to refresh metrics instantly
-    }
+        async function runSecurityAudit() {
+            const { data: { session }, error } = await supabase.auth.getSession();
 
-    async function handleSignOut() {
-      // Trigger supabase auth sign out, redirect back to portal.html
-    }
-  </script>
+            if (error || !session) {
+                window.location.href = "portal.html"; 
+                return;
+            }
+
+            const activeEmail = session.user.email.toLowerCase();
+
+            if (activeEmail !== ALLOWED_ADMIN.toLowerCase()) {
+                alert("⛔ Security Firewalls Warning: Access Denied.");
+                window.location.href = "portal.html";
+                return;
+            }
+
+            document.getElementById("admin-email").innerText = activeEmail;
+            document.getElementById("admin-body").classList.remove("hidden");
+            
+            fetchAdministrationData();
+        }
+        runSecurityAudit();
+
+        async function fetchAdministrationData() {
+            try {
+                const { data: teamLogs, error: rosterErr } = await supabase
+                    .from('volunteers')
+                    .select('id, name, bio, image_url');
+
+                if (rosterErr) throw rosterErr;
+
+                const { data: hoursLogs, error: hoursErr } = await supabase
+                    .from('hours_log')
+                    .select('volunteer_id, hours_count');
+
+                if (hoursErr) throw hoursErr;
+
+                const hourTrackerMap = {};
+                hoursLogs.forEach(entry => {
+                    const count = parseFloat(entry.hours_count) || 0;
+                    hourTrackerMap[entry.volunteer_id] = (hourTrackerMap[entry.volunteer_id] || 0) + count;
+                });
+
+                document.getElementById('stat-total-volunteers').innerText = teamLogs.length;
+
+                const dropdown = document.getElementById('volunteerSelect');
+                dropdown.innerHTML = '<option value="" disabled selected>Select from team roster...</option>';
+                
+                const rosterBox = document.getElementById('roster-container');
+                rosterBox.innerHTML = '';
+
+                teamLogs.forEach(user => {
+                    const opt = document.createElement('option');
+                    opt.value = user.id;
+                    opt.innerText = user.name || "Anonymous Volunteer";
+                    dropdown.appendChild(opt);
+
+                    const verifiedHours = hourTrackerMap[user.id] || 0;
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden";
+                    card.innerHTML = `
+                        <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border border-white/10 relative">
+                            <img src="${user.image_url}" class="w-full h-full object-cover object-top scale-125 origin-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-black text-white truncate">${user.name || 'Unnamed Record'}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">${user.bio || 'No profile declaration.'}</p>
+                            <div class="mt-3 flex items-center gap-1.5">
+                                <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                                <span class="text-[11px] font-black uppercase tracking-wider text-slate-300 font-mono">${verifiedHours.toFixed(1)} Lifetime Hours</span>
+                            </div>
+                        </div>
+                    `;
+                    rosterBox.appendChild(card);
+                });
+
+                document.getElementById('roster-loader').classList.add('hidden');
+                rosterBox.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('roster-loader').innerText = "💥 Error loading core database rows.";
+            }
+        }
+
+        document.getElementById('hoursForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const volunteerId = document.getElementById('volunteerSelect').value;
+            const hourValue = parseFloat(document.getElementById('hoursCount').value);
+            const operationDesc = document.getElementById('hoursDesc').value.trim();
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Appending Data...";
+
+            try {
+                const { error } = await supabase
+                    .from('hours_log')
+                    .insert([
+                        {
+                            volunteer_id: volunteerId,
+                            hours_count: hourValue,
+                            description: operationDesc
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert("⚡ Log verified! Contribution data records appended successfully.");
+                document.getElementById('hoursCount').value = '';
+                document.getElementById('hoursDesc').value = '';
+                fetchAdministrationData();
+
+            } catch (err) {
+                alert("❌ Storage transmission error: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Log Record Entry";
+            }
+        });
+
+        document.getElementById("logout-btn").addEventListener("click", async () => {
+            await supabase.auth.signOut();
+            window.location.href = "portal.html";
+        });
+    </script>
 </body>
 </html>

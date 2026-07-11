@@ -126,200 +126,96 @@
                         </button>
                     </form>
                 </div>
-                
-<!-- 📜 3. Wide Administrative Activity Ledger (Placed Under Roster) -->
-<div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 col-span-full mt-8 border border-white/5 shadow-2xl backdrop-blur-md">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
-        <div>
-            <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-200 flex items-center gap-2">
-                <span class="text-indigo-400">📜</span> Rolling System Audit Ledger
-            </h3>
-            <p class="text-xs text-slate-400 mt-0.5 font-sans">Complete historical timeline trail of submitted volunteer hours logs extracted directly from database memory matrix.</p>
-        </div>
-        
-        <!-- Live Badge Info Counter -->
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-            <div class="bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl text-[11px] font-mono font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Database Sync Stream
             </div>
         </div>
-    </div>
 
-    <!-- Wide Header row for alignment scanning -->
-    <div class="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold tracking-wider uppercase text-slate-500 font-mono border-b border-white/5 mb-2">
-        <div class="col-span-3">Volunteer Identity</div>
-        <div class="col-span-2">Date Stamp</div>
-        <div class="col-span-2 text-indigo-400">Volume Increment</div>
-        <div class="col-span-4 text-slate-400">Descriptive Memo Log</div>
-        <div class="col-span-1 text-right">Actions</div>
-    </div>
+        <!-- 📜 3. Wide Administrative Activity Ledger (Placed Under Roster spanning full grid width) -->
+        <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 border border-white/5 shadow-2xl backdrop-blur-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+                <div>
+                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-200 flex items-center gap-2">
+                        <span class="text-indigo-400">📜</span> Rolling System Audit Ledger
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5 font-sans">Complete historical timeline trail of submitted volunteer hours logs extracted directly from database memory matrix.</p>
+                </div>
+                
+                <!-- Live Badge Info Counter -->
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                    <div class="bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl text-[11px] font-mono font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Database Sync Stream
+                    </div>
+                </div>
+            </div>
 
-    <!-- Target Injection Matrix Target -->
-    <div id="ledger-container" class="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar font-mono text-xs">
-        <div class="p-4 text-slate-500 italic flex items-center gap-2">
-            <span class="inline-block animate-spin">⏳</span> Querying ledger tokens out of cloud matrix...
+            <!-- Wide Header row for alignment scanning -->
+            <div class="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold tracking-wider uppercase text-slate-500 font-mono border-b border-white/5 mb-2">
+                <div class="col-span-3">Volunteer Identity</div>
+                <div class="col-span-2">Date Stamp</div>
+                <div class="col-span-2 text-indigo-400">Volume Increment</div>
+                <div class="col-span-4 text-slate-400">Descriptive Memo Log</div>
+                <div class="col-span-1 text-right">Actions</div>
+            </div>
+
+            <!-- Target Injection Matrix Target -->
+            <div id="ledger-container" class="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar font-mono text-xs">
+                <div class="p-4 text-slate-500 italic flex items-center gap-2">
+                    <span class="inline-block animate-spin">⏳</span> Querying ledger tokens out of cloud matrix...
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-            </div> <!-- Closes inner grid shell container -->
-        </div> <!-- Closes outer layout container wrapper -->
     </main>
 
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-       const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-
-Ah, look at what happened here! The entire refreshTerminalContext function has accidently been pasted directly inside the middle of your renderVerificationSystem() function.
-
-Because one function is nested inside another, the browser gets confused. It completely skips running refreshTerminalContext(), which explains why the app is stuck on "Querying..." without tossing an obvious red error message.
-
-Let's untangle them right now. Here is the perfectly separated code.
-
-Replace that entire messy middle section of your script with this clean, un-nested block:
-
-JavaScript
-// 📑 Renders the verification queue panel for admin approval processing
-function renderVerificationSystem() {
-    // 🔍 Find the UI container where pending requests should live
-    const verificationBox = document.getElementById('verification-container');
-    if (!verificationBox) return; // Safely exit if this layout view isn't on screen
-
-    // Filter down to logs that require admin action (adjust status key to match your DB schema)
-    const pendingLogs = rawHoursLogs.filter(log => log.status === 'pending');
-
-    if (pendingLogs.length === 0) {
-        verificationBox.innerHTML = `
-            <div class="p-6 text-slate-500 italic text-center border border-white/5 rounded-2xl bg-white/[0.01]">
-                ✅ Verification queue clear. No pending approval requests inside ledger streams.
-            </div>`;
-        return;
-    }
-
-    verificationBox.innerHTML = pendingLogs.map(log => {
-        const profile = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
-        const volunteerName = profile ? profile.name : `Account ID: ${log.volunteer_id}`;
-        const hoursNum = parseFloat(log.hours_count) || 0;
-
-        return `
-            <div class="p-4 bg-slate-900/50 border border-white/5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition hover:border-indigo-500/30">
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-indigo-400 font-bold">📋 ${volunteerName}</span>
-                        <span class="text-[11px] text-amber-400 bg-amber-400/10 border border-amber-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">Pending</span>
-                    </div>
-                    <p class="text-slate-300 text-xs font-sans">
-                        Requesting <span class="text-indigo-400 font-mono font-bold">+${hoursNum.toFixed(1)} hrs</span> for: 
-                        <span class="text-slate-400 italic">"${log.description || 'No summary description.'}"</span>
-                    </p>
-                </div>
-                
-                <!-- Action Buttons Interlock Panel -->
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button onclick="processApproval(${log.id}, 'approved')" 
-                            class="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white font-bold text-xs uppercase tracking-wider rounded-xl border border-emerald-500/20 transition cursor-pointer">
-                        Approve
-                    </button>
-                    <button onclick="processApproval(${log.id}, 'denied')" 
-                            class="px-3 py-1.5 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white font-bold text-xs uppercase tracking-wider rounded-xl border border-red-500/20 transition cursor-pointer">
-                        Deny
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// 🔄 Main Database Sync Controller (Now safely outside!)
-async function refreshTerminalContext() {
-    try {
-        console.log("Database Sync: Initiating cloud handshake...");
-
-        // Fetch ALL volunteers
-        const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
-        if (rErr) throw rErr;
-        masterVolunteersArray = teamRows || [];
-
-        // Fetch ALL hours logs for computations and audit trails
-        const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
-        if (hErr) throw hErr;
-        rawHoursLogs = hoursRows || [];
-
-        console.log("DEBUG - Volunteers Array:", masterVolunteersArray);
-        console.log("DEBUG - Raw Hours Logs:", rawHoursLogs);
-        console.log("DEBUG - Is ledger-container in HTML?:", document.getElementById('ledger-container'));
-
-        // Build performance lookup mapping hashes
-        aggregatedHoursMap = {};
-        rawHoursLogs.forEach(entry => {
-            const count = parseFloat(entry.hours_count) || 0;
-            aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
-        });
-
-        // Run UI drawing passes
-        renderVerificationSystem();
-        renderActiveRoster();
-        renderAuditLedgerStream();
-
-    } catch (err) {
-        console.error("Database sync failed:", err);
-        alert("Terminal context refresh crash: " + err.message);
-    }
-}
-
-// 👥 Renders the active roster list view showing total aggregated hours for each volunteer
-function renderActiveRoster() {
-    // 🔍 Find the target UI element where your roster card or table lives
-    const rosterBox = document.getElementById('roster-container');
-    if (!rosterBox) return; // Safely escape if this specific view element is missing
-
-    if (!masterVolunteersArray || masterVolunteersArray.length === 0) {
-        rosterBox.innerHTML = `
-            <div class="p-6 text-slate-500 italic text-center border border-white/5 rounded-2xl bg-white/[0.01]">
-                👥 Roster empty. No active profiles synchronized in team database pools.
-            </div>`;
-        return;
-    }
-
-    rosterBox.innerHTML = masterVolunteersArray.map(volunteer => {
-        // Pull computed hours from the automated hashing mapping built in refreshTerminalContext
-        const totalHours = aggregatedHoursMap[volunteer.id] || 0;
+        const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
         
-        return `
-            <div class="p-4 bg-white/[0.01] hover:bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between gap-4 transition duration-150">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-sm uppercase">
-                        ${volunteer.name ? volunteer.name.charAt(0) : '?'}
-                    </div>
-                    <div class="min-w-0">
-                        <div class="text-xs font-bold text-slate-200 truncate font-sans">${volunteer.name || 'Unnamed Record'}</div>
-                        <div class="text-[10px] text-slate-500 font-mono truncate">${volunteer.email || 'No email registered'}</div>
-                    </div>
-                </div>
+        const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let masterVolunteersArray = [];
+        let rawHoursLogs = [];
+        let aggregatedHoursMap = {};
+
+        async function securityAudit() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error || !session) { window.location.href = "portal.html"; return; }
                 
-                <div class="text-right shrink-0 font-mono">
-                    <div class="text-xs font-black text-emerald-400">${totalHours.toFixed(1)} <span class="text-[9px] text-slate-500 font-normal uppercase tracking-wider">hrs</span></div>
-                    <div class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-0.5">Aggregated</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-        
+                const activeEmail = session.user.email.toLowerCase();
+                if (activeEmail !== ALLOWED_ADMIN.toLowerCase()) {
+                    alert("⛔ Firewall Warning: System Access Terminated.");
+                    window.location.href = "portal.html";
+                    return;
+                }
+                
+                const adminEmailEl = document.getElementById("admin-email");
+                if(adminEmailEl) adminEmailEl.innerText = activeEmail;
+                
+                const adminBodyEl = document.getElementById("admin-body");
+                if(adminBodyEl) adminBodyEl.classList.remove("hidden");
+                
+                await refreshTerminalContext();
+            } catch (err) {
+                console.error("Security Audit Crash:", err);
+            }
+        }
+        securityAudit();
+
+        // 🔄 Main Database Sync Controller
         async function refreshTerminalContext() {
             try {
-                // Fetch ALL volunteers
+                console.log("Database Sync: Handshaking...");
                 const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
                 if (rErr) throw rErr;
-                masterVolunteersArray = teamRows;
+                masterVolunteersArray = teamRows || [];
 
-                // Fetch ALL hours logs for computations and audit trails
                 const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
                 if (hErr) throw hErr;
-                rawHoursLogs = hoursRows;
+                rawHoursLogs = hoursRows || [];
 
-                // Build performance lookup mapping hashes
+                // Reset and aggregate runtime hours hash mapsmap
                 aggregatedHoursMap = {};
                 rawHoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
@@ -331,134 +227,39 @@ function renderActiveRoster() {
                 renderAuditLedgerStream();
 
             } catch (err) {
-                console.error(err);
+                console.error("Sync Crash: ", err);
                 alert("Terminal context refresh crash: " + err.message);
             }
         }
-        
-// 1. Renders the main wide audit ledger stream tracking logs
-function renderAuditLedgerStream() {
-    const ledgerBox = document.getElementById('ledger-container');
-    if (!ledgerBox) return;
 
-    if (!rawHoursLogs || rawHoursLogs.length === 0) {
-        ledgerBox.innerHTML = `<div class="p-4 text-slate-500 italic">No historical hour streams detected in database ledger.</div>`;
-        return;
-    }
-
-// 1. Renders the main wide audit ledger stream tracking logs across full screen width columns
-function renderAuditLedgerStream() {
-    const ledgerBox = document.getElementById('ledger-container');
-    if (!ledgerBox) return;
-
-    if (!rawHoursLogs || rawHoursLogs.length === 0) {
-        ledgerBox.innerHTML = `
-            <div class="p-6 text-slate-500 italic text-center border border-white/5 rounded-2xl bg-white/[0.01]">
-                🫙 System ledger pools idle. No recorded historical log entries detected inside table layers.
-            </div>`;
-        return;
-    }
-
-    ledgerBox.innerHTML = rawHoursLogs.map(entry => {
-        // Find matching volunteer profile name out of master array list
-        const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
-        const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
-        
-        // Match and format timestamps cleanly
-        const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
-        const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
-        const hoursNum = parseFloat(entry.hours_count) || 0;
-
-        return `
-            <div class="p-3 md:p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 justify-between items-start md:items-center transition duration-200 group">
-                
-                <!-- Col 1: Identity Profile Info -->
-                <div class="md:col-span-3 font-sans font-bold text-slate-200 min-w-0 truncate flex items-center gap-2">
-                    <span class="text-emerald-400 text-xs md:text-sm">⚡</span> ${volunteerName}
-                </div>
-                
-                <!-- Col 2: Calendar Node Point Stamp -->
-                <div class="md:col-span-2 text-slate-500 text-[11px] font-mono flex items-center gap-1.5">
-                    <span class="md:hidden font-bold uppercase text-slate-600 mr-1">Date:</span>
-                    ${formattedDate}
-                </div>
-                
-                <!-- Col 3: Numerical Hours Volume Stream Counter -->
-                <div class="md:col-span-2 text-indigo-400 font-extrabold font-mono text-sm md:text-xs flex items-center">
-                    <span class="md:hidden font-bold uppercase text-slate-600 mr-2 text-[11px]">Volume:</span>
-                    +${hoursNum.toFixed(1)} <span class="text-[10px] text-slate-500 ml-0.5 font-normal">hrs</span>
-                </div>
-                
-                <!-- Col 4: Explanatory Context Memo Paragraph Segment -->
-                <div class="md:col-span-4 text-slate-300 font-sans text-xs break-words leading-relaxed w-full">
-                    <span class="md:hidden font-bold uppercase font-mono text-slate-600 mr-2 text-[11px] block mb-0.5">Description Memo:</span>
-                    <span class="text-slate-400 group-hover:text-slate-200 transition-colors">${entry.description || 'No contextual descriptive logging memo submitted.'}</span>
-                </div>
-                
-                <!-- Col 5: Purge Execution Interface System Button -->
-                <div class="md:col-span-1 w-full md:w-auto text-right flex justify-end items-center self-stretch md:self-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t border-white/5 md:border-transparent">
-                    <button onclick="purgeLedgerRecord(${entry.id}, '${volunteerName.replace(/'/g, "\\'")}')" 
-                            class="w-full md:w-auto text-[10px] bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-red-500/10 hover:border-transparent transition-all duration-150 flex items-center justify-center gap-1 cursor-pointer group-hover:bg-red-500/20"
-                            title="Purge this execution entry point permanently from cloud registry backend records">
-                        &times; Delete
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// 2. Destroys a chosen hour log event out of your Supabase database table
-async function purgeLedgerRecord(logId, nameReference) {
-    if (!confirm(`Are you completely sure you want to permanently delete this hour entry for ${nameReference}? This will alter their hour history.`)) {
-        return;
-    }
-
-    try {
-        const { error } = await supabase
-            .from('hours_log') // Perfectly maps to your exact table string
-            .delete()
-            .eq('id', logId);
-
-        if (error) throw error;
-        
-        // Instantly refresh matching state streams without screen reloading
-        refreshTerminalContext();
-
-    } catch (err) {
-        alert("Failed to wipe ledger record target: " + err.message);
-    }
-}
-
-// 🌐 Expose to HTML buttons:
-window.purgeLedgerRecord = purgeLedgerRecord;
-        
-function renderVerificationSystem() {
+        // 📑 Renders the verification queue panel
+        function renderVerificationSystem() {
             const queueBox = document.getElementById('queue-container');
             const queueLoader = document.getElementById('queue-loader');
+            if(!queueBox) return;
             queueBox.innerHTML = '';
 
             const pendingAccounts = masterVolunteersArray.filter(v => v.is_approved === false);
 
             if (pendingAccounts.length === 0) {
-                queueLoader.innerText = "✓ System check complete. No accounts awaiting authorization.";
-                queueLoader.className = "text-xs font-bold text-slate-500 font-mono py-2";
+                if(queueLoader) {
+                    queueLoader.innerText = "✓ System check complete. No accounts awaiting authorization.";
+                    queueLoader.className = "text-xs font-bold text-slate-500 font-mono py-2";
+                }
                 queueBox.classList.add('hidden');
                 return;
             }
 
-            queueLoader.classList.add('hidden');
+            if(queueLoader) queueLoader.classList.add('hidden');
             queueBox.classList.remove('hidden');
 
             pendingAccounts.forEach(user => {
                 const node = document.createElement('div');
-                // CHANGED: Aligns everything to the top start edge
                 node.className = "bg-white/5 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4";
                 node.innerHTML = `
                     <div class="flex items-start gap-4">
-                        <!-- FIXED: Perfect circle layout with top focus alignment -->
                         <div class="w-16 h-16 rounded-full overflow-hidden border border-white/10 flex-shrink-0 bg-slate-900">
-                            <img src="${user.image_url}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                            <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-white">${user.name || 'Pending Records'}</h5>
@@ -510,487 +311,337 @@ function renderVerificationSystem() {
             });
         }
 
-function renderActiveRoster() {
-    const rosterBox = document.getElementById('roster-container');
-    const selectDropdown = document.getElementById('volunteerSelect');
-    
-    if (!rosterBox) return; // Prevent crashing if container isn't loaded yet
-    
-    rosterBox.innerHTML = '';
-    if (selectDropdown) {
-        selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
-    }
+        // 👥 Renders the active roster list view
+        function renderActiveRoster() {
+            const rosterBox = document.getElementById('roster-container');
+            const selectDropdown = document.getElementById('volunteerSelect');
+            const loaderEl = document.getElementById('roster-loader');
+            
+            if (!rosterBox) return;
+            rosterBox.innerHTML = '';
+            
+            if (selectDropdown) {
+                selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
+            }
 
-    // Safe array validation check
-    const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
-    const activeProfiles = dataArray.filter(v => v.is_approved === true);
-    
-    const totalStatEl = document.getElementById('stat-total-volunteers');
-    if (totalStatEl) totalStatEl.innerText = activeProfiles.length;
+            const activeProfiles = masterVolunteersArray.filter(v => v.is_approved === true);
+            
+            const totalStatEl = document.getElementById('stat-total-volunteers');
+            if (totalStatEl) totalStatEl.innerText = activeProfiles.length;
 
-    const loaderEl = document.getElementById('roster-loader');
-    if (activeProfiles.length === 0) {
-        if (loaderEl) loaderEl.innerText = "Roster directory is currently empty.";
-        return;
-    }
+            if (activeProfiles.length === 0) {
+                if (loaderEl) {
+                    loaderEl.innerText = "Roster directory is currently empty.";
+                    loaderEl.classList.remove('hidden');
+                }
+                rosterBox.classList.add('hidden');
+                return;
+            }
 
-    if (loaderEl) loaderEl.classList.add('hidden');
-    rosterBox.classList.remove('hidden');
+            if (loaderEl) loaderEl.classList.add('hidden');
+            rosterBox.classList.remove('hidden');
 
-    activeProfiles.forEach(user => {
-        if (selectDropdown) {
-            const option = document.createElement('option');
-            option.value = user.id;
-            option.innerText = user.name || "Anonymous User";
-            selectDropdown.appendChild(option);
-        }
+            activeProfiles.forEach(user => {
+                if (selectDropdown) {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.innerText = user.name || "Anonymous User";
+                    selectDropdown.appendChild(option);
+                }
 
-        // Fallback protection check for missing hours objects
-        const hoursMap = (typeof aggregatedHoursMap !== 'undefined') ? aggregatedHoursMap : {};
-        const lifetimeHours = hoursMap[user.id] || 0;
+                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
 
-        const card = document.createElement('div');
-        card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
-        card.innerHTML = `
-            <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
-                <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
-                    <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
-                </div>
-                <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
-                        <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
-                            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                            <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
+                const card = document.createElement('div');
+                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
+                        <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
+                            <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        </div>
+                        <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
+                                <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
+                                </div>
+                            </div>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
+                            <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
+                                <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
+                                <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
-                    <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
-                        <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
-                        <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
-                    <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
-                    <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
-                        <input type="file" id="input-file-${user.id}" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-cyan-500/10 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-500/20">
-                        <span id="file-status-${user.id}" class="text-xs text-slate-500 italic">No new file chosen</span>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
-                    <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
-                </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button data-id="${user.id}" class="cancel-btn text-xs bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Cancel</button>
-                    <button data-id="${user.id}" class="save-btn text-xs bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase tracking-wider px-5 py-2 rounded-xl transition-all cursor-pointer">Save Changes</button>
-                </div>
-            </div>
-        `;
-        rosterBox.appendChild(card);
-        
-        const fInput = document.getElementById(`input-file-${user.id}`);
-        if (fInput) {
-            fInput.onchange = (e) => {
-                const file = e.target.files[0];
-                const statusText = document.getElementById(`file-status-${user.id}`);
-                if (file && statusText) {
-                    if (file.size > 5242880) {
-                        alert("This file is too large! Please choose an image smaller than 5MB.");
-                        e.target.value = '';
-                        statusText.innerText = "✖ File rejected (over 5MB limit)";
-                        statusText.className = "text-xs text-red-400 font-bold";
-                    } else {
-                        statusText.innerText = `✓ ${file.name}`;
-                        statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
-                    }
-                }
-            };
-        }
-    });
-
-    attachRosterControlEvents();
-}
-
-function attachRosterControlEvents() {
-    // 1. Edit Layer Toggle
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.onclick = (e) => {
-            const id = e.target.getAttribute('data-id');
-            const viewL = document.getElementById(`view-layer-${id}`);
-            const editL = document.getElementById(`edit-layer-${id}`);
-            if (viewL) viewL.classList.add('hidden');
-            if (editL) editL.classList.remove('hidden');
-        };
-    });
-
-    // 2. Cancel Layer Toggle
-    document.querySelectorAll('.cancel-btn').forEach(btn => {
-        btn.onclick = (e) => {
-            const id = e.target.getAttribute('data-id');
-            const viewL = document.getElementById(`view-layer-${id}`);
-            const editL = document.getElementById(`edit-layer-${id}`);
-            if (editL) editL.classList.add('hidden');
-            if (viewL) viewL.classList.remove('hidden');
-        };
-    });
-
-    // 3. Remove/Delete Functionality
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.onclick = async (e) => {
-            const rawId = e.target.getAttribute('data-id');
-            const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-
-            if (!confirm("Are you sure you want to remove this volunteer from the active roster?")) return;
-
-            e.target.disabled = true;
-            e.target.innerText = "Removing...";
-
-            try {
-                const { error } = await supabase
-                    .from('volunteers')
-                    .delete()
-                    .eq('id', targetId);
-
-                if (error) throw error;
-                triggerContextRefresh();
-            } catch (err) {
-                alert("Error deleting record: " + err.message);
-                e.target.disabled = false;
-                e.target.innerText = "Remove";
-            }
-        };
-    });
-
-    // 4. Save and Image Upload Functionality
-    document.querySelectorAll('.save-btn').forEach(btn => {
-        btn.onclick = async (e) => {
-            const rawId = e.target.getAttribute('data-id');
-            const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-            
-            const nameEl = document.getElementById(`input-name-${rawId}`);
-            const bioEl = document.getElementById(`input-bio-${rawId}`);
-            const fileInput = document.getElementById(`input-file-${rawId}`);
-
-            const updatedName = nameEl ? nameEl.value : '';
-            const updatedBio = bioEl ? bioEl.value : '';
-
-            e.target.disabled = true;
-            e.target.innerText = "Saving...";
-
-            const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
-            const originalUser = dataArray.find(v => String(v.id) === String(rawId));
-            let finalImgUrl = originalUser ? originalUser.image_url : '';
-
-            try {
-                // FIXED: Handle proper Supabase storage upload instead of crushing DB with Base64 strings
-                if (fileInput && fileInput.files && fileInput.files[0]) {
-                    const selectedFile = fileInput.files[0];
                     
-                    // Create a clean unique filename (e.g., avatars/123-timestamp.png)
-                    const fileExt = selectedFile.name.split('.').pop();
-                    const fileName = `avatars/${targetId}-${Date.now()}.${fileExt}`;
-
-                    // Upload raw file binary to a Supabase storage bucket named 'volunteer-assets'
-                    const { error: uploadError } = await supabase.storage
-                        .from('volunteer-assets')
-                        .upload(fileName, selectedFile, { cacheControl: '3600', upsert: true });
-
-                    if (uploadError) throw uploadError;
-
-                    // Fetch the clean public asset URL string
-                    const { data: publicUrlData } = supabase.storage
-                        .from('volunteer-assets')
-                        .getPublicUrl(fileName);
-
-                    finalImgUrl = publicUrlData.publicUrl;
+                    <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
+                            <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
+                            <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
+                                <input type="file" id="input-file-${user.id}" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-cyan-500/10 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-500/20">
+                                <span id="file-status-${user.id}" class="text-xs text-slate-500 italic">No new file chosen</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
+                            <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
+                        </div>
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button data-id="${user.id}" class="cancel-btn text-xs bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Cancel</button>
+                            <button data-id="${user.id}" class="save-btn text-xs bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase tracking-wider px-5 py-2 rounded-xl transition-all cursor-pointer">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                rosterBox.appendChild(card);
+                
+                const fInput = document.getElementById(`input-file-${user.id}`);
+                if (fInput) {
+                    fInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const statusText = document.getElementById(`file-status-${user.id}`);
+                        if (file && statusText) {
+                            if (file.size > 5242880) {
+                                alert("This file is too large! Smaller than 5MB required.");
+                                e.target.value = '';
+                                statusText.innerText = "✖ File rejected";
+                            } else {
+                                statusText.innerText = `✓ ${file.name}`;
+                            }
+                        }
+                    };
                 }
+            });
 
+            attachRosterControlEvents();
+        }
+
+        // 🛠️ Handles buttons for Edit, Cancel, Remove, and Save changes
+        function attachRosterControlEvents() {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`view-layer-${id}`)?.classList.add('hidden');
+                    document.getElementById(`edit-layer-${id}`)?.classList.remove('hidden');
+                };
+            });
+
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`edit-layer-${id}`)?.classList.add('hidden');
+                    document.getElementById(`view-layer-${id}`)?.classList.remove('hidden');
+                };
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+
+                    if (!confirm("Permanently strip this profile entry off the public roster system?")) return;
+
+                    e.target.disabled = true;
+                    e.target.innerText = "Removing...";
+
+                    try {
+                        const { error } = await supabase.from('volunteers').delete().eq('id', targetId);
+                        if (error) throw error;
+                        await refreshTerminalContext();
+                    } catch (err) {
+                        alert("Error clearing record: " + err.message);
+                        e.target.disabled = false;
+                        e.target.innerText = "Remove";
+                    }
+                };
+            });
+
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+                    
+                    const nameEl = document.getElementById(`input-name-${rawId}`);
+                    const bioEl = document.getElementById(`input-bio-${rawId}`);
+                    const fileInput = document.getElementById(`input-file-${rawId}`);
+
+                    e.target.disabled = true;
+                    e.target.innerText = "Saving...";
+
+                    const originalUser = masterVolunteersArray.find(v => String(v.id) === String(rawId));
+                    let finalImgUrl = originalUser ? originalUser.image_url : '';
+
+                    try {
+                        if (fileInput && fileInput.files && fileInput.files[0]) {
+                            const selectedFile = fileInput.files[0];
+                            const fileExt = selectedFile.name.split('.').pop();
+                            const fileName = `avatars/${targetId}-${Date.now()}.${fileExt}`;
+
+                            const { error: uploadError } = await supabase.storage
+                                .from('volunteer-assets')
+                                .upload(fileName, selectedFile, { cacheControl: '3600', upsert: true });
+
+                            if (uploadError) throw uploadError;
+
+                            const { data: publicUrlData } = supabase.storage
+                                .from('volunteer-assets')
+                                .getPublicUrl(fileName);
+
+                            finalImgUrl = publicUrlData.publicUrl;
+                        }
+
+                        const { error } = await supabase
+                            .from('volunteers')
+                            .update({ 
+                                name: nameEl ? nameEl.value : '', 
+                                bio: bioEl ? bioEl.value : '',
+                                image_url: finalImgUrl
+                            })
+                            .eq('id', targetId);
+
+                        if (error) throw error;
+                        await refreshTerminalContext();
+                    } catch (err) {
+                        alert("Error saving data: " + err.message);
+                        e.target.disabled = false;
+                        e.target.innerText = "Save Changes";
+                    }
+                };
+            });
+        }
+
+        // 📜 Renders the rolling historical system trail rows
+        function renderAuditLedgerStream() {
+            const ledgerBox = document.getElementById('ledger-container');
+            if (!ledgerBox) return;
+
+            if (!rawHoursLogs || rawHoursLogs.length === 0) {
+                ledgerBox.innerHTML = `<div class="p-4 text-slate-500 italic text-center">No recorded historical log entries detected inside table layers.</div>`;
+                return;
+            }
+
+            ledgerBox.innerHTML = rawHoursLogs.map(entry => {
+                const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
+                const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
+                
+                const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
+                const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+                const hoursNum = parseFloat(entry.hours_count) || 0;
+
+                return `
+                    <div class="p-3 md:p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 justify-between items-start md:items-center transition duration-200 group">
+                        <div class="md:col-span-3 font-sans font-bold text-slate-200 min-w-0 truncate flex items-center gap-2">
+                            <span class="text-emerald-400 text-xs md:text-sm">⚡</span> ${volunteerName}
+                        </div>
+                        <div class="md:col-span-2 text-slate-500 text-[11px] font-mono">
+                            ${formattedDate}
+                        </div>
+                        <div class="md:col-span-2 text-indigo-400 font-extrabold font-mono text-sm md:text-xs">
+                            +${hoursNum.toFixed(1)} <span class="text-[10px] text-slate-500 ml-0.5 font-normal">hrs</span>
+                        </div>
+                        <div class="md:col-span-4 text-slate-300 font-sans text-xs break-words leading-relaxed w-full">
+                            <span class="text-slate-400 group-hover:text-slate-200 transition-colors">${entry.description || 'No descriptive context log.'}</span>
+                        </div>
+                        <div class="md:col-span-1 w-full md:w-auto text-right flex justify-end items-center mt-2 md:mt-0">
+                            <button onclick="deleteHoursRecord(${entry.id})" 
+                                    class="w-full md:w-auto text-[10px] bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-red-500/10 transition-all duration-150 flex items-center justify-center cursor-pointer">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ❌ Global Hour Log Delete Routine (Wipes row items smoothly)
+        async function deleteHoursRecord(requestId) {
+            if (!confirm("Are you completely sure you want to permanently delete this hour record log?")) return;
+
+            try {
                 const { error } = await supabase
-                    .from('volunteers')
-                    .update({ 
-                        name: updatedName, 
-                        bio: updatedBio,
-                        image_url: finalImgUrl
-                    })
-                    .eq('id', targetId);
+                    .from('hours_log')
+                    .delete()
+                    .eq('id', requestId);
 
                 if (error) throw error;
-                triggerContextRefresh();
-
+                await refreshTerminalContext();
             } catch (err) {
-                alert("Error saving data: " + err.message);
-                e.target.disabled = false;
-                e.target.innerText = "Save Changes";
+                alert("Failed to delete record: " + err.message);
             }
-        };
-    });
-}
-
-// 1. Fetch pending hour entries from Supabase
-async function fetchPendingHours() {
-    const { data, error } = await supabase
-        .from('hour_logs')
-        .select(`
-            id,
-            hours_requested,
-            description,
-            status,
-            volunteers ( name )
-        `)
-        .eq('status', 'pending');
-
-    if (error) {
-        console.error("Error fetching hours:", error);
-        return;
-    }
-    
-    renderHoursRequests(data || []);
-}
-
-// 2. Render them cleanly on the admin screen
-function renderHoursRequests(requests) {
-    const container = document.getElementById('hours-requests-container');
-    if (!container) return;
-
-    if (requests.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-sm italic p-4">No hours awaiting approval.</p>';
-        return;
-    }
-
-    container.innerHTML = requests.map(req => `
-        <div class="p-4 bg-white/5 rounded-xl border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
-            <div class="min-w-0 flex-1">
-                <h4 class="font-extrabold text-white text-base truncate">${req.volunteers?.name || 'Unknown Volunteer'}</h4>
-                <p class="text-sm text-slate-300 mt-1 leading-relaxed">${req.description || 'No description provided'}</p>
-                <div class="mt-2 inline-flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-lg">
-                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                    <span class="text-xs font-mono font-bold uppercase tracking-wide text-cyan-400">${req.hours_requested} Hours</span>
-                </div>
-            </div>
-            
-            <!-- 🛠️ ACTION BUTTONS GROUP -->
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl transition cursor-pointer">
-                    Approve
-                </button>
-                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="text-xs bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl border border-red-500/20 transition cursor-pointer">
-                    Deny
-                </button>
-                
-                <!-- ❌ THE RED DELETE X BUTTON -->
-                <button onclick="deleteHoursRecord(${req.id})" class="text-xs bg-transparent hover:bg-red-500/20 text-red-400 font-bold border border-red-500/30 hover:border-red-500 px-3 py-2 rounded-xl transition cursor-pointer" title="Delete record permanently">
-                    Delete
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-// 3. Handle the click actions to change statuses
-async function updateHoursStatus(requestId, newStatus) {
-    try {
-        const { error } = await supabase
-            .from('hour_logs')
-            .update({ status: newStatus })
-            .eq('id', requestId);
-
-        if (error) throw error;
-        
-        // Refresh the list immediately upon change
-        fetchPendingHours(); 
-    } catch (err) {
-        alert("Could not update request status: " + err.message);
-    }
-}
-        
-// Micro helper to consolidate application reload routines safely
-function triggerContextRefresh() {
-    if (typeof refreshTerminalContext === 'function') {
-        refreshTerminalContext();
-    } else if (typeof fetchVolunteers === 'function') {
-        fetchVolunteers();
-    } else {
-        window.location.reload();
-    }
-}
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const rawId = e.target.getAttribute('data-id');
-                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-
-                    if (confirm("Permanently strip this profile entry off the public roster system?")) {
-                        e.target.disabled = true;
-                        try {
-                            const { error } = await supabase
-                                .from('volunteers')
-                                .delete()
-                                .eq('id', targetId);
-
-                            if (error) throw error;
-                            
-                            if (typeof refreshTerminalContext === 'function') {
-                                refreshTerminalContext();
-                            } else if (typeof fetchVolunteers === 'function') {
-                                fetchVolunteers();
-                            } else {
-                                window.location.reload();
-                            }
-                        } catch (err) {
-                            alert("Error clearing record: " + err.message);
-                            e.target.disabled = false;
-                        }
-                    }
-                };
-            });
-        
-            // Remove workflow button bindings
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const rawId = e.target.getAttribute('data-id');
-                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-
-                    if (confirm("Permanently strip this profile entry off the public roster system?")) {
-                        e.target.disabled = true;
-                        try {
-                            const { error } = await supabase
-                                .from('volunteers')
-                                .delete()
-                                .eq('id', targetId);
-
-                            if (error) throw error;
-                            refreshTerminalContext();
-                        } catch (err) {
-                            alert("Error clearing record: " + err.message);
-                            e.target.disabled = false;
-                        }
-                    }
-                };
-            });
-
-     // 📥 1. CSV Compilation Engine Script logic module setup block
-document.getElementById('export-csv-btn').addEventListener('click', () => {
-    if (!rawHoursLogs || rawHoursLogs.length === 0) return alert("No tracking rows found to export.");
-    
-    let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
-    
-    rawHoursLogs.forEach(log => {
-        const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
-        dataRows.push([
-            log.id,
-            log.created_at ? log.created_at.split('T')[0] : 'N/A',
-            `"${(user ? user.name : 'Unknown Account').replace(/"/g, '""')}"`,
-            parseFloat(log.hours_count).toFixed(1),
-            `"${(log.description || 'General Service').replace(/"/g, '""')}"`
-        ]);
-    });
-
-    const rawCsvText = dataRows.map(row => row.join(",")).join("\n");
-    const blobObj = new Blob([rawCsvText], { type: 'text/csv;charset=utf-8;' });
-    const temporaryLink = document.createElement("a");
-    
-    temporaryLink.href = URL.createObjectURL(blobObj);
-    temporaryLink.setAttribute("download", `hygienify_service_ledger_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(temporaryLink);
-    temporaryLink.click();
-    document.body.removeChild(temporaryLink);
-});
-
-// 🚀 2. System Bootloader Trigger: Forces database fetch and replaces loading loops on mount
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("Core initialization active. Clearing hidden screen blockers...");
-    const adminBody = document.getElementById('admin-body');
-    if (adminBody) adminBody.classList.remove('hidden');
-
-    if (typeof refreshTerminalContext === 'function') {
-        console.log("Requesting raw metrics rows from Supabase cloud tables...");
-        await refreshTerminalContext();
-    } else {
-        console.warn("Notice: refreshTerminalContext boot block is handling execution dynamically.");
-    }
-});
-
-        // Submission handling engines pipeline actions
-      document.getElementById('hoursForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    
-    const volunteerSelect = document.getElementById('volunteerSelect');
-    const volunteerId = volunteerSelect.value;
-    const hourValue = parseFloat(document.getElementById('hoursCount').value);
-    const operationDesc = document.getElementById('hoursDesc').value.trim();
-
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Appending Data...";
-
-    try {
-        const { error } = await supabase
-            .from('hours_log')
-            .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
-
-        if (error) throw error;
-
-        alert("⚡ Log verified! Contribution data records appended successfully.");
-        
-        // Clean up inputs safely
-        document.getElementById('hoursCount').value = '';
-        document.getElementById('hoursDesc').value = '';
-        
-        // CRITICAL: Added await so the UI waits for the database update to complete
-        await refreshTerminalContext();
-
-    } catch (err) {
-        alert("❌ Storage transmission error: " + err.message);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Log Record Entry";
-    }
-});
-
-document.getElementById("logout-btn").addEventListener("click", async () => {
-    try {
-        if (typeof supabase !== 'undefined' && supabase.auth) {
-            await supabase.auth.signOut();
         }
-    } catch (err) {
-        console.error("Auth session termination failed:", err);
-    } finally {
-        window.location.href = "portal.html";
-    }
-});
+        window.deleteHoursRecord = deleteHoursRecord;
 
-        async function deleteHoursRecord(requestId) {
-    // ⚠️ Security sanity check so you don't misclick and erase data accidentally
-    if (!confirm("Are you completely sure you want to permanently delete this hour audit record? This action cannot be undone.")) {
-        return;
-    }
+        // 📥 CSV Document Builder
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            if (!rawHoursLogs || rawHoursLogs.length === 0) return alert("No tracking rows found to export.");
+            let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
+            
+            rawHoursLogs.forEach(log => {
+                const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
+                dataRows.push([
+                    log.id,
+                    log.created_at ? log.created_at.split('T')[0] : 'N/A',
+                    `"${(user ? user.name : 'Unknown Account').replace(/"/g, '""')}"`,
+                    parseFloat(log.hours_count).toFixed(1),
+                    `"${(log.description || 'General Service').replace(/"/g, '""')}"`
+                ]);
+            });
 
-    try {
-        const { error } = await supabase
-            .from('hour_logs') // Make sure this matches your exact database table name
-            .delete()
-            .eq('id', requestId);
+            const rawCsvText = dataRows.map(row => row.join(",")).join("\n");
+            const blobObj = new Blob([rawCsvText], { type: 'text/csv;charset=utf-8;' });
+            const temporaryLink = document.createElement("a");
+            temporaryLink.href = URL.createObjectURL(blobObj);
+            temporaryLink.setAttribute("download", `hygienify_service_ledger_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(temporaryLink);
+            temporaryLink.click();
+            document.body.removeChild(temporaryLink);
+        });
 
-        if (error) throw error;
-        
-        // Immediately refresh the views to visually drop the card out of the UI
-        if (typeof fetchPendingHours === 'function') fetchPendingHours();
-        triggerContextRefresh();
-        
-    } catch (err) {
-        alert("Failed to delete the record: " + err.message);
-    }
-}
-    }
+        // ⏱️ Hours Submission Engine Form
+        document.getElementById('hoursForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const volunteerSelect = document.getElementById('volunteerSelect');
+            
+            const volunteerId = volunteerSelect.value;
+            const hourValue = parseFloat(document.getElementById('hoursCount').value);
+            const operationDesc = document.getElementById('hoursDesc').value.trim();
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Appending Data...";
+
+            try {
+                const { error } = await supabase
+                    .from('hours_log')
+                    .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
+
+                if (error) throw error;
+
+                alert("⚡ Log verified! Contribution records appended successfully.");
+                document.getElementById('hoursCount').value = '';
+                document.getElementById('hoursDesc').value = '';
+                await refreshTerminalContext();
+            } catch (err) {
+                alert("❌ Transmission error: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Log Record Entry";
+            }
+        });
+
+        // Signout routing panel logic
+        document.getElementById("logout-btn").addEventListener("click", async () => {
+            try {
+                await supabase.auth.signOut();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                window.location.href = "portal.html";
+            }
+        });
     </script>
 </body>
 </html>

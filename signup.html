@@ -60,44 +60,52 @@
             <a href="portal.html" class="text-cyan-400 font-bold hover:underline ml-1 whitespace-nowrap">Sign in</a>
         </div>
 </div>
-   <script>
         // =========================================================================
         // 🔒 MASTER LIST OF PRE-APPROVED EMAILS
         // =========================================================================
         // Keep this list identical to the authorized emails allowed to use the portal
+   <script type="module">
+    // 1. Import the official Supabase library directly into the browser
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    // 2. Initialize your specific Supabase project connection
+    const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    // =========================================================================
+    // ⚙️ FORM SUBMISSION LOGIC
+    // =========================================================================
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const password = document.getElementById('regPassword').value;
+        e.preventDefault();
+        
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const password = document.getElementById('regPassword').value;
 
-    // Simple frontend check to save time
-    if (password.length < 6) {
-        alert("🔒 Password must be at least 6 characters long.");
-        return;
-    }
-
-    try {
-        // 1. Tell Supabase Auth to try registering this new user
-        // Note: Replace 'supabase' with whatever your Supabase client variable is named in your script
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        });
-
-        // 2. If Supabase rejects it (e.g., Row Level Security blocks it or email is bad)
-        if (error) {
-            alert(`⛔ Registration Error: ${error.message}`);
+        if (password.length < 6) {
+            alert("🔒 Password must be at least 6 characters long.");
             return;
         }
 
-        // 3. Success! 
-        alert("🎉 Account Created Successfully! Please check your email for a confirmation link (if turned on) or click OK to sign in.");
-        window.location.href = 'portal.html';
+        try {
+            // 3. Fire the secure creation request over to Supabase Auth
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
 
-    } catch (err) {
-        console.error(err);
-        alert("💥 An unexpected error occurred during registration. Check your console log.");
-    }
-});
-    </script>
+            if (error) {
+                alert(`⛔ Registration Error: ${error.message}`);
+                return;
+            }
+
+            alert("🎉 Account Created Successfully! Please check your email for a confirmation link or click OK to sign in.");
+            window.location.href = 'portal.html';
+
+        } catch (err) {
+            console.error(err);
+            alert("💥 An unexpected error occurred during registration. Check your console log.");
+        }
+    });
+</script>

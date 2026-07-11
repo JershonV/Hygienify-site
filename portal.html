@@ -96,63 +96,62 @@
         </form>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script type="module">
 // =========================================================================
-// 🔒 1. SUPABASE CONFIGURATION & MASTER ACCOUNT REGISTER
+// 🔒 1. SUPABASE CONFIGURATION
 // =========================================================================
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
 const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_21GG4f9fiRhm6DDQUhtPWw_y5qu-_1Y'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
 
-// Initialize the official Supabase Client (FIXED: Duplicate declaration removed)
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Core pre-configured baseline accounts
-    const APPROVED_EMAILS = [
-        'admin@hygienify.org',
-        'volunteer1@gmail.com',
-        'test@hygienify.org'
-    ];
+const authCard = document.getElementById('auth-card');
+const portalCard = document.getElementById('portal-card');
+const authForm = document.getElementById('authForm');
 
-    const authCard = document.getElementById('auth-card');
-    const portalCard = document.getElementById('portal-card');
-    const authForm = document.getElementById('authForm');
-    let loggedInEmail = ""; 
+// =========================================================================
+// 🔑 2. REAL SUPABASE SIGN IN ENGINE
+// =========================================================================
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('authEmail').value.trim().toLowerCase();
+    const password = document.getElementById('authPassword').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
 
-    // =========================================================================
-    // 🔑 2. SIGN IN INTERCEPTOR ENGINE
-    // =========================================================================
-    authForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('authEmail').value.trim().toLowerCase();
-        const password = document.getElementById('authPassword').value;
-        
-        const customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-        
-        const allVolunteers = { 
-            ...APPROVED_EMAILS.reduce((acc, el) => ({...acc, [el]: "password123"}), {}), 
-            ...customVolunteers 
-        };
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Authenticating...";
+    
+    try {
+        // Query Supabase Auth to verify email and password combo securely
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
 
-        if (!allVolunteers.hasOwnProperty(email)) {
-            alert("⛔ Access Denied: This email address is not found in our authorized volunteer registry.");
+        if (error) {
+            alert(`❌ Authentication Failed: ${error.message}`);
             return;
         }
 
-        if (allVolunteers[email] !== password) {
-            alert("❌ Authentication Failed: Incorrect password entered for this account.");
-            return;
-        }
-
-        loggedInEmail = email; 
-        document.getElementById('userBadge').innerText = email;
+        // Successfully logged in! Reveal portal form layout
+        document.getElementById('userBadge').innerText = data.user.email;
         authCard.classList.add('hidden');
         portalCard.classList.remove('hidden');
-    });
+
+    } catch (err) {
+        console.error(err);
+        alert("💥 An unexpected authentication error occurred.");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Sign In";
+    }
+});
 
 // =========================================================================
-// 🌐 3. SUPABASE DATA INGESTION ENGINE (SPACE ALIGNED)
+// 🌐 3. SUPABASE DATA INGESTION ENGINE
 // =========================================================================
 document.getElementById('portalForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -168,11 +167,10 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         return;
     }
 
-    // 🛑 FILE SIZE CEILING RULE (300KB)
     const MAX_SIZE_KB = 300;
     const MAX_SIZE_BYTES = MAX_SIZE_KB * 1024;
     if (file.size > MAX_SIZE_BYTES) {
-        alert(`⛔ File too large! Your image is ${(file.size / 1024).toFixed(0)}KB. Please choose a photo smaller than ${MAX_SIZE_KB}KB (or try uploading a phone screenshot of it!).`);
+        alert(`⛔ File too large! Your image is ${(file.size / 1024).toFixed(0)}KB. Please choose a photo smaller than ${MAX_SIZE_KB}KB.`);
         return;
     }
 
@@ -184,7 +182,6 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         const filePath = `portraits/${uniqueFileName}`;
 
-        // 1️⃣ LOCATION FIX ONE: Change 'FROM' to 'volunteer-info'
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
             .from('volunteer-info') 
             .upload(filePath, file);
@@ -193,14 +190,12 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
             throw new Error(`Storage Upload Failed: ${uploadError.message}`);
         }
 
-        // 2️⃣ LOCATION FIX TWO: Change 'FROM' to 'volunteer-info'
         const { data: urlData } = supabaseClient.storage
             .from('volunteer-info') 
             .getPublicUrl(filePath);
         
         const publicImageUrl = urlData.publicUrl;
 
-        // Insert into the database table
         const { error: dbError } = await supabaseClient
             .from('volunteers')
             .insert([
@@ -227,12 +222,13 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
     }
 });
 
-    // =========================================================================
-    // 🪵 4. SESSION SYSTEM KILL SWITCH
-    // =========================================================================
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.reload();
-    });
+// =========================================================================
+// 🪵 4. SESSION SYSTEM KILL SWITCH
+// =========================================================================
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+});
 </script>
 </body>
 </html>

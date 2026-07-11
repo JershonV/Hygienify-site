@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Hygienify</title>
-    <!-- Fix #1: Added your official logo favicon link to the browser tab -->
+    <title>Admin Panel | Hygienify</title>
     <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
-    <!-- Tailwind Engine and Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -19,11 +17,12 @@
 </head>
 <body class="min-h-screen hidden" id="admin-body">
 
-    <!-- Top Security Nav Wrapper (Responsive padding) -->
+    <!-- Top Security Nav Wrapper -->
     <nav class="border-b border-white/10 bg-slate-950/50 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <span class="text-xl px-2 py-1 bg-cyan-500/10 rounded-lg text-cyan-400 font-mono">🛡️</span>
-            <h1 class="text-lg font-black uppercase tracking-widest text-white">Hygienify Core Control</h1>
+            <!-- Replaced with your native SVG logo element -->
+            <img src="logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain">
+            <h1 class="text-lg font-black uppercase tracking-widest text-white">Admin Panel</h1>
         </div>
         <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
             <span id="admin-email" class="text-[11px] sm:text-xs font-bold text-slate-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full truncate max-w-[180px] sm:max-w-xs"></span>
@@ -33,7 +32,7 @@
         </div>
     </nav>
 
-    <!-- Content Workspace Grid (Fix #2: Full Mobile stack to desktop grid support) -->
+    <!-- Content Workspace Grid -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
         
         <!-- Welcome Jumbotron Hero Banner -->
@@ -41,7 +40,7 @@
             <div>
                 <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">System Authorized</span>
                 <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">System Administrative Hub</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">Log volunteer action metrics, append community service credit hours, and audit team files from this terminal.</p>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">Log volunteer action metrics, edit profiles, erase accounts, and assign service hours from this panel.</p>
             </div>
             <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl px-6 py-4 text-center w-full md:w-auto">
                 <span class="text-xs text-slate-400 uppercase tracking-widest block font-bold mb-1">Total Volunteers</span>
@@ -63,7 +62,7 @@
                         Querying database tables...
                     </div>
                     
-                    <div id="roster-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                    <div id="roster-container" class="grid grid-cols-1 gap-4 hidden">
                         <!-- Hydrated dynamically from data returns -->
                     </div>
                 </div>
@@ -104,7 +103,6 @@
         </div>
     </main>
 
-    <!-- Fix #3: Full integrated script block inside modules to prevent broken variables -->
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -113,6 +111,10 @@
         
         const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Store active data state globally in view memory
+        let localVolunteersArray = [];
+        let localHoursMap = {};
 
         async function runSecurityAudit() {
             const { data: { session }, error } = await supabase.auth.getSession();
@@ -141,9 +143,11 @@
             try {
                 const { data: teamLogs, error: rosterErr } = await supabase
                     .from('volunteers')
-                    .select('id, name, bio, image_url');
+                    .select('id, name, bio, image_url')
+                    .order('id', { ascending: false });
 
                 if (rosterErr) throw rosterErr;
+                localVolunteersArray = teamLogs;
 
                 const { data: hoursLogs, error: hoursErr } = await supabase
                     .from('hours_log')
@@ -151,48 +155,13 @@
 
                 if (hoursErr) throw hoursErr;
 
-                const hourTrackerMap = {};
+                localHoursMap = {};
                 hoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
-                    hourTrackerMap[entry.volunteer_id] = (hourTrackerMap[entry.volunteer_id] || 0) + count;
+                    localHoursMap[entry.volunteer_id] = (localHoursMap[entry.volunteer_id] || 0) + count;
                 });
 
-                document.getElementById('stat-total-volunteers').innerText = teamLogs.length;
-
-                const dropdown = document.getElementById('volunteerSelect');
-                dropdown.innerHTML = '<option value="" disabled selected>Select from team roster...</option>';
-                
-                const rosterBox = document.getElementById('roster-container');
-                rosterBox.innerHTML = '';
-
-                teamLogs.forEach(user => {
-                    const opt = document.createElement('option');
-                    opt.value = user.id;
-                    opt.innerText = user.name || "Anonymous Volunteer";
-                    dropdown.appendChild(opt);
-
-                    const verifiedHours = hourTrackerMap[user.id] || 0;
-
-                    const card = document.createElement('div');
-                    card.className = "bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden";
-                    card.innerHTML = `
-                        <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border border-white/10 relative">
-                            <img src="${user.image_url}" class="w-full h-full object-cover object-top scale-125 origin-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-black text-white truncate">${user.name || 'Unnamed Record'}</h4>
-                            <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed">${user.bio || 'No profile declaration.'}</p>
-                            <div class="mt-3 flex items-center gap-1.5">
-                                <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                                <span class="text-[11px] font-black uppercase tracking-wider text-slate-300 font-mono">${verifiedHours.toFixed(1)} Lifetime Hours</span>
-                            </div>
-                        </div>
-                    `;
-                    rosterBox.appendChild(card);
-                });
-
-                document.getElementById('roster-loader').classList.add('hidden');
-                rosterBox.classList.remove('hidden');
+                renderRosterView();
 
             } catch (err) {
                 console.error(err);
@@ -200,6 +169,158 @@
             }
         }
 
+        function renderRosterView() {
+            document.getElementById('stat-total-volunteers').innerText = localVolunteersArray.length;
+
+            const dropdown = document.getElementById('volunteerSelect');
+            dropdown.innerHTML = '<option value="" disabled selected>Select from team roster...</option>';
+            
+            const rosterBox = document.getElementById('roster-container');
+            rosterBox.innerHTML = '';
+
+            localVolunteersArray.forEach(user => {
+                const opt = document.createElement('option');
+                opt.value = user.id;
+                opt.innerText = user.name || "Anonymous Volunteer";
+                dropdown.appendChild(opt);
+
+                const verifiedHours = localHoursMap[user.id] || 0;
+
+                const card = document.createElement('div');
+                card.className = "bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden transition-all duration-300";
+                card.id = `volunteer-card-${user.id}`;
+                
+                // Standard Read view layout configuration with operational modifications forms
+                card.innerHTML = `
+                    <div class="flex items-start gap-4" id="view-layer-${user.id}">
+                        <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border border-white/10 relative">
+                            <img src="${user.image_url}" class="w-full h-full object-cover object-top scale-125 origin-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-black text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed Record'}</h4>
+                            <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed" id="text-bio-${user.id}">${user.bio || 'No profile declaration.'}</p>
+                            <div class="mt-3 flex items-center justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-300 font-mono">${verifiedHours.toFixed(1)} Lifetime Hours</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button data-id="${user.id}" class="edit-btn text-[11px] bg-white/5 hover:bg-cyan-500 hover:text-black font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-white/10 transition-all cursor-pointer">Edit</button>
+                                    <button data-id="${user.id}" class="delete-btn text-[11px] bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-red-500/20 transition-all cursor-pointer">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden Update Inline Form Editor Input System Module Layer -->
+                    <div class="hidden space-y-4" id="edit-layer-${user.id}">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Edit Volunteer Name</label>
+                            <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Edit Short Bio</label>
+                            <textarea id="input-bio-${user.id}" rows="2" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button data-id="${user.id}" class="cancel-btn text-[10px] bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/10 transition-all cursor-pointer">Cancel</button>
+                            <button data-id="${user.id}" class="save-btn text-[10px] bg-cyan-600 hover:bg-cyan-500 text-black font-bold uppercase tracking-wider px-4 py-1.5 rounded-lg transition-all cursor-pointer">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+                rosterBox.appendChild(card);
+            });
+
+            document.getElementById('roster-loader').classList.add('hidden');
+            rosterBox.classList.remove('hidden');
+
+            attachDynamicCardListeners();
+        }
+
+        function attachDynamicCardListeners() {
+            // Trigger Form Edit Expansion Display Toggle State
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`view-layer-${id}`).classList.add('hidden');
+                    document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
+                });
+            });
+
+            // Cancel Inline Form Editor Display Modification Layer
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`edit-layer-${id}`).classList.add('hidden');
+                    document.getElementById(`view-layer-${id}`).classList.remove('hidden');
+                });
+            });
+
+            // Save Modified Inline Form Mutations back into Database Tables
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const updatedName = document.getElementById(`input-name-${id}`).value.trim();
+                    const updatedBio = document.getElementById(`input-bio-${id}`).value.trim();
+                    
+                    if(!updatedName) { alert("Name cannot be missing."); return; }
+                    
+                    e.target.disabled = true;
+                    e.target.innerText = "Saving...";
+
+                    try {
+                        const { error } = await supabase
+                            .from('volunteers')
+                            .update({ name: updatedName, bio: updatedBio })
+                            .eq('id', id);
+
+                        if(error) throw error;
+
+                        // Mutate active data array dynamically
+                        const targetIndex = localVolunteersArray.findIndex(item => item.id == id);
+                        if(targetIndex !== -1) {
+                            localVolunteersArray[targetIndex].name = updatedName;
+                            localVolunteersArray[targetIndex].bio = updatedBio;
+                        }
+
+                        renderRosterView();
+                    } catch(err) {
+                        alert("Error saving updates: " + err.message);
+                        e.target.disabled = false;
+                        e.target.innerText = "Save Changes";
+                    }
+                });
+            });
+
+            // Hard Deletion Module Flow Engine Hook
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const targetProfile = localVolunteersArray.find(item => item.id == id);
+                    const profileName = targetProfile ? targetProfile.name : "this user";
+
+                    if (confirm(`⚠️ Are you absolutely sure you want to permanently delete "${profileName}"?\nThis removes their public team card and clears their records completely.`)) {
+                        try {
+                            const { error } = await supabase
+                                .from('volunteers')
+                                .delete()
+                                .eq('id', id);
+
+                            if (error) throw error;
+
+                            // Filter out matching indices array state element rows records
+                            localVolunteersArray = localVolunteersArray.filter(item => item.id != id);
+                            renderRosterView();
+
+                        } catch (err) {
+                            alert("Failed to delete record: " + err.message);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Service Hours Form Application Submission
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -214,13 +335,7 @@
             try {
                 const { error } = await supabase
                     .from('hours_log')
-                    .insert([
-                        {
-                            volunteer_id: volunteerId,
-                            hours_count: hourValue,
-                            description: operationDesc
-                        }
-                    ]);
+                    .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
 
                 if (error) throw error;
 

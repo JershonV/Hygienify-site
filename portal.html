@@ -121,7 +121,7 @@
         </form>
     </div>
 
-<!-- 🧠 Fully Aligned JavaScript Integration Layer -->
+<!-- 🧠 Updated JavaScript for BigInt Table Support -->
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -194,19 +194,17 @@
                     return;
                 }
 
-                // Querying the active 'volunteers' table schema setup
+                // 🔍 LOOKUP FIXED: Now queries by the user_id column instead of id
                 const { data: profile, error: profileErr } = await supabaseClient
                     .from('volunteers')
-                    .select('id')
-                    .eq('id', data.user.id)
+                    .select('user_id')
+                    .eq('user_id', data.user.id)
                     .maybeSingle();
 
                 if (profile) {
-                    // Profile exits, proceed immediately to the main deck
                     window.location.href = "dashboard.html";
                     return;
                 } else {
-                    // Brand new user profile capture workflow
                     document.getElementById('userBadge').innerText = data.user.email;
                     authCard.classList.add('hidden');
                     portalCard.classList.remove('hidden');
@@ -260,15 +258,16 @@
                 });
             }
 
-            // 🛡️ FIXED: Pointing directly to table 'volunteers' and column mapping key 'name'
+            // 🛡️ UPSERT FIXED: We search on user_id to decide whether to update or create.
+            // Leaving the numeric 'id' completely alone lets your database auto-increment it natively!
             const { error: dbError } = await supabaseClient
                 .from('volunteers')
                 .upsert({ 
-                    id: authenticatedUserInstance.id,
+                    user_id: authenticatedUserInstance.id,
                     name: volunteerName, 
                     bio: volunteerBio, 
                     image_url: finalAvatarDataString
-                });
+                }, { onConflict: 'user_id' }); // Ensures protection works through our new user_id key
 
             if (dbError) throw dbError;
 
@@ -284,7 +283,6 @@
         }
     });
 
-    // 🪵 SESSION SYSTEM KILL SWITCH
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
         window.location.reload();

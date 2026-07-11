@@ -249,6 +249,45 @@ function renderVerificationSystem() {
     }).join('');
 }
 
+// 👥 Renders the active roster list view showing total aggregated hours for each volunteer
+function renderActiveRoster() {
+    // 🔍 Find the target UI element where your roster card or table lives
+    const rosterBox = document.getElementById('roster-container');
+    if (!rosterBox) return; // Safely escape if this specific view element is missing
+
+    if (!masterVolunteersArray || masterVolunteersArray.length === 0) {
+        rosterBox.innerHTML = `
+            <div class="p-6 text-slate-500 italic text-center border border-white/5 rounded-2xl bg-white/[0.01]">
+                👥 Roster empty. No active profiles synchronized in team database pools.
+            </div>`;
+        return;
+    }
+
+    rosterBox.innerHTML = masterVolunteersArray.map(volunteer => {
+        // Pull computed hours from the automated hashing mapping built in refreshTerminalContext
+        const totalHours = aggregatedHoursMap[volunteer.id] || 0;
+        
+        return `
+            <div class="p-4 bg-white/[0.01] hover:bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between gap-4 transition duration-150">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-sm uppercase">
+                        ${volunteer.name ? volunteer.name.charAt(0) : '?'}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-slate-200 truncate font-sans">${volunteer.name || 'Unnamed Record'}</div>
+                        <div class="text-[10px] text-slate-500 font-mono truncate">${volunteer.email || 'No email registered'}</div>
+                    </div>
+                </div>
+                
+                <div class="text-right shrink-0 font-mono">
+                    <div class="text-xs font-black text-emerald-400">${totalHours.toFixed(1)} <span class="text-[9px] text-slate-500 font-normal uppercase tracking-wider">hrs</span></div>
+                    <div class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mt-0.5">Aggregated</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+        
         async function refreshTerminalContext() {
             try {
                 // Fetch ALL volunteers

@@ -279,7 +279,7 @@ function renderVerificationSystem() {
             });
         }
 
-        function renderActiveRoster() {
+     function renderActiveRoster() {
             const rosterBox = document.getElementById('roster-container');
             const selectDropdown = document.getElementById('volunteerSelect');
             
@@ -308,9 +308,7 @@ function renderVerificationSystem() {
                 const card = document.createElement('div');
                 card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden";
                 card.innerHTML = `
-                    <!-- CHANGED: Swapped items-center to items-start to perfectly push up image to align with the first line of text -->
                     <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
-                        <!-- FIXED: Circular avatar with object-top positioning to focus precisely on faces -->
                         <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
                             <img src="${user.image_url}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
@@ -330,10 +328,15 @@ function renderVerificationSystem() {
                         </div>
                     </div>
                     
+                    <!-- EDIT LAYER UPDATED: Added Image URL input field -->
                     <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
                             <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Profile Picture Link (URL)</label>
+                            <input type="text" id="input-img-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 font-mono text-sm" value="${user.image_url || ''}">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
@@ -351,44 +354,81 @@ function renderVerificationSystem() {
             attachRosterControlEvents();
         }
         
-        function attachRosterControlEvents() {
-            document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', (e) => {
-                const id = e.target.getAttribute('data-id');
-                document.getElementById(`view-layer-${id}`).classList.add('hidden');
-                document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
-            }));
+       function attachRosterControlEvents() {
+            // Edit layout toggles
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`view-layer-${id}`).classList.add('hidden');
+                    document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
+                };
+            });
 
-            document.querySelectorAll('.cancel-btn').forEach(b => b.addEventListener('click', (e) => {
-                const id = e.target.getAttribute('data-id');
-                document.getElementById(`edit-layer-${id}`).classList.add('hidden');
-                document.getElementById(`view-layer-${id}`).classList.remove('hidden');
-            }));
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    document.getElementById(`edit-layer-${id}`).classList.add('hidden');
+                    document.getElementById(`view-layer-${id}`).classList.remove('hidden');
+                };
+            });
 
-            document.querySelectorAll('.save-btn').forEach(btn => btn.addEventListener('click', async (e) => {
-                const id = e.target.getAttribute('data-id');
-                const name = document.getElementById(`input-name-${id}`).value.trim();
-                const bio = document.getElementById(`input-bio-${id}`).value.trim();
-                
-                if (!name) return alert("Profile target identifier labels required.");
-                e.target.disabled = true;
+            // Save processing functionality
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+                    
+                    const updatedName = document.getElementById(`input-name-${rawId}`).value;
+                    const updatedBio = document.getElementById(`input-bio-${rawId}`).value;
+                    // CAPTURED: Read the value of the new picture input
+                    const updatedImg = document.getElementById(`input-img-${rawId}`).value;
 
-                try {
-                    const { error } = await supabase.from('volunteers').update({ name, bio }).eq('id', id);
-                    if (error) throw error;
-                    refreshTerminalContext();
-                } catch(err) { alert(err.message); e.target.disabled = false; }
-            }));
+                    e.target.disabled = true;
+                    e.target.innerText = "Saving...";
 
-            document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => {
-                const id = e.target.getAttribute('data-id');
-                if (confirm("⚠️ System Deletion warning: Erase user and clear linked metric hours permanently?")) {
                     try {
-                        const { error } = await supabase.from('volunteers').delete().eq('id', id);
+                        const { error } = await supabase
+                            .from('volunteers')
+                            .update({ 
+                                name: updatedName, 
+                                bio: updatedBio,
+                                image_url: updatedImg // SAVES: Updates columns inside Supabase directly
+                            })
+                            .eq('id', targetId);
+
                         if (error) throw error;
                         refreshTerminalContext();
-                    } catch (err) { alert(err.message); }
-                }
-            }));
+                    } catch (err) {
+                        alert("Error committing edits: " + err.message);
+                        e.target.disabled = false;
+                        e.target.innerText = "Save Changes";
+                    }
+                };
+            });
+
+            // Remove workflow button bindings
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+
+                    if (confirm("Permanently strip this profile entry off the public roster system?")) {
+                        e.target.disabled = true;
+                        try {
+                            const { error } = await supabase
+                                .from('volunteers')
+                                .delete()
+                                .eq('id', targetId);
+
+                            if (error) throw error;
+                            refreshTerminalContext();
+                        } catch (err) {
+                            alert("Error clearing record: " + err.message);
+                            e.target.disabled = false;
+                        }
+                    }
+                };
+            });
         }
 
         function renderAuditLedgerStream() {

@@ -127,15 +127,29 @@
                     </form>
                 </div>
 
-                <!-- 3. Dynamic Activity Ledger Trail View -->
-                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40">
-                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-300 mb-6 flex items-center gap-2">
-                        <span class="text-slate-400">📜</span> Rolling Audit Trail
-                    </h3>
-                    <div id="ledger-container" class="space-y-4 max-h-[380px] overflow-y-auto pr-2 font-mono text-xs text-slate-400">
-                        Loading audit stream tokens...
-                    </div>
-                </div>
+<!-- 📜 3. Dynamic Activity Ledger Trail View (Main Dashboard Widget) -->
+<div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 col-span-full mt-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/5">
+        <div>
+            <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-300 flex items-center gap-2">
+                <span class="text-slate-400">📜</span> Rolling Audit Trail
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Complete real-time logging history of hours submitted across your team database</p>
+        </div>
+        
+        <!-- Live Counters -->
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <div class="bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-indigo-400 uppercase tracking-wider">
+                Ledger Entries Tracked
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Injection Box -->
+    <div id="ledger-container" class="space-y-3 max-h-[450px] overflow-y-auto pr-2 font-mono text-xs text-slate-400 custom-scrollbar">
+        Loading audit stream tokens...
+    </div>
+</div>
 
             </div>
         </div>
@@ -201,7 +215,76 @@
                 alert("Terminal context refresh crash: " + err.message);
             }
         }
+        
+// 1. Renders the main wide audit ledger stream tracking logs
+function renderAuditLedgerStream() {
+    const ledgerBox = document.getElementById('ledger-container');
+    if (!ledgerBox) return;
 
+    if (!rawHoursLogs || rawHoursLogs.length === 0) {
+        ledgerBox.innerHTML = `<div class="p-4 text-slate-500 italic">No historical hour streams detected in database ledger.</div>`;
+        return;
+    }
+
+    ledgerBox.innerHTML = rawHoursLogs.map(entry => {
+        // Find matching volunteer profile name out of master array list
+        const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
+        const volunteerName = profile ? profile.name : `Volunteer ID: ${entry.volunteer_id}`;
+        
+        // Match timestamps cleanly
+        const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
+        const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+        const hoursNum = parseFloat(entry.hours_count) || 0;
+
+        return `
+            <div class="p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition group">
+                <div class="min-w-0 flex-1 leading-relaxed">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <span class="text-emerald-400 font-bold">⚡ ${volunteerName}</span>
+                        <span class="text-[10px] text-slate-600 border border-white/5 px-1.5 py-0.2 rounded bg-white/5">${formattedDate}</span>
+                    </div>
+                    <div>
+                        Logged <span class="text-indigo-400 font-bold font-mono">+${hoursNum.toFixed(1)} hrs</span>: 
+                        <span class="text-slate-300 font-sans">${entry.description || 'No descriptive activity text provided.'}</span>
+                    </div>
+                </div>
+                
+                <!-- 🗑️ PERMANENT DELETE (X BUTTON) -->
+                <button onclick="purgeLedgerRecord(${entry.id}, '${volunteerName.replace(/'/g, "\\'")}')" 
+                        class="text-[11px] bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-3 py-1.5 rounded-xl border border-red-500/10 hover:border-transparent transition flex items-center gap-1 cursor-pointer self-end sm:self-auto"
+                        title="Delete this specific hour log event">
+                    &times; Delete
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+// 2. Destroys a chosen hour log event out of your Supabase database table
+async function purgeLedgerRecord(logId, nameReference) {
+    if (!confirm(`Are you completely sure you want to permanently delete this hour entry for ${nameReference}? This will alter their hour history.`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('hours_log') // Perfectly maps to your exact table string
+            .delete()
+            .eq('id', logId);
+
+        if (error) throw error;
+        
+        // Instantly refresh matching state streams without screen reloading
+        refreshTerminalContext();
+
+    } catch (err) {
+        alert("Failed to wipe ledger record target: " + err.message);
+    }
+}
+
+// 🌐 Expose to HTML buttons:
+window.purgeLedgerRecord = purgeLedgerRecord;
+        
 function renderVerificationSystem() {
             const queueBox = document.getElementById('queue-container');
             const queueLoader = document.getElementById('queue-loader');

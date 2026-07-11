@@ -126,33 +126,44 @@
                         </button>
                     </form>
                 </div>
-
-<!-- 📜 3. Dynamic Activity Ledger Trail View (Main Dashboard Widget) -->
-<div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 col-span-full mt-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/5">
+                
+<!-- 📜 3. Wide Administrative Activity Ledger (Placed Under Roster) -->
+<div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 col-span-full mt-8 border border-white/5 shadow-2xl backdrop-blur-md">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
         <div>
-            <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-300 flex items-center gap-2">
-                <span class="text-slate-400">📜</span> Rolling Audit Trail
+            <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-200 flex items-center gap-2">
+                <span class="text-indigo-400">📜</span> Rolling System Audit Ledger
             </h3>
-            <p class="text-xs text-slate-500 mt-0.5">Complete real-time logging history of hours submitted across your team database</p>
+            <p class="text-xs text-slate-400 mt-0.5 font-sans">Complete historical timeline trail of submitted volunteer hours logs extracted directly from database memory matrix.</p>
         </div>
         
-        <!-- Live Counters -->
+        <!-- Live Badge Info Counter -->
         <div class="flex items-center gap-2 self-start sm:self-auto">
-            <div class="bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold text-indigo-400 uppercase tracking-wider">
-                Ledger Entries Tracked
+            <div class="bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl text-[11px] font-mono font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Database Sync Stream
             </div>
         </div>
     </div>
 
-    <!-- Target Injection Box -->
-    <div id="ledger-container" class="space-y-3 max-h-[450px] overflow-y-auto pr-2 font-mono text-xs text-slate-400 custom-scrollbar">
-        Loading audit stream tokens...
+    <!-- Wide Header row for alignment scanning -->
+    <div class="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold tracking-wider uppercase text-slate-500 font-mono border-b border-white/5 mb-2">
+        <div class="col-span-3">Volunteer Identity</div>
+        <div class="col-span-2">Date Stamp</div>
+        <div class="col-span-2 text-indigo-400">Volume Increment</div>
+        <div class="col-span-4 text-slate-400">Descriptive Memo Log</div>
+        <div class="col-span-1 text-right">Actions</div>
+    </div>
+
+    <!-- Target Injection Matrix Target -->
+    <div id="ledger-container" class="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar font-mono text-xs">
+        <div class="p-4 text-slate-500 italic flex items-center gap-2">
+            <span class="inline-block animate-spin">⏳</span> Querying ledger tokens out of cloud matrix...
+        </div>
     </div>
 </div>
 
-            </div>
-        </div>
+            </div> <!-- Closes inner grid shell container -->
+        </div> <!-- Closes outer layout container wrapper -->
     </main>
 
     <script type="module">
@@ -226,35 +237,63 @@ function renderAuditLedgerStream() {
         return;
     }
 
+// 1. Renders the main wide audit ledger stream tracking logs across full screen width columns
+function renderAuditLedgerStream() {
+    const ledgerBox = document.getElementById('ledger-container');
+    if (!ledgerBox) return;
+
+    if (!rawHoursLogs || rawHoursLogs.length === 0) {
+        ledgerBox.innerHTML = `
+            <div class="p-6 text-slate-500 italic text-center border border-white/5 rounded-2xl bg-white/[0.01]">
+                🫙 System ledger pools idle. No recorded historical log entries detected inside table layers.
+            </div>`;
+        return;
+    }
+
     ledgerBox.innerHTML = rawHoursLogs.map(entry => {
         // Find matching volunteer profile name out of master array list
         const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
-        const volunteerName = profile ? profile.name : `Volunteer ID: ${entry.volunteer_id}`;
+        const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
         
-        // Match timestamps cleanly
+        // Match and format timestamps cleanly
         const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
         const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
         const hoursNum = parseFloat(entry.hours_count) || 0;
 
         return `
-            <div class="p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition group">
-                <div class="min-w-0 flex-1 leading-relaxed">
-                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                        <span class="text-emerald-400 font-bold">⚡ ${volunteerName}</span>
-                        <span class="text-[10px] text-slate-600 border border-white/5 px-1.5 py-0.2 rounded bg-white/5">${formattedDate}</span>
-                    </div>
-                    <div>
-                        Logged <span class="text-indigo-400 font-bold font-mono">+${hoursNum.toFixed(1)} hrs</span>: 
-                        <span class="text-slate-300 font-sans">${entry.description || 'No descriptive activity text provided.'}</span>
-                    </div>
+            <div class="p-3 md:p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 justify-between items-start md:items-center transition duration-200 group">
+                
+                <!-- Col 1: Identity Profile Info -->
+                <div class="md:col-span-3 font-sans font-bold text-slate-200 min-w-0 truncate flex items-center gap-2">
+                    <span class="text-emerald-400 text-xs md:text-sm">⚡</span> ${volunteerName}
                 </div>
                 
-                <!-- 🗑️ PERMANENT DELETE (X BUTTON) -->
-                <button onclick="purgeLedgerRecord(${entry.id}, '${volunteerName.replace(/'/g, "\\'")}')" 
-                        class="text-[11px] bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-3 py-1.5 rounded-xl border border-red-500/10 hover:border-transparent transition flex items-center gap-1 cursor-pointer self-end sm:self-auto"
-                        title="Delete this specific hour log event">
-                    &times; Delete
-                </button>
+                <!-- Col 2: Calendar Node Point Stamp -->
+                <div class="md:col-span-2 text-slate-500 text-[11px] font-mono flex items-center gap-1.5">
+                    <span class="md:hidden font-bold uppercase text-slate-600 mr-1">Date:</span>
+                    ${formattedDate}
+                </div>
+                
+                <!-- Col 3: Numerical Hours Volume Stream Counter -->
+                <div class="md:col-span-2 text-indigo-400 font-extrabold font-mono text-sm md:text-xs flex items-center">
+                    <span class="md:hidden font-bold uppercase text-slate-600 mr-2 text-[11px]">Volume:</span>
+                    +${hoursNum.toFixed(1)} <span class="text-[10px] text-slate-500 ml-0.5 font-normal">hrs</span>
+                </div>
+                
+                <!-- Col 4: Explanatory Context Memo Paragraph Segment -->
+                <div class="md:col-span-4 text-slate-300 font-sans text-xs break-words leading-relaxed w-full">
+                    <span class="md:hidden font-bold uppercase font-mono text-slate-600 mr-2 text-[11px] block mb-0.5">Description Memo:</span>
+                    <span class="text-slate-400 group-hover:text-slate-200 transition-colors">${entry.description || 'No contextual descriptive logging memo submitted.'}</span>
+                </div>
+                
+                <!-- Col 5: Purge Execution Interface System Button -->
+                <div class="md:col-span-1 w-full md:w-auto text-right flex justify-end items-center self-stretch md:self-auto mt-2 md:mt-0 pt-2 md:pt-0 border-t border-white/5 md:border-transparent">
+                    <button onclick="purgeLedgerRecord(${entry.id}, '${volunteerName.replace(/'/g, "\\'")}')" 
+                            class="w-full md:w-auto text-[10px] bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-red-500/10 hover:border-transparent transition-all duration-150 flex items-center justify-center gap-1 cursor-pointer group-hover:bg-red-500/20"
+                            title="Purge this execution entry point permanently from cloud registry backend records">
+                        &times; Delete
+                    </button>
+                </div>
             </div>
         `;
     }).join('');

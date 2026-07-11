@@ -196,6 +196,7 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         
         const publicImageUrl = urlData.publicUrl;
 
+        // FIXED: Added { returning: 'minimal' } parameter here to prevent the read-back security trigger
         const { error: dbError } = await supabaseClient
             .from('volunteers')
             .insert([
@@ -204,7 +205,7 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
                     bio: bio, 
                     image_url: publicImageUrl 
                 }
-            ]);
+            ], { returning: 'minimal' });
 
         if (dbError) {
             throw new Error(`Database Write Failed: ${dbError.message}`);

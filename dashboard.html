@@ -6,7 +6,7 @@
     <title>Volunteer Dashboard | Hygienify</title>
     <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         
@@ -31,7 +31,7 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen bg-[#020617] relative flex flex-col md:flex-row">
+<body class="min-h-screen bg-[#020617] relative flex flex-col md:flex-row pb-24 md:pb-0">
 
     <!-- 🔒 SECURITY & ONBOARDING GATE -->
     <div id="loading-gate" class="fixed inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center space-y-4">
@@ -39,7 +39,7 @@
         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Authenticating Session...</p>
     </div>
 
-   <!-- 📋 NEW ACCOUNT PROFILE INFO MODAL (Name, Bio, Pic) -->
+   <!-- 📋 NEW ACCOUNT PROFILE INFO MODAL -->
     <div id="onboarding-gate" class="fixed inset-0 z-50 bg-[#020617]/95 backdrop-blur-xl flex items-center justify-center p-4 hidden">
         <div class="w-full max-w-md card-glass p-8 rounded-[2.5rem] shadow-2xl relative">
             <div class="mb-6 text-center">
@@ -69,7 +69,7 @@
     </div>
 
     <!-- 📱/💻 SIDEBAR NAVIGATION -->
-    <aside class="w-full md:w-64 dashboard-glass border-b md:border-b-0 md:border-r border-white/10 p-6 flex flex-row md:flex-col justify-between items-center md:items-stretch z-40 fixed bottom-0 md:relative md:bottom-auto">
+    <aside class="w-full md:w-64 dashboard-glass border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 flex flex-row md:flex-col justify-between items-center md:items-stretch z-40 fixed bottom-0 top-auto md:top-0 md:bottom-auto md:h-screen">
         <div class="hidden md:flex items-center gap-3 mb-10">
             <img src="logo_new2.svg" alt="Logo" class="w-8 h-8">
             <div>
@@ -79,7 +79,7 @@
         </div>
 
         <nav class="flex flex-row md:flex-col justify-around md:justify-start w-full gap-2 md:gap-4">
-            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-semibold text-sm">
+            <a href="dashboard.html" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-semibold text-sm w-full md:w-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
@@ -88,7 +88,7 @@
             </a>
         </nav>
 
-        <button id="logoutBtn" class="mt-0 md:mt-auto flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-bold w-auto md:w-full">
+        <button id="logoutBtn" class="flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-bold w-auto md:w-full md:mt-auto">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M19.5 12l-3-3m3 3-3 3m3-3H9" />
             </svg>
@@ -97,7 +97,7 @@
     </aside>
 
     <!-- 💻 MAIN DYNAMIC DASHBOARD FIELD -->
-    <main class="flex-1 p-6 md:p-12 overflow-y-auto mb-24 md:mb-0">
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto">
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12 border-b border-white/5 pb-6">
             <div>
                 <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 block mb-1">Volunteer Workspace</span>
@@ -138,9 +138,9 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-let currentUser = null;
+        let currentUser = null;
 
-// 🛡️ SESSION SECURITY GATEWAY
+        // 🛡️ SESSION SECURITY GATEWAY
         async function runSecurityGate() {
             const { data: { session }, error } = await supabase.auth.getSession();
             
@@ -151,25 +151,22 @@ let currentUser = null;
 
             currentUser = session.user;
             
-            // 🚨 FIX #1: If logged in as admin, explicitly hide the onboarding element and load data safely
+            // 🚨 FIX #1: Admin Bypass Logic
             if (currentUser.email === 'jershonvinodh@gmail.com') {
                 console.log("Admin verified. Bypassing onboarding checks.");
                 document.getElementById('onboarding-gate').style.setProperty('display', 'none', 'important');
                 document.getElementById('onboarding-gate').classList.add('hidden');
                 document.getElementById('userWelcome').textContent = `Welcome back, Admin Jershon!`;
-                
-                // Load data directly without letting loadDashboardData toggle the onboarding screen
                 await forceBypassLoadData();
                 return;
             }
             
-            // 🚨 FIX #2: Check if profile details already exist for this volunteer account
+            // 🚨 FIX #2: Check if profile details already exist
             const profileCompleted = await checkVolunteerProfile();
             
             if (profileCompleted) {
                 await forceBypassLoadData();
             } else {
-                // If they are brand new, show your profile collection elements
                 document.getElementById('onboarding-gate').classList.remove('hidden');
                 document.getElementById('loading-gate').classList.add('hidden');
             }
@@ -211,12 +208,7 @@ let currentUser = null;
             document.getElementById('loading-gate').classList.add('hidden');
         }
 
-        // 🚀 GENERIC DASHBOARD LOAD (Fallback keeping old mappings safe)
-        async function loadDashboardData() {
-            await forceBypassLoadData();
-        }
-
-        // 📝 FORM ONBOARDING CAPTURE LOGIC (Updated for Name, Bio, Pic)
+        // 📝 FORM ONBOARDING CAPTURE LOGIC
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -243,15 +235,19 @@ let currentUser = null;
             }
         });
 
-        // 📊 AGGREGATE PERSONAL HOURS FROM SERVER
+        // 📊 AGGREGATE PERSONAL HOURS FROM SERVER (Filtered uniquely by authenticated user)
         async function fetchPersonalHours() {
             try {
-                const { data, error } = await supabase.from('public_hours_log').select('hours');
+                const { data, error } = await supabase
+                    .from('public_hours_log')
+                    .select('hours')
+                    .eq('user_id', currentUser.id);
+
                 if (error) throw error;
                 const total = data ? data.reduce((acc, row) => acc + parseFloat(row.hours || 0), 0) : 0;
                 document.getElementById('hoursDisplay').textContent = total.toFixed(1);
             } catch (err) {
-                document.getElementById('hoursDisplay').textContent = "Err";
+                document.getElementById('hoursDisplay').textContent = "0.0";
             }
         }
 

@@ -29,8 +29,6 @@
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 md:p-6 relative">
-
-    <div class="w-full max-w-2xl widget-glass p-8 md:p-16 shadow-2xl relative">
         
 <!-- Fully Optimized Safe Zone Home Navigation Link with Instant Touch Execution -->
 <a href="index.html" ontouchstart="window.location.href='index.html';" class="absolute top-10 left-10 z-50 flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 group" title="Return to Home">
@@ -38,13 +36,14 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
     </svg>
 </a>
-        
-        <!-- pt-16 ensures clearance below the home button on mobile viewports -->
-        <div class="mb-8 text-center pt-16 md:pt-0">
-            <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Account Registration</span>
-            <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Create Account</h2>
-            <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ Verification Required: Your email must be pre-approved to sign up.</p>
-        </div>
+    
+    <div class="w-full max-w-2xl widget-glass p-8 md:p-16 shadow-2xl relative">
+        <!-- Increased pt-16 for mobile clearance, md:pt-0 resets for desktop -->
+<div class="mb-8 text-center pt-16 md:pt-0">
+    <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Account Registration</span>
+    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Create Account</h2>
+    <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ Verification Required: Your email must be pre-approved to sign up.</p>
+</div>
         
         <p class="text-slate-400 text-sm text-center mb-10 max-w-md mx-auto leading-relaxed">
             Type your verified volunteer email below to validate your credentials and establish your personal access password.

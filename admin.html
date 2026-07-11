@@ -532,20 +532,12 @@ function renderHoursRequests(requests) {
     if (!container) return;
 
     if (requests.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-sm italic p-4">No logs or audits recorded.</p>';
+        container.innerHTML = '<p class="text-slate-400 text-sm italic p-4">No hours awaiting approval.</p>';
         return;
     }
 
     container.innerHTML = requests.map(req => `
-        <div class="relative group p-4 bg-white/5 rounded-xl border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3 pr-10">
-            
-            <!-- ❌ THE INLINE DELETE BUTTON (The X) -->
-            <button onclick="deleteHoursRecord(${req.id})" 
-                    class="absolute top-3 right-3 text-slate-500 hover:text-red-400 text-lg font-bold leading-none p-1 transition cursor-pointer" 
-                    title="Permanently delete this audit log">
-                &times;
-            </button>
-
+        <div class="p-4 bg-white/5 rounded-xl border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
             <div class="min-w-0 flex-1">
                 <h4 class="font-extrabold text-white text-base truncate">${req.volunteers?.name || 'Unknown Volunteer'}</h4>
                 <p class="text-sm text-slate-300 mt-1 leading-relaxed">${req.description || 'No description provided'}</p>
@@ -555,9 +547,19 @@ function renderHoursRequests(requests) {
                 </div>
             </div>
             
-            <div class="flex gap-2 w-full sm:w-auto justify-end">
-                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl transition cursor-pointer">Approve</button>
-                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="text-xs bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl border border-red-500/20 transition cursor-pointer">Deny</button>
+            <!-- 🛠️ ACTION BUTTONS GROUP -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl transition cursor-pointer">
+                    Approve
+                </button>
+                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="text-xs bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl border border-red-500/20 transition cursor-pointer">
+                    Deny
+                </button>
+                
+                <!-- ❌ THE RED DELETE X BUTTON -->
+                <button onclick="deleteHoursRecord(${req.id})" class="text-xs bg-transparent hover:bg-red-500/20 text-red-400 font-bold border border-red-500/30 hover:border-red-500 px-3 py-2 rounded-xl transition cursor-pointer" title="Delete record permanently">
+                    Delete
+                </button>
             </div>
         </div>
     `).join('');

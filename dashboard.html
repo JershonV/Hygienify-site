@@ -6,131 +6,154 @@
     <title>Volunteer Dashboard | Hygienify</title>
     <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc; 
+            overflow-x: hidden; 
+        }
         
         .dashboard-glass {
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
         }
 
         .card-glass {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.005) 100%);
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.005) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), border-color 0.3s ease, box-shadow 0.3s ease;
         }
         
         .card-glass:hover {
-            transform: translateY(-6px);
-            border-color: rgba(34, 211, 238, 0.3);
+            transform: translateY(-4px);
+            border-color: rgba(34, 211, 238, 0.25);
+            box-shadow: 0 12px 30px -10px rgba(6, 182, 212, 0.1);
         }
 
+        /* Smooth UI hidden fade fallback state */
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen bg-[#020617] relative flex flex-col md:flex-row pb-24 md:pb-0">
+<body class="min-h-screen relative flex flex-col md:flex-row">
 
-    <!-- 🔒 SECURITY & ONBOARDING GATE -->
+    <!-- 🔒 SECURITY AUTHENTICATION GATE -->
     <div id="loading-gate" class="fixed inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center space-y-4">
-        <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Authenticating Session...</p>
+        <div class="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-500 animate-pulse">Syncing User Environment...</p>
     </div>
 
-   <!-- 📋 NEW ACCOUNT PROFILE INFO MODAL -->
-    <div id="onboarding-gate" class="fixed inset-0 z-50 bg-[#020617]/95 backdrop-blur-xl flex items-center justify-center p-4 hidden">
-        <div class="w-full max-w-md card-glass p-8 rounded-[2.5rem] shadow-2xl relative">
-            <div class="mb-6 text-center">
-                <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">Welcome to Hygienify</span>
-                <h3 class="text-2xl font-black text-white tracking-tight">Complete Your Profile</h3>
-                <p class="text-slate-400 text-xs mt-2">Just a few details before we unlock your personal workspace portal.</p>
-            </div>
-
-            <form id="profileForm" class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Full Name</label>
-                    <input type="text" id="profName" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="Alex Morgan">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
-                    <textarea id="profBio" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition resize-none" placeholder="Tell us a bit about yourself..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Profile Picture URL</label>
-                    <input type="url" id="profPic" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="https://example.com/avatar.jpg">
-                </div>
-                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-wider py-4 rounded-xl transition-all shadow-lg mt-2">
-                    Save & Enter Dashboard
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 📱/💻 SIDEBAR NAVIGATION -->
-    <aside class="w-full md:w-64 dashboard-glass border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 flex flex-row md:flex-col justify-between items-center md:items-stretch z-40 fixed bottom-0 top-auto md:top-0 md:bottom-auto md:h-screen">
-        <div class="hidden md:flex items-center gap-3 mb-10">
-            <img src="logo_new2.svg" alt="Logo" class="w-8 h-8">
+    <!-- 📱/💻 SIDEBAR NAVIGATION CONTEXT -->
+    <aside class="w-full md:w-64 md:h-screen dashboard-glass border-b md:border-b-0 md:border-r border-white/5 p-5 flex flex-row md:flex-col justify-between items-center md:items-stretch z-40 fixed bottom-0 md:top-0 md:bottom-auto">
+        <div class="hidden md:flex items-center gap-3 mb-10 px-2">
+            <img src="logo_new2.svg" alt="Logo" class="w-7 h-7">
             <div>
-                <h1 class="font-black text-white tracking-tight leading-none text-lg">Hygienify</h1>
-                <span class="text-[10px] uppercase tracking-[0.3em] text-cyan-400 font-bold">Portal v2.0</span>
+                <h1 class="font-extrabold text-white tracking-tight text-base">Hygienify</h1>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-cyan-400 font-extrabold block">Workspace Panel</span>
             </div>
         </div>
 
-        <nav class="flex flex-row md:flex-col justify-around md:justify-start w-full gap-2 md:gap-4">
-            <a href="dashboard.html" class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-semibold text-sm w-full md:w-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <nav class="flex flex-row md:flex-col justify-around md:justify-start w-full gap-2">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-bold text-xs uppercase tracking-wider transition-all w-full md:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
                 </svg>
-                <span class="hidden md:inline">My Dashboard</span>
+                <span>Dashboard</span>
             </a>
         </nav>
 
-        <button id="logoutBtn" class="flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all text-sm font-bold w-auto md:w-full md:mt-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <button id="logoutBtn" class="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10 transition-all text-xs font-bold uppercase tracking-wider md:w-full md:mt-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M19.5 12l-3-3m3 3-3 3m3-3H9" />
             </svg>
-            <span class="hidden md:inline uppercase tracking-wider text-xs">Sign Out</span>
+            <span class="hidden md:inline">Sign Out</span>
         </button>
     </aside>
 
-    <!-- 💻 MAIN DYNAMIC DASHBOARD FIELD -->
-    <main class="flex-1 p-6 md:p-12 overflow-y-auto">
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12 border-b border-white/5 pb-6">
+    <!-- 💻 MAIN CORE DISPLAY SPACE -->
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto mb-20 md:mb-0 h-screen">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-white/5 pb-6">
             <div>
-                <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 block mb-1">Volunteer Workspace</span>
-                <h2 id="userWelcome" class="text-2xl md:text-3xl font-black text-white tracking-tight">---</h2>
+                <span class="text-[10px] font-extrabold uppercase tracking-[0.35em] text-cyan-400 block mb-1">Overview Dashboard</span>
+                <h2 id="userWelcome" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">---</h2>
             </div>
         </header>
 
-        <!-- DYNAMIC METRICS BLOCK -->
-        <section class="max-w-md mb-12">
-            <div class="card-glass p-8 rounded-[2rem] bg-gradient-to-br from-cyan-500/5 to-transparent">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Total Verified Contribution</span>
-                <div class="text-5xl font-black text-white tracking-tight flex items-baseline gap-2">
+        <!-- 🎨 INLINE NATIVE SETUP MODULE (NO POPUP WINDOWS) -->
+        <div id="onboarding-gate" class="hidden w-full max-w-3xl mb-10">
+            <div class="card-glass p-6 md:p-8 rounded-[2rem] border-cyan-500/20 relative overflow-hidden bg-gradient-to-br from-cyan-500/[0.02] to-transparent">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    
+                    <!-- File Avatar Upload Area -->
+                    <div class="w-full md:w-1/4 flex flex-col items-center justify-center gap-2">
+                        <div class="relative group w-24 h-24 rounded-full border-2 border-dashed border-white/10 bg-white/[0.02] flex items-center justify-center overflow-hidden transition-all hover:border-cyan-400">
+                            <img id="avatarPreview" src="" class="w-full h-full object-cover hidden" alt="Preview">
+                            <div id="avatarPlaceholder" class="text-center p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-auto text-slate-400 group-hover:text-cyan-400 transition-colors">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                </svg>
+                                <span class="text-[9px] font-bold tracking-wider uppercase text-slate-400 block mt-1">Photo</span>
+                            </div>
+                            <input type="file" id="avatarUpload" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                        </div>
+                        <p id="fileSizeWarning" class="text-[9px] font-semibold text-slate-500 tracking-wide text-center">Limit: 300 KB</p>
+                    </div>
+
+                    <!-- Input Parameters Form Layout -->
+                    <form id="profileForm" class="flex-1 w-full space-y-4">
+                        <div>
+                            <span class="text-[9px] font-extrabold uppercase tracking-[0.25em] text-cyan-400 block mb-0.5">Account Setup Required</span>
+                            <h3 class="text-lg font-extrabold text-white tracking-tight">Complete Profile Information</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Full Name</label>
+                                <input type="text" id="profName" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500 transition" placeholder="Alex Morgan">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Short Bio</label>
+                                <input type="text" id="profBio" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500 transition" placeholder="Volunteer speaker/coordinator...">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold uppercase text-[10px] tracking-wider px-6 py-2.5 rounded-xl transition-all shadow-lg">
+                            Save Workspace Details
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- METRICS DISPLAY GRID CONTAINER -->
+        <section class="max-w-xs mb-10">
+            <div class="card-glass p-6 rounded-2xl bg-gradient-to-br from-white/[0.01] to-transparent">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Verified Placement Contribution</span>
+                <div class="text-4xl font-extrabold text-white tracking-tight flex items-baseline gap-1.5">
                     <span id="hoursDisplay" class="text-cyan-400">0.0</span>
-                    <span class="text-sm font-normal text-slate-500 uppercase tracking-wider">Total Hours</span>
+                    <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Hours</span>
                 </div>
             </div>
         </section>
 
-        <!-- DYNAMIC EVENT REGISTRATION LAYER -->
-        <section class="space-y-6">
+        <!-- DYNAMIC SHIFTS LIST FEED -->
+        <section class="space-y-4">
             <div>
-                <h3 class="text-xl font-black text-white tracking-tight">Open Volunteer Registrations</h3>
-                <p class="text-slate-400 text-xs mt-1">Select an active initiative below to register your shift placement.</p>
+                <h3 class="text-lg font-extrabold text-white tracking-tight">Open Volunteer Positions</h3>
+                <p class="text-slate-400 text-xs mt-0.5">Claim an open shift placement inside active operational sectors.</p>
             </div>
-            <div id="eventsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="col-span-full p-12 text-center text-slate-500 border border-dashed border-white/10 rounded-3xl">
-                    Gathering listed events pipeline...
+            <div id="eventsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="col-span-full p-10 text-center text-slate-500 border border-dashed border-white/10 rounded-2xl text-xs font-medium uppercase tracking-wider">
+                    Querying listed events timeline pipeline...
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- 🧠 CLIENT ENGINE & DATABASE ACCESS INTERFACE -->
+    <!-- 🧠 CORE INTERFACE OPERATIONS SCRIPT -->
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -139,40 +162,44 @@
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
         let currentUser = null;
+        let base64AvatarStr = "";
 
-        // 🛡️ SESSION SECURITY GATEWAY
+        // 🛡️ SECURITY ENVIRONMENT ACCESS ROUTER
         async function runSecurityGate() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
-                window.location.replace('portal.html');
-                return;
-            }
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error || !session) {
+                    window.location.replace('portal.html');
+                    return;
+                }
 
-            currentUser = session.user;
-            
-            // 🚨 FIX #1: Admin Bypass Logic
-            if (currentUser.email === 'jershonvinodh@gmail.com') {
-                console.log("Admin verified. Bypassing onboarding checks.");
-                document.getElementById('onboarding-gate').style.setProperty('display', 'none', 'important');
-                document.getElementById('onboarding-gate').classList.add('hidden');
-                document.getElementById('userWelcome').textContent = `Welcome back, Admin Jershon!`;
-                await forceBypassLoadData();
-                return;
-            }
-            
-            // 🚨 FIX #2: Check if profile details already exist
-            const profileCompleted = await checkVolunteerProfile();
-            
-            if (profileCompleted) {
-                await forceBypassLoadData();
-            } else {
-                document.getElementById('onboarding-gate').classList.remove('hidden');
+                currentUser = session.user;
+                
+                // 🚨 ADMIN IDENTIFICATION RUNWAY
+                if (currentUser.email === 'jershonvinodh@gmail.com') {
+                    console.log("Admin verified. Bypassing profile configuration checks.");
+                    document.getElementById('onboarding-gate').classList.add('hidden');
+                    document.getElementById('userWelcome').textContent = "Welcome back, Admin Jershon!";
+                    await loadWorkspaceFeeds();
+                    return;
+                }
+                
+                // 🕵️ BASE USER PROFILE COMPLETION VALIDATOR
+                const isProfileReady = await checkVolunteerProfile();
+                if (isProfileReady) {
+                    document.getElementById('onboarding-gate').classList.add('hidden');
+                } else {
+                    document.getElementById('onboarding-gate').classList.remove('hidden');
+                }
+                
+                await loadWorkspaceFeeds();
+            } catch (err) {
+                console.error("Security core initialization structural exception:", err);
                 document.getElementById('loading-gate').classList.add('hidden');
             }
         }
 
-        // 🕵️ ROUTING CONTROL: EVALUATES DB EXISTENCE
+        // 🕵️ DATABASE RECORD VERIFIER
         async function checkVolunteerProfile() {
             try {
                 const { data, error } = await supabase
@@ -181,62 +208,92 @@
                     .eq('id', currentUser.id)
                     .maybeSingle();
 
-                if (error) throw error;
+                if (error) return false;
                 
-                if (data) {
+                if (data && data.full_name) {
                     document.getElementById('userWelcome').textContent = `Welcome back, ${data.full_name}!`;
                     return true;
                 }
+                document.getElementById('userWelcome').textContent = "Welcome to Hygienify!";
                 return false;
             } catch (err) {
-                console.error("Profile check failed:", err);
                 return false;
             }
         }
 
-        // 🔒 INTERNAL ROUTER: FORCES MODAL DOWN AND LOADS FEEDS
-        async function forceBypassLoadData() {
-            document.getElementById('onboarding-gate').classList.add('hidden');
-            document.getElementById('onboarding-gate').style.setProperty('display', 'none', 'important');
-            document.getElementById('loading-gate').classList.remove('hidden');
+        // 📸 MULTIMEDIA FILE PROCESSING SUB-ENGINE (STRICT 300KB CEILING)
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            const uploadedFile = e.target.files[0];
+            const feedbackEl = document.getElementById('fileSizeWarning');
+            if (!uploadedFile) return;
 
-            await Promise.all([
-                fetchPersonalHours(),
-                renderOpportunitiesFeed()
-            ]);
+            const sizeCeilingBytes = 300 * 1024; // 300KB Target Max Boundary
+            if (uploadedFile.size > sizeCeilingBytes) {
+                feedbackEl.textContent = `❌ Rejection: ${(uploadedFile.size / 1024).toFixed(0)}KB exceeds 300KB restriction limit.`;
+                feedbackEl.className = "text-[9px] font-bold text-rose-400 tracking-wide text-center";
+                this.value = "";
+                base64AvatarStr = "";
+                return;
+            }
 
-            document.getElementById('loading-gate').classList.add('hidden');
-        }
+            const fileBufferReader = new FileReader();
+            fileBufferReader.onload = function(evt) {
+                base64AvatarStr = evt.target.result;
+                const imgPreviewNode = document.getElementById('avatarPreview');
+                imgPreviewNode.src = base64AvatarStr;
+                imgPreviewNode.classList.remove('hidden');
+                document.getElementById('avatarPlaceholder').classList.add('hidden');
+                
+                feedbackEl.textContent = `✓ Allocation Safe (${(uploadedFile.size / 1024).toFixed(0)}KB)`;
+                feedbackEl.className = "text-[9px] font-bold text-emerald-400 tracking-wide text-center";
+            };
+            fileBufferReader.readAsDataURL(uploadedFile);
+        });
 
-        // 📝 FORM ONBOARDING CAPTURE LOGIC
+        // 📝 FORM CAPTURE DISPATCH PIPELINE
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const fullName = document.getElementById('profName').value.trim();
-            const bio = document.getElementById('profBio').value.trim();
-            const avatarUrl = document.getElementById('profPic').value.trim();
+            const fullNameValue = document.getElementById('profName').value.trim();
+            const bioTextValue = document.getElementById('profBio').value.trim();
+
+            if (!base64AvatarStr) {
+                alert("⛔ Upload an identity configuration image under 300KB to proceed.");
+                return;
+            }
 
             try {
                 const { error } = await supabase
                     .from('volunteer_profiles')
                     .insert({
                         id: currentUser.id,
-                        full_name: fullName,
-                        bio: bio,
-                        avatar_url: avatarUrl
+                        full_name: fullNameValue,
+                        bio: bioTextValue,
+                        avatar_url: base64AvatarStr
                     });
 
                 if (error) throw error;
-
-                document.getElementById('userWelcome').textContent = `Welcome back, ${fullName}!`;
-                await forceBypassLoadData();
+                
+                document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
+                document.getElementById('onboarding-gate').classList.add('hidden');
+                alert("🎉 Workspace configuration settings saved successfully!");
             } catch (err) {
-                alert(`⛔ Profile Setup Error: ${err.message}`);
+                alert(`⛔ Engine Insert Rejection: ${err.message}`);
             }
         });
 
-        // 📊 AGGREGATE PERSONAL HOURS FROM SERVER (Filtered uniquely by authenticated user)
-        async function fetchPersonalHours() {
+        // 📊 ENGINE STREAM FEEDS CORE AGGREGATOR
+        async function loadWorkspaceFeeds() {
+            document.getElementById('loading-gate').classList.remove('hidden');
+            // Using catch block structures on calls so a single 404 table error won't crash the UI rendering architecture entirely
+            await Promise.all([
+                fetchUserMetrics().catch(e => console.warn(e)),
+                renderOpportunitiesData().catch(e => console.warn(e))
+            ]);
+            document.getElementById('loading-gate').classList.add('hidden');
+        }
+
+        // 📊 INDIVIDUAL SPECIFIC ACCOUNT METRIC DISPATCH
+        async function fetchUserMetrics() {
             try {
                 const { data, error } = await supabase
                     .from('public_hours_log')
@@ -244,67 +301,85 @@
                     .eq('user_id', currentUser.id);
 
                 if (error) throw error;
-                const total = data ? data.reduce((acc, row) => acc + parseFloat(row.hours || 0), 0) : 0;
-                document.getElementById('hoursDisplay').textContent = total.toFixed(1);
+                const accumulatedSum = data ? data.reduce((currentTotal, schemaRow) => currentTotal + parseFloat(schemaRow.hours || 0), 0) : 0;
+                document.getElementById('hoursDisplay').textContent = accumulatedSum.toFixed(1);
             } catch (err) {
                 document.getElementById('hoursDisplay').textContent = "0.0";
             }
         }
 
-        // 📅 RENDER EVENTS OPPORTUNITIES 
-        async function renderOpportunitiesFeed() {
-            const container = document.getElementById('eventsContainer');
+        // 📅 OPPORTUNITIES STREAM LAYER PARSER
+        async function renderOpportunitiesData() {
+            const elementFeedContainer = document.getElementById('eventsContainer');
             try {
-                const { data: events, error: eventErr } = await supabase.from('events').select('*').order('event_date', { ascending: true });
-                if (eventErr) throw eventErr;
+                const { data: globalEventsList, error: eventsQueryErr } = await supabase
+                    .from('events')
+                    .select('*')
+                    .order('event_date', { ascending: true });
 
-                const { data: signups, error: signupErr } = await supabase.from('event_signups').select('event_id').eq('user_id', currentUser.id);
-                if (signupErr) throw signupErr;
+                if (eventsQueryErr) throw eventsQueryErr;
 
-                const signedUpIds = new Set(signups.map(s => s.event_id));
+                const { data: userCurrentSignupsList, error: lookupErr } = await supabase
+                    .from('event_signups')
+                    .select('event_id')
+                    .eq('user_id', currentUser.id);
 
-                if (!events || events.length === 0) {
-                    container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-500 border border-dashed border-white/10 rounded-3xl text-xs uppercase tracking-wider font-semibold">No open shifts posted.</div>`;
+                if (lookupErr) throw lookupErr;
+
+                const processedSignupsSet = new Set(userCurrentSignupsList.map(item => item.event_id));
+
+                if (!globalEventsList || globalEventsList.length === 0) {
+                    elementFeedContainer.innerHTML = `<div class="col-span-full p-10 text-center text-slate-500 border border-dashed border-white/10 rounded-2xl text-xs uppercase tracking-widest font-bold">No shifts available.</div>`;
                     return;
                 }
 
-                container.innerHTML = events.map(event => {
-                    const isRegistered = signedUpIds.has(event.id);
+                elementFeedContainer.innerHTML = globalEventsList.map(opportunity => {
+                    const profileHasRegistered = processedSignupsSet.has(opportunity.id);
                     return `
-                        <div class="card-glass p-6 rounded-3xl flex flex-col justify-between gap-6">
-                            <div class="space-y-2">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2.5 py-1 rounded-md inline-block">${event.location || 'Remote'}</span>
-                                <h4 class="text-lg font-bold text-white tracking-tight">${event.title}</h4>
-                                <p class="text-xs text-slate-400 leading-relaxed">${event.description || ''}</p>
+                        <div class="card-glass p-5 rounded-2xl flex flex-col justify-between gap-5">
+                            <div class="space-y-1.5">
+                                <span class="text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded inline-block">${opportunity.location || 'Remote'}</span>
+                                <h4 class="text-base font-bold text-white tracking-tight">${opportunity.title}</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">${opportunity.description || ''}</p>
                             </div>
-                            <div class="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
-                                <div class="text-[11px] text-slate-500 font-medium">📅 ${new Date(event.event_date).toLocaleDateString()}</div>
-                                <button onclick="executeEventSignup('${event.id}', ${isRegistered})" class="text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all ${isRegistered ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 cursor-not-allowed' : 'bg-white text-black hover:bg-cyan-400'}" ${isRegistered ? 'disabled' : ''}>${isRegistered ? '✓ Registered' : 'Claim Shift'}</button>
+                            <div class="flex items-center justify-between border-t border-white/5 pt-3 mt-auto">
+                                <div class="text-[10px] text-slate-500 font-semibold tracking-wide">📅 ${opportunity.event_date}</div>
+                                <button onclick="executeShiftSignup('${opportunity.id}', ${profileHasRegistered})" class="text-[10px] font-extrabold uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all ${profileHasRegistered ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 cursor-not-allowed' : 'bg-white text-slate-950 hover:bg-cyan-400'}" ${profileHasRegistered ? 'disabled' : ''}>${profileHasRegistered ? '✓ Claimed' : 'Claim Position'}</button>
                             </div>
                         </div>`;
                 }).join('');
             } catch (err) {
-                container.innerHTML = `<p class="text-rose-400 text-xs text-center col-span-full">Context read exception.</p>`;
+                elementFeedContainer.innerHTML = `<div class="col-span-full p-6 text-center text-rose-400/80 text-xs border border-rose-500/10 bg-rose-500/[0.02] rounded-xl font-medium tracking-wide">Notice: Configure matching data schema tables inside Supabase console deployment pipeline to reveal shift registration availability.</div>`;
             }
         }
 
-        window.executeEventSignup = async function(eventId, isRegistered) {
-            if (isRegistered) return;
+        // ⚡ REGISTRATION ACTION EVENT WRAPPER
+        window.executeShiftSignup = async function(selectedEventId, profileHasRegistered) {
+            if (profileHasRegistered) return;
             try {
-                const { error } = await supabase.from('event_signups').insert({ event_id: eventId, user_id: currentUser.id, registered_at: new Date().toISOString() });
+                const { error } = await supabase
+                    .from('event_signups')
+                    .insert({ 
+                        event_id: selectedEventId, 
+                        user_id: currentUser.id, 
+                        registered_at: new Date().toISOString() 
+                    });
+
                 if (error) throw error;
-                alert("🎉 Shift registration locked in successfully!");
-                await renderOpportunitiesFeed();
+                alert("🎉 Placement shift claimed successfully!");
+                await renderOpportunitiesData();
             } catch (err) {
-                alert(`⛔ Sign-up Failure: ${err.message}`);
+                alert(`⛔ Signup Action Refused: ${err.message}`);
             }
         }
 
+        // 🚪 LOGOUT ACTION DISPATCH
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.replace('portal.html');
         });
 
+        // Trigger Startup Security Pipeline
         runSecurityGate();
     </script>
 </body>

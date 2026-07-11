@@ -349,9 +349,9 @@ async function loadSupabaseVolunteers() {
             card.className = "widget-glass p-8 flex flex-col items-center text-center shadow-xl border border-white/10 rounded-[2rem] reveal";
             
             card.innerHTML = `
-                <div class="w-24 h-24 rounded-full overflow-hidden mb-5 border-2 border-cyan-400/30 bg-slate-950">
-                    <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name || 'Volunteer'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
-                </div>
+<div class="w-32 h-32 rounded-full overflow-hidden mx-auto shadow-md">
+    <img src="${imageUrl}" class="w-full h-full object-cover" alt="${volunteer.name || 'Volunteer'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+</div>
                 <span class="text-xs font-black uppercase tracking-[0.2em] text-cyan-400 mb-1">Volunteer</span>
                 <h4 class="text-xl font-extrabold text-white tracking-tight">${volunteer.name || 'Anonymous'}</h4>
                 <p class="text-slate-400 text-sm mt-3 italic leading-relaxed font-light">

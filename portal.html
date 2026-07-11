@@ -245,7 +245,7 @@
                 const MAX_SIZE_KB = 300;
                 const MAX_SIZE_BYTES = MAX_SIZE_KB * 1024;
                 if (file.size > MAX_SIZE_BYTES) {
-                    alert(`⛔ File too large! Please choose a photo smaller than ${MAX_SIZE_KB}KB.`);
+                    alert(`⛔ File too large! Please choose a photo smaller than ${300}KB.`);
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Publish Updates";
                     return;
@@ -267,7 +267,7 @@
                     id: authenticatedUserInstance.id,
                     full_name: name, 
                     bio: bio, 
-                    avatar_url: finalAvatarDataString
+                   image_url: finalAvatarDataString
                 });
 
             if (dbError) throw dbError;

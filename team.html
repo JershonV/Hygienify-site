@@ -313,12 +313,12 @@
 // =========================================================================
 // 🌐 2. FIXED CREDENTIALS SUPABASE DATABASE ROSTER LOADER ENGINE
 // =========================================================================
-const SUPABASE_URL = "https://wzbcqpxwbtlqfscmbwew.supabase.co"; 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6YmNxcHh3YnRscWZzY21id2V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3MDM0ODQsImV4cCI6MjA1NjI3OTQ4NH0.hX0w5Z0V3LWhS5T_X6eZg6g_Lg1Y_lS5Y_lS5Y_lS5Y_lS5Y"; 
+const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"; 
 
 // Initialize the official Supabase Client
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    
 async function loadSupabaseVolunteers() {
     const container = document.getElementById('dynamic-volunteers-grid');
     if (!container) return;

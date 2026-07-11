@@ -39,13 +39,13 @@
         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Authenticating Session...</p>
     </div>
 
-    <!-- 📋 NEW ACCOUNT PROFILE INFO MODAL -->
+   <!-- 📋 NEW ACCOUNT PROFILE INFO MODAL (Name, Bio, Pic) -->
     <div id="onboarding-gate" class="fixed inset-0 z-50 bg-[#020617]/95 backdrop-blur-xl flex items-center justify-center p-4 hidden">
         <div class="w-full max-w-md card-glass p-8 rounded-[2.5rem] shadow-2xl relative">
             <div class="mb-6 text-center">
                 <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">Welcome to Hygienify</span>
                 <h3 class="text-2xl font-black text-white tracking-tight">Complete Your Profile</h3>
-                <p class="text-slate-400 text-xs mt-2">Just a few more details before we unlock your personal workspace portal.</p>
+                <p class="text-slate-400 text-xs mt-2">Just a few details before we unlock your personal workspace portal.</p>
             </div>
 
             <form id="profileForm" class="space-y-4">
@@ -54,12 +54,12 @@
                     <input type="text" id="profName" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="Alex Morgan">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Phone Number</label>
-                    <input type="tel" id="profPhone" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="(555) 019-2834">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
+                    <textarea id="profBio" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition resize-none" placeholder="Tell us a bit about yourself..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Emergency Contact Info</label>
-                    <input type="text" id="profEmergency" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="Name & Phone">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Profile Picture URL</label>
+                    <input type="url" id="profPic" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 transition" placeholder="https://example.com/avatar.jpg">
                 </div>
                 <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-wider py-4 rounded-xl transition-all shadow-lg mt-2">
                     Save & Enter Dashboard
@@ -140,7 +140,7 @@
 
 let currentUser = null;
 
-        // 🛡️ SESSION SECURITY GATEWAY
+// 🛡️ SESSION SECURITY GATEWAY
         async function runSecurityGate() {
             const { data: { session }, error } = await supabase.auth.getSession();
             
@@ -151,11 +151,15 @@ let currentUser = null;
 
             currentUser = session.user;
             
-            // 🚨 FIX #1: If you are logged in as the admin, bypass all onboarding instantly
+            // 🚨 FIX #1: If logged in as admin, explicitly hide the onboarding element and load data safely
             if (currentUser.email === 'jershonvinodh@gmail.com') {
                 console.log("Admin verified. Bypassing onboarding checks.");
+                document.getElementById('onboarding-gate').style.setProperty('display', 'none', 'important');
+                document.getElementById('onboarding-gate').classList.add('hidden');
                 document.getElementById('userWelcome').textContent = `Welcome back, Admin Jershon!`;
-                await loadDashboardData();
+                
+                // Load data directly without letting loadDashboardData toggle the onboarding screen
+                await forceBypassLoadData();
                 return;
             }
             
@@ -163,8 +167,7 @@ let currentUser = null;
             const profileCompleted = await checkVolunteerProfile();
             
             if (profileCompleted) {
-                // If they exist in the DB, skip the popup entirely and load their workspace
-                await loadDashboardData();
+                await forceBypassLoadData();
             } else {
                 // If they are brand new, show your profile collection elements
                 document.getElementById('onboarding-gate').classList.remove('hidden');
@@ -183,7 +186,6 @@ let currentUser = null;
 
                 if (error) throw error;
                 
-                // If data returns a record, they've already completed their info before!
                 if (data) {
                     document.getElementById('userWelcome').textContent = `Welcome back, ${data.full_name}!`;
                     return true;
@@ -195,9 +197,10 @@ let currentUser = null;
             }
         }
 
-        // 🚀 FILL SYSTEM METRICS WHEN VERIFIED EXISTENCE MATCHES
-        async function loadDashboardData() {
+        // 🔒 INTERNAL ROUTER: FORCES MODAL DOWN AND LOADS FEEDS
+        async function forceBypassLoadData() {
             document.getElementById('onboarding-gate').classList.add('hidden');
+            document.getElementById('onboarding-gate').style.setProperty('display', 'none', 'important');
             document.getElementById('loading-gate').classList.remove('hidden');
 
             await Promise.all([
@@ -208,13 +211,18 @@ let currentUser = null;
             document.getElementById('loading-gate').classList.add('hidden');
         }
 
-        // 📝 FORM ONBOARDING CAPTURE LOGIC
+        // 🚀 GENERIC DASHBOARD LOAD (Fallback keeping old mappings safe)
+        async function loadDashboardData() {
+            await forceBypassLoadData();
+        }
+
+        // 📝 FORM ONBOARDING CAPTURE LOGIC (Updated for Name, Bio, Pic)
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const fullName = document.getElementById('profName').value.trim();
-            const phone = document.getElementById('profPhone').value.trim();
-            const emergency = document.getElementById('profEmergency').value.trim();
+            const bio = document.getElementById('profBio').value.trim();
+            const avatarUrl = document.getElementById('profPic').value.trim();
 
             try {
                 const { error } = await supabase
@@ -222,14 +230,14 @@ let currentUser = null;
                     .insert({
                         id: currentUser.id,
                         full_name: fullName,
-                        phone_number: phone,
-                        emergency_contact: emergency
+                        bio: bio,
+                        avatar_url: avatarUrl
                     });
 
                 if (error) throw error;
 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullName}!`;
-                await loadDashboardData();
+                await forceBypassLoadData();
             } catch (err) {
                 alert(`⛔ Profile Setup Error: ${err.message}`);
             }

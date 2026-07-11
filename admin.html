@@ -505,6 +505,75 @@ function attachRosterControlEvents() {
     });
 }
 
+// 1. Fetch pending hour entries from Supabase
+async function fetchPendingHours() {
+    const { data, error } = await supabase
+        .from('hour_logs')
+        .select(`
+            id,
+            hours_requested,
+            description,
+            status,
+            volunteers ( name )
+        `)
+        .eq('status', 'pending');
+
+    if (error) {
+        console.error("Error fetching hours:", error);
+        return;
+    }
+    
+    renderHoursRequests(data || []);
+}
+
+// 2. Render them cleanly on the admin screen
+function renderHoursRequests(requests) {
+    const container = document.getElementById('hours-requests-container');
+    if (!container) return;
+
+    if (requests.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-sm">No hours awaiting approval.</p>';
+        return;
+    }
+
+    container.innerHTML = requests.map(req => `
+        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 flex justify-between items-center mb-3">
+            <div>
+                <h4 class="font-bold text-white">${req.volunteers?.name || 'Unknown Volunteer'}</h4>
+                <p class="text-xs text-slate-400 mt-1">${req.description || 'No description provided'}</p>
+                <span class="inline-block mt-2 px-2 py-0.5 bg-sky-500/20 text-sky-400 rounded text-xs font-semibold">
+                    ${req.hours_requested} Hours Requested
+                </span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-medium transition">
+                    Approve
+                </button>
+                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-medium transition">
+                    Deny
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 3. Handle the click actions to change statuses
+async function updateHoursStatus(requestId, newStatus) {
+    try {
+        const { error } = await supabase
+            .from('hour_logs')
+            .update({ status: newStatus })
+            .eq('id', requestId);
+
+        if (error) throw error;
+        
+        // Refresh the list immediately upon change
+        fetchPendingHours(); 
+    } catch (err) {
+        alert("Could not update request status: " + err.message);
+    }
+}
+        
 // Micro helper to consolidate application reload routines safely
 function triggerContextRefresh() {
     if (typeof refreshTerminalContext === 'function') {

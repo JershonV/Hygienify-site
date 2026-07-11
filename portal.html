@@ -195,7 +195,7 @@
 
                 // 🔍 FIX: Added proper await validation to see if profile already exists
                 const { data: profile, error: profileErr } = await supabaseClient
-                    .from('volunteer_profiles')
+                    .from('volunteers')
                     .select('id')
                     .eq('id', data.user.id)
                     .maybeSingle();
@@ -262,7 +262,7 @@
             // 🛡️ SECURITY FIX: Changed from .insert() to .upsert() matching user auth ID
             // This explicitly protects your database from ever creating duplicate rows for 1 user.
             const { error: dbError } = await supabaseClient
-                .from('volunteer_profiles')
+                .from('volunteers')
                 .upsert({ 
                     id: authenticatedUserInstance.id,
                     full_name: name, 

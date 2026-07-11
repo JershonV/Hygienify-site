@@ -562,7 +562,7 @@ function renderVerificationSystem() {
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
             
             rawHoursLogs.forEach(log => {
-                const user = masterVolunteersArray.find(v => v.id === log.volunteer_id);
+       const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
                 dataRows.push([
                     log.id,
                     log.created_at ? log.created_at.split('T')[0] : 'N/A',
@@ -584,41 +584,53 @@ function renderVerificationSystem() {
         });
 
         // Submission handling engines pipeline actions
-        document.getElementById('hoursForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            
-            const volunteerId = document.getElementById('volunteerSelect').value;
-            const hourValue = parseFloat(document.getElementById('hoursCount').value);
-            const operationDesc = document.getElementById('hoursDesc').value.trim();
+      document.getElementById('hoursForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    const volunteerSelect = document.getElementById('volunteerSelect');
+    const volunteerId = volunteerSelect.value;
+    const hourValue = parseFloat(document.getElementById('hoursCount').value);
+    const operationDesc = document.getElementById('hoursDesc').value.trim();
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Appending Data...";
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Appending Data...";
 
-            try {
-                const { error } = await supabase
-                    .from('hours_log')
-                    .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
+    try {
+        const { error } = await supabase
+            .from('hours_log')
+            .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
 
-                if (error) throw error;
+        if (error) throw error;
 
-                alert("⚡ Log verified! Contribution data records appended successfully.");
-                document.getElementById('hoursCount').value = '';
-                document.getElementById('hoursDesc').value = '';
-                refreshTerminalContext();
+        alert("⚡ Log verified! Contribution data records appended successfully.");
+        
+        // Clean up inputs safely
+        document.getElementById('hoursCount').value = '';
+        document.getElementById('hoursDesc').value = '';
+        
+        // CRITICAL: Added await so the UI waits for the database update to complete
+        await refreshTerminalContext();
 
-            } catch (err) {
-                alert("❌ Storage transmission error: " + err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Log Record Entry";
-            }
-        });
+    } catch (err) {
+        alert("❌ Storage transmission error: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Log Record Entry";
+    }
+});
 
-        document.getElementById("logout-btn").addEventListener("click", async () => {
+document.getElementById("logout-btn").addEventListener("click", async () => {
+    try {
+        if (typeof supabase !== 'undefined' && supabase.auth) {
             await supabase.auth.signOut();
-            window.location.href = "portal.html";
-        });
+        }
+    } catch (err) {
+        console.error("Auth session termination failed:", err);
+    } finally {
+        window.location.href = "portal.html";
+    }
+});
     </script>
 </body>
 </html>

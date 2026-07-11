@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hygienify Core Control</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Tailwind CSS for modern dark-mode styling -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen antialiased">
+
+  <!-- Admin Verification Guard -->
+  <script>
+    // Replace this string with your actual admin email address
+    const ADMIN_EMAIL = "your-admin-email@example.com"; 
+
+    async function checkAdminAuth() {
+      // Assuming you initialize Supabase globally or via your config script
+      // If you have a separate config.js, ensure it runs before this check
+      const supabaseUrl = 'YOUR_SUPABASE_URL';
+      const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+      const supabase = supabaseUrl !== 'YOUR_SUPABASE_URL' 
+        ? supabase.createClient(supabaseUrl, supabaseKey)
+        : window.supabase; // Fallback if initialized elsewhere
+
+      if (!supabase) return;
+
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user || user.email !== ADMIN_EMAIL) {
+        alert("Access Denied: Admin authorization required.");
+        window.location.href = "portal.html";
+      } else {
+        // Reveal dashboard content once authorized
+        document.getElementById('dashboard-wrapper').classList.remove('hidden');
+        loadVolunteers();
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+  </script>
+
+  <!-- Main Dashboard UI Wrapper (Hidden until auth passes) -->
+  <div id="dashboard-wrapper" class="hidden">
+    
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-xl font-black tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            HYGIENIFY CORE
+          </span>
+          <span class="bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-2 py-0.5 rounded border border-cyan-500/20">
+            Control Panel
+          </span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="admin-display-email" class="text-sm text-slate-400 font-medium"></span>
+          <button onclick="handleSignOut()" class="text-xs bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-all duration-200">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Section Header -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold tracking-tight text-white">Volunteer Roster</h1>
+        <p class="text-sm text-slate-400 mt-1">Manage core volunteer details and log service hours in real-time.</p>
+      </div>
+
+      <!-- Main Layout Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        <!-- Left: Roster List Cards -->
+        <div class="lg:col-span-2 space-y-4" id="roster-container">
+          <!-- Loading State Placeholder -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center text-slate-400 animate-pulse">
+            Fetching active records...
+          </div>
+        </div>
+
+        <!-- Right: Floating Hour Logger Panel -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 sticky top-24 shadow-xl shadow-black/40">
+          <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+            Log Service Hours
+          </h2>
+          
+          <form id="hours-form" onsubmit="logHours(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Target Volunteer</label>
+              <select id="volunteer-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors">
+                <option value="" disabled selected>Select a volunteer...</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hours Earned</label>
+              <input type="number" id="hours-input" step="0.25" min="0.25" required placeholder="e.g. 2.5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Activity Description</label>
+              <textarea id="description-input" rows="3" required placeholder="Describe their contribution..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors resize-none"></option></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-sm font-bold py-2.5 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-cyan-500/10 hover:shadow-cyan-400/20 active:scale-[0.98]">
+              Commit Hours to Ledger
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Framework Code Logic Placeholder -->
+  <script>
+    // Initialize your Supabase logic here
+    async function loadVolunteers() {
+      // 1. Fetch volunteers from 'public.volunteers'
+      // 2. Aggregate total hours dynamically from 'public.hours_log'
+      // 3. Render into UI cards inside '#roster-container'
+      // 4. Populate '#volunteer-select' dropdown options
+    }
+
+    async function logHours(event) {
+      event.preventDefault();
+      // 1. Grab inputs, execute supabase insert into 'public.hours_log'
+      // 2. Clear inputs, trigger loadVolunteers() to refresh metrics instantly
+    }
+
+    async function handleSignOut() {
+      // Trigger supabase auth sign out, redirect back to portal.html
+    }
+  </script>
+</body>
+</html>

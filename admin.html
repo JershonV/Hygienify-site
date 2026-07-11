@@ -221,12 +221,13 @@ function renderVerificationSystem() {
 
             pendingAccounts.forEach(user => {
                 const node = document.createElement('div');
-                node.className = "bg-white/5 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+                // CHANGED: Aligns everything to the top start edge
+                node.className = "bg-white/5 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4";
                 node.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <!-- FIXED: Perfect circle layout wrapper -->
+                    <div class="flex items-start gap-4">
+                        <!-- FIXED: Perfect circle layout with top focus alignment -->
                         <div class="w-16 h-16 rounded-full overflow-hidden border border-white/10 flex-shrink-0 bg-slate-900">
-                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                            <img src="${user.image_url}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-white">${user.name || 'Pending Records'}</h5>
@@ -307,10 +308,11 @@ function renderVerificationSystem() {
                 const card = document.createElement('div');
                 card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden";
                 card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6" id="view-layer-${user.id}">
-                        <!-- FIXED: Exact team page matching circular avatar block formatting -->
+                    <!-- CHANGED: Swapped items-center to items-start to perfectly push up image to align with the first line of text -->
+                    <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
+                        <!-- FIXED: Circular avatar with object-top positioning to focus precisely on faces -->
                         <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
-                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                            <img src="${user.image_url}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
                         <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">

@@ -729,33 +729,6 @@ function triggerContextRefresh() {
                 };
             });
 
-        function renderAuditLedgerStream() {
-            const container = document.getElementById('ledger-container');
-            container.innerHTML = '';
-
-            if (rawHoursLogs.length === 0) {
-                container.innerText = "> System logs idle. No recorded timeline history logs located.";
-                return;
-            }
-
-            rawHoursLogs.slice(0, 30).forEach(log => {
-                const linkedUser = masterVolunteersArray.find(v => v.id === log.volunteer_id);
-                const userName = linkedUser ? linkedUser.name : "Unknown Account";
-                const stamp = log.created_at ? new Date(log.created_at).toLocaleDateString() : "System";
-
-                const line = document.createElement('div');
-                line.className = "p-2 rounded-lg bg-white/[0.02] border border-white/5 space-y-1";
-                line.innerHTML = `
-                    <div class="flex justify-between font-bold text-slate-300">
-                        <span class="text-cyan-400">⚡ ${userName}</span>
-                        <span class="text-slate-500 text-[10px]">${stamp}</span>
-                    </div>
-                    <p class="text-slate-400 text-[11px] leading-normal font-sans">Logged +${parseFloat(log.hours_count).toFixed(1)} hrs: ${log.description || 'No descriptive context memo submitted.'}</p>
-                `;
-                container.appendChild(line);
-            });
-        }
-
         // CSV Compilation Engine Script logic module setup block
         document.getElementById('export-csv-btn').addEventListener('click', () => {
             if (rawHoursLogs.length === 0) return alert("No tracking rows found to export.");

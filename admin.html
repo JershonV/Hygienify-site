@@ -9,97 +9,135 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        
         .admin-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .admin-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 20px 40px -15px rgba(6, 182, 212, 0.15);
+        }
+        
+        .volunteer-widget {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
+        .volunteer-widget:hover {
+            border-color: rgba(34, 211, 238, 0.3);
+            box-shadow: 0 12px 24px -10px rgba(6, 182, 212, 0.12);
+            background: rgba(34, 211, 238, 0.02);
         }
     </style>
 </head>
 <body class="min-h-screen hidden" id="admin-body">
 
     <!-- Top Security Nav Wrapper -->
-    <nav class="border-b border-white/10 bg-slate-950/50 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
+    <nav class="border-b border-white/10 bg-slate-950/50 backdrop-blur-md px-4 sm:px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <!-- Replaced with your native SVG logo element -->
-            <img src="logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain">
-            <h1 class="text-lg font-black uppercase tracking-widest text-white">Admin Panel</h1>
+            <img src="logo_new2.svg" alt="Hygienify Logo" class="w-9 h-9 object-contain">
+            <h1 class="text-xl font-black uppercase tracking-widest text-white">Admin Panel</h1>
         </div>
         <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-            <span id="admin-email" class="text-[11px] sm:text-xs font-bold text-slate-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full truncate max-w-[180px] sm:max-w-xs"></span>
-            <button id="logout-btn" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-xs font-black uppercase tracking-wider px-4 py-2 rounded-xl cursor-pointer transition-all border border-red-500/20">
+            <span id="admin-email" class="text-xs font-bold text-slate-300 bg-white/5 border border-white/10 px-4 py-2 rounded-full truncate max-w-[180px] sm:max-w-xs font-mono"></span>
+            <button id="logout-btn" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded-xl cursor-pointer transition-all border border-red-500/20">
                 Sign Out
             </button>
         </div>
     </nav>
 
     <!-- Content Workspace Grid -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-10">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
         
         <!-- Welcome Jumbotron Hero Banner -->
-        <div class="admin-card rounded-[2rem] p-6 sm:p-10 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
-                <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 mb-2 block">System Authorized</span>
-                <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">System Administrative Hub</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">Log volunteer action metrics, edit profiles, erase accounts, and assign service hours from this panel.</p>
+        <div class="admin-card rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-8 shadow-xl">
+            <div class="space-y-2">
+                <span class="text-xs font-black uppercase tracking-[0.4em] text-cyan-400 block">System Hub</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight">System Administrative Hub</h2>
+                <p class="text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed">Manage your workforce ledger, approve pending profiles, audit community metrics, and extract spreadsheet tables instantly.</p>
+                <div class="pt-2">
+                    <button id="export-csv-btn" class="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black text-xs font-black uppercase tracking-wider px-5 py-3 rounded-xl border border-emerald-500/20 transition-all cursor-pointer inline-flex items-center gap-2">
+                        📥 Export Service Ledger (.CSV)
+                    </button>
+                </div>
             </div>
-            <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl px-6 py-4 text-center w-full md:w-auto">
+            <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl px-8 py-5 text-center w-full md:w-auto min-w-[160px]">
                 <span class="text-xs text-slate-400 uppercase tracking-widest block font-bold mb-1">Total Volunteers</span>
-                <span id="stat-total-volunteers" class="text-3xl font-black text-white font-mono">...</span>
+                <span id="stat-total-volunteers" class="text-4xl font-black text-cyan-400 font-mono">...</span>
             </div>
         </div>
 
-        <!-- Section: Active Logs & Operational Actions -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Left Panel Column: Volunteer Management Roster Grid -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="admin-card rounded-[2rem] p-4 sm:p-6">
-                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
+            <!-- Left Side Stack: Verification Queue & Roster -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- 1. Verification Queue Panel -->
+                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 border-amber-500/20 bg-amber-500/[0.01]">
+                    <h3 class="text-lg sm:text-xl font-black tracking-wider uppercase text-amber-400 mb-6 flex items-center gap-2">
+                        <span>⏳</span> Pending Approvals Queue
+                    </h3>
+                    <div id="queue-loader" class="text-sm text-slate-500 py-4 font-bold font-mono">Scanning registration tables...</div>
+                    <div id="queue-container" class="space-y-4 hidden">
+                        <!-- Dynamic verification cards hook here -->
+                    </div>
+                </div>
+
+                <!-- 2. Active Roster Panel -->
+                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8">
+                    <h3 class="text-lg sm:text-xl font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
                         <span class="text-cyan-400">👥</span> Active Enrolled Roster
                     </h3>
-                    
-                    <div id="roster-loader" class="py-12 text-center text-sm text-slate-500 font-bold">
-                        Querying database tables...
-                    </div>
-                    
-                    <div id="roster-container" class="grid grid-cols-1 gap-4 hidden">
-                        <!-- Hydrated dynamically from data returns -->
+                    <div id="roster-loader" class="py-12 text-center text-base text-slate-500 font-bold">Querying database rows...</div>
+                    <div id="roster-container" class="grid grid-cols-1 gap-6 hidden">
+                        <!-- Roster widgets hook here -->
                     </div>
                 </div>
             </div>
 
-            <!-- Right Panel Column: Fast Actions Form Panel -->
-            <div class="space-y-6">
-                <div class="admin-card rounded-[2rem] p-4 sm:p-6 lg:sticky lg:top-24">
-                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
-                        <span class="text-amber-400">⏱️</span> Append Service Hours
+            <!-- Right Side Panel: Entry Forms & Audit Feeds -->
+            <div class="space-y-8">
+                
+                <!-- Hours Input Form Widget -->
+                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8">
+                    <h3 class="text-lg sm:text-xl font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
+                        <span class="text-cyan-400">⏱️</span> Append Service Hours
                     </h3>
-                    
-                    <form id="hoursForm" class="space-y-4">
+                    <form id="hoursForm" class="space-y-5">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Select Target Volunteer</label>
-                            <select id="volunteerSelect" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500">
-                                <option value="" disabled selected>Select from team roster...</option>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Target Volunteer</label>
+                            <select id="volunteerSelect" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-base focus:outline-none focus:border-cyan-500">
+                                <option value="" disabled selected>Select from active roster...</option>
                             </select>
                         </div>
-                        
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Hours to Assign</label>
-                            <input type="number" step="0.5" min="0.5" id="hoursCount" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="e.g. 3.5">
+                            <input type="number" step="0.5" min="0.5" id="hoursCount" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-base focus:outline-none focus:border-cyan-500 font-mono" placeholder="e.g. 3.5">
                         </div>
-                        
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Operation/Event Description</label>
-                            <textarea id="hoursDesc" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g. Clean kit packaging assembly distribution drive"></textarea>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Event Activity / Memo</label>
+                            <textarea id="hoursDesc" required rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-base focus:outline-none focus:border-cyan-500" placeholder="Describe the service activity..."></textarea>
                         </div>
-
-                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all shadow-md mt-2 cursor-pointer">
+                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all cursor-pointer">
                             Log Record Entry
                         </button>
                     </form>
                 </div>
-            </div>
 
+                <!-- 3. Dynamic Activity Ledger Trail View -->
+                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40">
+                    <h3 class="text-base sm:text-lg font-black tracking-wider uppercase text-slate-300 mb-6 flex items-center gap-2">
+                        <span class="text-slate-400">📜</span> Rolling Audit Trail
+                    </h3>
+                    <div id="ledger-container" class="space-y-4 max-h-[380px] overflow-y-auto pr-2 font-mono text-xs text-slate-400">
+                        Loading audit stream tokens...
+                    </div>
+                </div>
+
+            </div>
         </div>
     </main>
 
@@ -107,220 +145,294 @@
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
         const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnv2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI'; 
         
         const ALLOWED_ADMIN = "jershonvinodh@gmail.com";
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Store active data state globally in view memory
-        let localVolunteersArray = [];
-        let localHoursMap = {};
+        let masterVolunteersArray = [];
+        let rawHoursLogs = [];
+        let aggregatedHoursMap = {};
 
-        async function runSecurityAudit() {
+        async function securityAudit() {
             const { data: { session }, error } = await supabase.auth.getSession();
-
-            if (error || !session) {
-                window.location.href = "portal.html"; 
-                return;
-            }
-
+            if (error || !session) { window.location.href = "portal.html"; return; }
+            
             const activeEmail = session.user.email.toLowerCase();
-
             if (activeEmail !== ALLOWED_ADMIN.toLowerCase()) {
-                alert("⛔ Security Firewalls Warning: Access Denied.");
+                alert("⛔ Firewall Warning: System Access Terminated.");
                 window.location.href = "portal.html";
                 return;
             }
-
             document.getElementById("admin-email").innerText = activeEmail;
             document.getElementById("admin-body").classList.remove("hidden");
             
-            fetchAdministrationData();
+            refreshTerminalContext();
         }
-        runSecurityAudit();
+        securityAudit();
 
-        async function fetchAdministrationData() {
+        async function refreshTerminalContext() {
             try {
-                const { data: teamLogs, error: rosterErr } = await supabase
-                    .from('volunteers')
-                    .select('id, name, bio, image_url')
-                    .order('id', { ascending: false });
+                // Fetch ALL volunteers
+                const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
+                if (rErr) throw rErr;
+                masterVolunteersArray = teamRows;
 
-                if (rosterErr) throw rosterErr;
-                localVolunteersArray = teamLogs;
+                // Fetch ALL hours logs for computations and audit trails
+                const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
+                if (hErr) throw hErr;
+                rawHoursLogs = hoursRows;
 
-                const { data: hoursLogs, error: hoursErr } = await supabase
-                    .from('hours_log')
-                    .select('volunteer_id, hours_count');
-
-                if (hoursErr) throw hoursErr;
-
-                localHoursMap = {};
-                hoursLogs.forEach(entry => {
+                // Build performance lookup mapping hashes
+                aggregatedHoursMap = {};
+                rawHoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
-                    localHoursMap[entry.volunteer_id] = (localHoursMap[entry.volunteer_id] || 0) + count;
+                    aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
                 });
 
-                renderRosterView();
+                renderVerificationSystem();
+                renderActiveRoster();
+                renderAuditLedgerStream();
 
             } catch (err) {
                 console.error(err);
-                document.getElementById('roster-loader').innerText = "💥 Error loading core database rows.";
+                alert("Terminal context refresh crash: " + err.message);
             }
         }
 
-        function renderRosterView() {
-            document.getElementById('stat-total-volunteers').innerText = localVolunteersArray.length;
+        function renderVerificationSystem() {
+            const queueBox = document.getElementById('queue-container');
+            const queueLoader = document.getElementById('queue-loader');
+            queueBox.innerHTML = '';
 
-            const dropdown = document.getElementById('volunteerSelect');
-            dropdown.innerHTML = '<option value="" disabled selected>Select from team roster...</option>';
-            
+            // Filter for unapproved accounts
+            const pendingAccounts = masterVolunteersArray.filter(v => v.is_approved === false);
+
+            if (pendingAccounts.length === 0) {
+                queueLoader.innerText = "✓ System check complete. No accounts awaiting authorization.";
+                queueLoader.className = "text-xs font-bold text-slate-500 font-mono py-2";
+                queueBox.classList.add('hidden');
+                return;
+            }
+
+            queueLoader.classList.add('hidden');
+            queueBox.classList.remove('hidden');
+
+            pendingAccounts.forEach(user => {
+                const node = document.createElement('div');
+                node.className = "bg-white/5 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+                node.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
+                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-bold text-white">${user.name || 'Pending Records'}</h5>
+                            <p class="text-xs text-slate-400 line-clamp-1 max-w-md">${user.bio || 'No profile data declaration submitted.'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button data-id="${user.id}" class="deny-btn text-[11px] font-bold bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 px-3 py-2 rounded-lg border border-red-500/20 transition-all cursor-pointer">Deny</button>
+                        <button data-id="${user.id}" class="approve-btn text-[11px] font-black bg-amber-500 text-black hover:bg-amber-400 px-4 py-2 rounded-lg transition-all cursor-pointer">Verify Profile</button>
+                    </div>
+                `;
+                queueBox.appendChild(node);
+            });
+
+            // Bind approval system interactions
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    e.target.disabled = true;
+                    try {
+                        const { error } = await supabase.from('volunteers').update({ is_approved: true }).eq('id', id);
+                        if (error) throw error;
+                        refreshTerminalContext();
+                    } catch (err) { alert(err.message); }
+                });
+            });
+
+            document.querySelectorAll('.deny-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm("Reject and permanently wipe this registration attempt?")) {
+                        try {
+                            await supabase.from('volunteers').delete().eq('id', id);
+                            refreshTerminalContext();
+                        } catch (err) { alert(err.message); }
+                    }
+                });
+            });
+        }
+
+        function renderActiveRoster() {
             const rosterBox = document.getElementById('roster-container');
+            const selectDropdown = document.getElementById('volunteerSelect');
+            
             rosterBox.innerHTML = '';
+            selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
 
-            localVolunteersArray.forEach(user => {
-                const opt = document.createElement('option');
-                opt.value = user.id;
-                opt.innerText = user.name || "Anonymous Volunteer";
-                dropdown.appendChild(opt);
+            const activeProfiles = masterVolunteersArray.filter(v => v.is_approved === true);
+            document.getElementById('stat-total-volunteers').innerText = activeProfiles.length;
 
-                const verifiedHours = localHoursMap[user.id] || 0;
+            if (activeProfiles.length === 0) {
+                document.getElementById('roster-loader').innerText = "Roster directory is currently empty.";
+                return;
+            }
+
+            document.getElementById('roster-loader').classList.add('hidden');
+            rosterBox.classList.remove('hidden');
+
+            activeProfiles.forEach(user => {
+                // Load operational options selectors elements setup
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.innerText = user.name || "Anonymous User";
+                selectDropdown.appendChild(option);
+
+                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
 
                 const card = document.createElement('div');
-                card.className = "bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden transition-all duration-300";
-                card.id = `volunteer-card-${user.id}`;
-                
-                // Standard Read view layout configuration with operational modifications forms
+                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden";
                 card.innerHTML = `
-                    <div class="flex items-start gap-4" id="view-layer-${user.id}">
-                        <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border border-white/10 relative">
-                            <img src="${user.image_url}" class="w-full h-full object-cover object-top scale-125 origin-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6" id="view-layer-${user.id}">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 relative shadow-inner">
+                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-black text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed Record'}</h4>
-                            <p class="text-xs text-slate-400 line-clamp-2 mt-1 leading-relaxed" id="text-bio-${user.id}">${user.bio || 'No profile declaration.'}</p>
-                            <div class="mt-3 flex items-center justify-between">
-                                <div class="flex items-center gap-1.5">
+                        <div class="flex-1 min-w-0 space-y-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
+                                <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-start sm:self-auto">
                                     <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-300 font-mono">${verifiedHours.toFixed(1)} Lifetime Hours</span>
+                                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${lifetimeHours.toFixed(1)} Hours</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <button data-id="${user.id}" class="edit-btn text-[11px] bg-white/5 hover:bg-cyan-500 hover:text-black font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-white/10 transition-all cursor-pointer">Edit</button>
-                                    <button data-id="${user.id}" class="delete-btn text-[11px] bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-red-500/20 transition-all cursor-pointer">Delete</button>
-                                </div>
+                            </div>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
+                            <div class="pt-2 flex justify-end gap-3 border-t border-white/5">
+                                <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
+                                <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Hidden Update Inline Form Editor Input System Module Layer -->
-                    <div class="hidden space-y-4" id="edit-layer-${user.id}">
+                    <!-- Inline Editing Frame View Interface Layer container -->
+                    <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
                         <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Edit Volunteer Name</label>
-                            <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
+                            <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Edit Short Bio</label>
-                            <textarea id="input-bio-${user.id}" rows="2" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
+                            <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
                         </div>
-                        <div class="flex justify-end gap-2">
-                            <button data-id="${user.id}" class="cancel-btn text-[10px] bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/10 transition-all cursor-pointer">Cancel</button>
-                            <button data-id="${user.id}" class="save-btn text-[10px] bg-cyan-600 hover:bg-cyan-500 text-black font-bold uppercase tracking-wider px-4 py-1.5 rounded-lg transition-all cursor-pointer">Save Changes</button>
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button data-id="${user.id}" class="cancel-btn text-xs bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Cancel</button>
+                            <button data-id="${user.id}" class="save-btn text-xs bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase tracking-wider px-5 py-2 rounded-xl transition-all cursor-pointer">Save Changes</button>
                         </div>
                     </div>
                 `;
                 rosterBox.appendChild(card);
             });
 
-            document.getElementById('roster-loader').classList.add('hidden');
-            rosterBox.classList.remove('hidden');
-
-            attachDynamicCardListeners();
+            attachRosterControlEvents();
         }
 
-        function attachDynamicCardListeners() {
-            // Trigger Form Edit Expansion Display Toggle State
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    document.getElementById(`view-layer-${id}`).classList.add('hidden');
-                    document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
-                });
-            });
+        function attachRosterControlEvents() {
+            document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                document.getElementById(`view-layer-${id}`).classList.add('hidden');
+                document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
+            }));
 
-            // Cancel Inline Form Editor Display Modification Layer
-            document.querySelectorAll('.cancel-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    document.getElementById(`edit-layer-${id}`).classList.add('hidden');
-                    document.getElementById(`view-layer-${id}`).classList.remove('hidden');
-                });
-            });
+            document.querySelectorAll('.cancel-btn').forEach(b => b.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                document.getElementById(`edit-layer-${id}`).classList.add('hidden');
+                document.getElementById(`view-layer-${id}`).classList.remove('hidden');
+            }));
 
-            // Save Modified Inline Form Mutations back into Database Tables
-            document.querySelectorAll('.save-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const updatedName = document.getElementById(`input-name-${id}`).value.trim();
-                    const updatedBio = document.getElementById(`input-bio-${id}`).value.trim();
-                    
-                    if(!updatedName) { alert("Name cannot be missing."); return; }
-                    
-                    e.target.disabled = true;
-                    e.target.innerText = "Saving...";
+            document.querySelectorAll('.save-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const name = document.getElementById(`input-name-${id}`).value.trim();
+                const bio = document.getElementById(`input-bio-${id}`).value.trim();
+                
+                if (!name) return alert("Profile target identifier labels required.");
+                e.target.disabled = true;
 
+                try {
+                    const { error } = await supabase.from('volunteers').update({ name, bio }).eq('id', id);
+                    if (error) throw error;
+                    refreshTerminalContext();
+                } catch(err) { alert(err.message); e.target.disabled = false; }
+            }));
+
+            document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                if (confirm("⚠️ System Deletion warning: Erase user and clear linked metric hours permanently?")) {
                     try {
-                        const { error } = await supabase
-                            .from('volunteers')
-                            .update({ name: updatedName, bio: updatedBio })
-                            .eq('id', id);
+                        const { error } = await supabase.from('volunteers').delete().eq('id', id);
+                        if (error) throw error;
+                        refreshTerminalContext();
+                    } catch (err) { alert(err.message); }
+                }
+            }));
+        }
 
-                        if(error) throw error;
+        function renderAuditLedgerStream() {
+            const container = document.getElementById('ledger-container');
+            container.innerHTML = '';
 
-                        // Mutate active data array dynamically
-                        const targetIndex = localVolunteersArray.findIndex(item => item.id == id);
-                        if(targetIndex !== -1) {
-                            localVolunteersArray[targetIndex].name = updatedName;
-                            localVolunteersArray[targetIndex].bio = updatedBio;
-                        }
+            if (rawHoursLogs.length === 0) {
+                container.innerText = "> System logs idle. No recorded timeline history logs located.";
+                return;
+            }
 
-                        renderRosterView();
-                    } catch(err) {
-                        alert("Error saving updates: " + err.message);
-                        e.target.disabled = false;
-                        e.target.innerText = "Save Changes";
-                    }
-                });
-            });
+            rawHoursLogs.slice(0, 30).forEach(log => {
+                const linkedUser = masterVolunteersArray.find(v => v.id === log.volunteer_id);
+                const userName = linkedUser ? linkedUser.name : "Unknown Account";
+                const stamp = log.created_at ? new Date(log.created_at).toLocaleDateString() : "System";
 
-            // Hard Deletion Module Flow Engine Hook
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const targetProfile = localVolunteersArray.find(item => item.id == id);
-                    const profileName = targetProfile ? targetProfile.name : "this user";
-
-                    if (confirm(`⚠️ Are you absolutely sure you want to permanently delete "${profileName}"?\nThis removes their public team card and clears their records completely.`)) {
-                        try {
-                            const { error } = await supabase
-                                .from('volunteers')
-                                .delete()
-                                .eq('id', id);
-
-                            if (error) throw error;
-
-                            // Filter out matching indices array state element rows records
-                            localVolunteersArray = localVolunteersArray.filter(item => item.id != id);
-                            renderRosterView();
-
-                        } catch (err) {
-                            alert("Failed to delete record: " + err.message);
-                        }
-                    }
-                });
+                const line = document.createElement('div');
+                line.className = "p-2 rounded-lg bg-white/[0.02] border border-white/5 space-y-1";
+                line.innerHTML = `
+                    <div class="flex justify-between font-bold text-slate-300">
+                        <span class="text-cyan-400">⚡ ${userName}</span>
+                        <span class="text-slate-500 text-[10px]">${stamp}</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px] leading-normal font-sans">Logged +${parseFloat(log.hours_count).toFixed(1)} hrs: ${log.description || 'No descriptive context memo submitted.'}</p>
+                `;
+                container.appendChild(line);
             });
         }
 
-        // Service Hours Form Application Submission
+        // CSV Compilation Engine Script logic module setup block
+        document.getElementById('export-csv-btn').addEventListener('click', () => {
+            if (rawHoursLogs.length === 0) return alert("No tracking rows found to export.");
+            
+            let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
+            
+            rawHoursLogs.forEach(log => {
+                const user = masterVolunteersArray.find(v => v.id === log.volunteer_id);
+                dataRows.push([
+                    log.id,
+                    log.created_at ? log.created_at.split('T')[0] : 'N/A',
+                    `"${(user ? user.name : 'Unknown Account').replace(/"/g, '""')}"`,
+                    parseFloat(log.hours_count).toFixed(1),
+                    `"${(log.description || 'General Service').replace(/"/g, '""')}"`
+                ]);
+            });
+
+            const rawCsvText = dataRows.map(row => row.join(",")).join("\n");
+            const blobObj = new Blob([rawCsvText], { type: 'text/csv;charset=utf-8;' });
+            const temporaryLink = document.createElement("a");
+            
+            temporaryLink.href = URL.createObjectURL(blobObj);
+            temporaryLink.setAttribute("download", `hygienify_service_ledger_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(temporaryLink);
+            temporaryLink.click();
+            document.body.removeChild(temporaryLink);
+        });
+
+        // Submission handling engines pipeline actions
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -342,7 +454,7 @@
                 alert("⚡ Log verified! Contribution data records appended successfully.");
                 document.getElementById('hoursCount').value = '';
                 document.getElementById('hoursDesc').value = '';
-                fetchAdministrationData();
+                refreshTerminalContext();
 
             } catch (err) {
                 alert("❌ Storage transmission error: " + err.message);

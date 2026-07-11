@@ -241,17 +241,20 @@ function renderVerificationSystem() {
                 queueBox.appendChild(node);
             });
 
-            // FIXED: We scan the queueBox elements specifically right after appending them to ensure they exist
+// FIXED: Ensure we parse the ID to match your database data-type requirements
             queueBox.querySelectorAll('.approve-btn').forEach(btn => {
                 btn.onclick = async (e) => {
-                    const id = e.target.getAttribute('data-id');
+                    const rawId = e.target.getAttribute('data-id');
+                    // Try parsing as number; if it's a UUID string, it falls back gracefully to rawId
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+                    
                     e.target.disabled = true;
                     e.target.innerText = "Verifying...";
                     try {
-                        const { error } = await supabase
+                        const { error, data } = await supabase
                             .from('volunteers')
                             .update({ is_approved: true })
-                            .eq('id', id);
+                            .eq('id', targetId);
                         
                         if (error) throw error;
                         refreshTerminalContext();
@@ -259,6 +262,29 @@ function renderVerificationSystem() {
                         alert("Verification error: " + err.message); 
                         e.target.disabled = false;
                         e.target.innerText = "Verify Profile";
+                    }
+                };
+            });
+
+            queueBox.querySelectorAll('.deny-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+
+                    if (confirm("Reject and permanently wipe this registration attempt?")) {
+                        e.target.disabled = true;
+                        try {
+                            const { error } = await supabase
+                                .from('volunteers')
+                                .delete()
+                                .eq('id', targetId);
+                                
+                            if (error) throw error;
+                            refreshTerminalContext();
+                        } catch (err) { 
+                            alert("Error dropping request: " + err.message); 
+                            e.target.disabled = false;
+                        }
                     }
                 };
             });

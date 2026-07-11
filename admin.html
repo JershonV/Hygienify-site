@@ -224,9 +224,9 @@ function renderVerificationSystem() {
                 node.className = "bg-white/5 border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
                 node.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <!-- RESTORED: Flexible aspect ratio and alignment for clean visibility -->
-                        <div class="w-16 h-16 rounded-xl overflow-hidden border border-white/10 flex-shrink-0 flex items-center justify-center bg-slate-900">
-                            <img src="${user.image_url}" class="max-w-full max-h-full object-contain" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        <!-- FIXED: Perfect circle layout wrapper -->
+                        <div class="w-16 h-16 rounded-full overflow-hidden border border-white/10 flex-shrink-0 bg-slate-900">
+                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-white">${user.name || 'Pending Records'}</h5>
@@ -308,20 +308,20 @@ function renderVerificationSystem() {
                 card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden";
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6" id="view-layer-${user.id}">
-                        <!-- RESTORED: Shifted back to a balanced layout using object-contain to match team.html -->
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 flex items-center justify-center bg-slate-900 shadow-inner">
-                            <img src="${user.image_url}" class="max-w-full max-h-full object-contain" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                        <!-- FIXED: Exact team page matching circular avatar block formatting -->
+                        <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
+                            <img src="${user.image_url}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
-                        <div class="flex-1 min-w-0 space-y-2 w-full">
+                        <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
-                                <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-start sm:self-auto">
+                                <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
                                     <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
                                     <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${lifetimeHours.toFixed(1)} Hours</span>
                                 </div>
                             </div>
                             <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
-                            <div class="pt-2 flex justify-end gap-3 border-t border-white/5">
+                            <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
                                 <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
                                 <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
                             </div>

@@ -127,8 +127,8 @@
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-        // =========================================================================
-        // ⚙️ FORM SUBMISSION LOGIC
+// =========================================================================
+        // ⚙️ FORM SUBMISSION LOGIC (WITH ALREADY-EXISTS HANDLING)
         // =========================================================================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -142,7 +142,7 @@
             }
 
             try {
-                // 3. Fire the secure creation request over to Supabase Auth
+                // Fire the registration request to Supabase Auth
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -153,6 +153,15 @@
                     return;
                 }
 
+                // 🔍 Check if user identity already exists in the backend database
+                // If user exists, data.user will return, but identities array will be empty
+                if (data?.user && data.user.identities && data.user.identities.length === 0) {
+                    alert("📧 An account with this email address already exists. Redirecting you to the sign-in portal.");
+                    window.location.href = 'portal.html';
+                    return;
+                }
+
+                // Fresh registration path configuration
                 alert("🎉 Account Created Successfully! Please check your email for a confirmation link or click OK to sign in.");
                 window.location.href = 'portal.html';
 

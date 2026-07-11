@@ -63,6 +63,7 @@
         </div>
     </div>
 
+    <!-- This card handles profile creation if they don't have a profile record yet -->
     <div id="portal-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 border-b border-white/5 pb-6">
             <div>
@@ -112,7 +113,7 @@ const portalCard = document.getElementById('portal-card');
 const authForm = document.getElementById('authForm');
 
 // =========================================================================
-// 🔑 2. REAL SUPABASE SIGN IN ENGINE
+// 🔑 2. REAL SUPABASE SIGN IN & SMART ROUTING ENGINE
 // =========================================================================
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -136,10 +137,36 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        // Successfully logged in! Reveal portal form layout
-        document.getElementById('userBadge').innerText = data.user.email;
-        authCard.classList.add('hidden');
-        portalCard.classList.remove('hidden');
+        // --- SMART ROUTING INJECTION START ---
+        if (data.user) {
+            const loggedInEmail = data.user.email.toLowerCase();
+            const ADMIN_EMAIL = "jershonvinodh@gmail.com";
+
+            // 1. Secret Admin Path: Instantly jump past everything
+            if (loggedInEmail === ADMIN_EMAIL) {
+                window.location.href = "admin.html";
+                return;
+            }
+
+            // 2. Standard Volunteer Path: Check if they already have an existing profile card
+            const { data: profile } = await supabaseClient
+                .from('volunteers')
+                .select('id')
+                .eq('id', data.user.id)
+                .maybeSingle();
+
+            if (profile) {
+                // Already made their profile? Bypass setup and go straight to workspace dashboard
+                window.location.href = "volunteer-dashboard.html";
+                return;
+            } else {
+                // Brand new user? Unhide the image upload profile manager form right here
+                document.getElementById('userBadge').innerText = data.user.email;
+                authCard.classList.add('hidden');
+                portalCard.classList.remove('hidden');
+            }
+        }
+        // --- SMART ROUTING INJECTION END ---
 
     } catch (err) {
         console.error(err);
@@ -196,7 +223,6 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         
         const publicImageUrl = urlData.publicUrl;
 
-        // FIXED: Added { returning: 'minimal' } parameter here to prevent the read-back security trigger
         const { error: dbError } = await supabaseClient
             .from('volunteers')
             .insert([
@@ -212,7 +238,7 @@ document.getElementById('portalForm').addEventListener('submit', async (e) => {
         }
 
         alert("🎉 Success! Your profile card is officially published to the live Team Roster.");
-        window.location.href = 'team.html';
+        window.location.href = 'volunteer-dashboard.html'; // Set to go to dashboard now upon initial registration finish
 
     } catch (error) {
         alert("❌ Supabase Transmission Error: " + error.message);

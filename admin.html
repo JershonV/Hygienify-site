@@ -279,200 +279,242 @@ function renderVerificationSystem() {
             });
         }
 
-    function renderActiveRoster() {
-            const rosterBox = document.getElementById('roster-container');
-            const selectDropdown = document.getElementById('volunteerSelect');
-            
-            if (!rosterBox) return; // Prevent crashing if container isn't loaded yet
-            
-            rosterBox.innerHTML = '';
-            if (selectDropdown) {
-                selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
-            }
+function renderActiveRoster() {
+    const rosterBox = document.getElementById('roster-container');
+    const selectDropdown = document.getElementById('volunteerSelect');
+    
+    if (!rosterBox) return; // Prevent crashing if container isn't loaded yet
+    
+    rosterBox.innerHTML = '';
+    if (selectDropdown) {
+        selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
+    }
 
-            // Safe array validation check
-            const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
-            const activeProfiles = dataArray.filter(v => v.is_approved === true);
-            
-            const totalStatEl = document.getElementById('stat-total-volunteers');
-            if (totalStatEl) totalStatEl.innerText = activeProfiles.length;
+    // Safe array validation check
+    const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
+    const activeProfiles = dataArray.filter(v => v.is_approved === true);
+    
+    const totalStatEl = document.getElementById('stat-total-volunteers');
+    if (totalStatEl) totalStatEl.innerText = activeProfiles.length;
 
-            const loaderEl = document.getElementById('roster-loader');
-            if (activeProfiles.length === 0) {
-                if (loaderEl) loaderEl.innerText = "Roster directory is currently empty.";
-                return;
-            }
+    const loaderEl = document.getElementById('roster-loader');
+    if (activeProfiles.length === 0) {
+        if (loaderEl) loaderEl.innerText = "Roster directory is currently empty.";
+        return;
+    }
 
-            if (loaderEl) loaderEl.classList.add('hidden');
-            rosterBox.classList.remove('hidden');
+    if (loaderEl) loaderEl.classList.add('hidden');
+    rosterBox.classList.remove('hidden');
 
-            activeProfiles.forEach(user => {
-                if (selectDropdown) {
-                    const option = document.createElement('option');
-                    option.value = user.id;
-                    option.innerText = user.name || "Anonymous User";
-                    selectDropdown.appendChild(option);
-                }
-
-                // Fallback protection check for missing hours objects
-                const hoursMap = (typeof aggregatedHoursMap !== 'undefined') ? aggregatedHoursMap : {};
-                const lifetimeHours = hoursMap[user.id] || 0;
-
-                const card = document.createElement('div');
-                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
-                card.innerHTML = `
-                    <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
-                        <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
-                            <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
-                        </div>
-                        <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
-                                <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
-                                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
-                                </div>
-                            </div>
-                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
-                            <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
-                                <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
-                                <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
-                            <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
-                            <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
-                                <input type="file" id="input-file-${user.id}" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-cyan-500/10 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-500/20">
-                                <span id="file-status-${user.id}" class="text-xs text-slate-500 italic">No new file chosen</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
-                            <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
-                        </div>
-                        <div class="flex justify-end gap-3 pt-2">
-                            <button data-id="${user.id}" class="cancel-btn text-xs bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Cancel</button>
-                            <button data-id="${user.id}" class="save-btn text-xs bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase tracking-wider px-5 py-2 rounded-xl transition-all cursor-pointer">Save Changes</button>
-                        </div>
-                    </div>
-                `;
-                rosterBox.appendChild(card);
-                
-                const fInput = document.getElementById(`input-file-${user.id}`);
-                if (fInput) {
-                    fInput.onchange = (e) => {
-                        const file = e.target.files[0];
-                        const statusText = document.getElementById(`file-status-${user.id}`);
-                        if(file && statusText) {
-                            if (file.size > 5242880) {
-                                alert("This file is too large! Please choose an image smaller than 5MB.");
-                                e.target.value = '';
-                                statusText.innerText = "✖ File rejected (over 5MB limit)";
-                                statusText.className = "text-xs text-red-400 font-bold";
-                            } else {
-                                statusText.innerText = `✓ ${file.name}`;
-                                statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
-                            }
-                        }
-                    };
-                }
-            });
-
-            attachRosterControlEvents();
+    activeProfiles.forEach(user => {
+        if (selectDropdown) {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.innerText = user.name || "Anonymous User";
+            selectDropdown.appendChild(option);
         }
 
-        function attachRosterControlEvents() {
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.onclick = (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const viewL = document.getElementById(`view-layer-${id}`);
-                    const editL = document.getElementById(`edit-layer-${id}`);
-                    if (viewL) viewL.classList.add('hidden');
-                    if (editL) editL.classList.remove('hidden');
-                };
-            });
+        // Fallback protection check for missing hours objects
+        const hoursMap = (typeof aggregatedHoursMap !== 'undefined') ? aggregatedHoursMap : {};
+        const lifetimeHours = hoursMap[user.id] || 0;
 
-            document.querySelectorAll('.cancel-btn').forEach(btn => {
-                btn.onclick = (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const viewL = document.getElementById(`view-layer-${id}`);
-                    const editL = document.getElementById(`edit-layer-${id}`);
-                    if (editL) editL.classList.add('hidden');
-                    if (viewL) viewL.classList.remove('hidden');
-                };
-            });
+        const card = document.createElement('div');
+        card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
+        card.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
+                <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
+                    <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                </div>
+                <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
+                        <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
+                            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                            <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
+                        </div>
+                    </div>
+                    <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
+                    <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
+                        <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
+                        <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
+                    <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
+                    <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
+                        <input type="file" id="input-file-${user.id}" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-cyan-500/10 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-500/20">
+                        <span id="file-status-${user.id}" class="text-xs text-slate-500 italic">No new file chosen</span>
+                    </div>
+                </div>
 
-            document.querySelectorAll('.save-btn').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const rawId = e.target.getAttribute('data-id');
-                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-                    
-                    const nameEl = document.getElementById(`input-name-${rawId}`);
-                    const bioEl = document.getElementById(`input-bio-${rawId}`);
-                    const fileInput = document.getElementById(`input-file-${rawId}`);
-
-                    const updatedName = nameEl ? nameEl.value : '';
-                    const updatedBio = bioEl ? bioEl.value : '';
-
-                    e.target.disabled = true;
-                    e.target.innerText = "Saving...";
-
-                    const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
-                    const originalUser = dataArray.find(v => String(v.id) === String(rawId));
-                    let finalImgUrl = originalUser ? originalUser.image_url : '';
-
-                    try {
-                        if (fileInput && fileInput.files && fileInput.files[0]) {
-                            const selectedFile = fileInput.files[0];
-                            
-                            if (selectedFile.size > 5242880) {
-                                throw new Error("File exceeds 5MB size limit restriction.");
-                            }
-
-                            finalImgUrl = await new Promise((resolve, reject) => {
-                                const reader = new FileReader();
-                                reader.onload = () => resolve(reader.result);
-                                reader.onerror = (error) => reject(error);
-                                reader.readAsDataURL(selectedFile);
-                            });
-                        }
-
-                        const { error } = await supabase
-                            .from('volunteers')
-                            .update({ 
-                                name: updatedName, 
-                                bio: updatedBio,
-                                image_url: finalImgUrl
-                            })
-                            .eq('id', targetId);
-
-                        if (error) throw error;
-                        
-                        // Self-correcting update call if your reload function has a slightly different name
-                        if (typeof refreshTerminalContext === 'function') {
-                            refreshTerminalContext();
-                        } else if (typeof fetchVolunteers === 'function') {
-                            fetchVolunteers();
-                        } else {
-                            window.location.reload();
-                        }
-                    } catch (err) {
-                        alert("Error saving: " + err.message);
-                        e.target.disabled = false;
-                        e.target.innerText = "Save Changes";
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
+                    <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button data-id="${user.id}" class="cancel-btn text-xs bg-white/5 hover:bg-white/10 font-bold uppercase tracking-wider px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Cancel</button>
+                    <button data-id="${user.id}" class="save-btn text-xs bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase tracking-wider px-5 py-2 rounded-xl transition-all cursor-pointer">Save Changes</button>
+                </div>
+            </div>
+        `;
+        rosterBox.appendChild(card);
+        
+        const fInput = document.getElementById(`input-file-${user.id}`);
+        if (fInput) {
+            fInput.onchange = (e) => {
+                const file = e.target.files[0];
+                const statusText = document.getElementById(`file-status-${user.id}`);
+                if (file && statusText) {
+                    if (file.size > 5242880) {
+                        alert("This file is too large! Please choose an image smaller than 5MB.");
+                        e.target.value = '';
+                        statusText.innerText = "✖ File rejected (over 5MB limit)";
+                        statusText.className = "text-xs text-red-400 font-bold";
+                    } else {
+                        statusText.innerText = `✓ ${file.name}`;
+                        statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
                     }
-                };
-            });
+                }
+            };
+        }
+    });
 
+    attachRosterControlEvents();
+}
+
+function attachRosterControlEvents() {
+    // 1. Edit Layer Toggle
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            const id = e.target.getAttribute('data-id');
+            const viewL = document.getElementById(`view-layer-${id}`);
+            const editL = document.getElementById(`edit-layer-${id}`);
+            if (viewL) viewL.classList.add('hidden');
+            if (editL) editL.classList.remove('hidden');
+        };
+    });
+
+    // 2. Cancel Layer Toggle
+    document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            const id = e.target.getAttribute('data-id');
+            const viewL = document.getElementById(`view-layer-${id}`);
+            const editL = document.getElementById(`edit-layer-${id}`);
+            if (editL) editL.classList.add('hidden');
+            if (viewL) viewL.classList.remove('hidden');
+        };
+    });
+
+    // 3. Remove/Delete Functionality
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async (e) => {
+            const rawId = e.target.getAttribute('data-id');
+            const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+
+            if (!confirm("Are you sure you want to remove this volunteer from the active roster?")) return;
+
+            e.target.disabled = true;
+            e.target.innerText = "Removing...";
+
+            try {
+                const { error } = await supabase
+                    .from('volunteers')
+                    .delete()
+                    .eq('id', targetId);
+
+                if (error) throw error;
+                triggerContextRefresh();
+            } catch (err) {
+                alert("Error deleting record: " + err.message);
+                e.target.disabled = false;
+                e.target.innerText = "Remove";
+            }
+        };
+    });
+
+    // 4. Save and Image Upload Functionality
+    document.querySelectorAll('.save-btn').forEach(btn => {
+        btn.onclick = async (e) => {
+            const rawId = e.target.getAttribute('data-id');
+            const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+            
+            const nameEl = document.getElementById(`input-name-${rawId}`);
+            const bioEl = document.getElementById(`input-bio-${rawId}`);
+            const fileInput = document.getElementById(`input-file-${rawId}`);
+
+            const updatedName = nameEl ? nameEl.value : '';
+            const updatedBio = bioEl ? bioEl.value : '';
+
+            e.target.disabled = true;
+            e.target.innerText = "Saving...";
+
+            const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
+            const originalUser = dataArray.find(v => String(v.id) === String(rawId));
+            let finalImgUrl = originalUser ? originalUser.image_url : '';
+
+            try {
+                // FIXED: Handle proper Supabase storage upload instead of crushing DB with Base64 strings
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    const selectedFile = fileInput.files[0];
+                    
+                    // Create a clean unique filename (e.g., avatars/123-timestamp.png)
+                    const fileExt = selectedFile.name.split('.').pop();
+                    const fileName = `avatars/${targetId}-${Date.now()}.${fileExt}`;
+
+                    // Upload raw file binary to a Supabase storage bucket named 'volunteer-assets'
+                    const { error: uploadError } = await supabase.storage
+                        .from('volunteer-assets')
+                        .upload(fileName, selectedFile, { cacheControl: '3600', upsert: true });
+
+                    if (uploadError) throw uploadError;
+
+                    // Fetch the clean public asset URL string
+                    const { data: publicUrlData } = supabase.storage
+                        .from('volunteer-assets')
+                        .getPublicUrl(fileName);
+
+                    finalImgUrl = publicUrlData.publicUrl;
+                }
+
+                const { error } = await supabase
+                    .from('volunteers')
+                    .update({ 
+                        name: updatedName, 
+                        bio: updatedBio,
+                        image_url: finalImgUrl
+                    })
+                    .eq('id', targetId);
+
+                if (error) throw error;
+                triggerContextRefresh();
+
+            } catch (err) {
+                alert("Error saving data: " + err.message);
+                e.target.disabled = false;
+                e.target.innerText = "Save Changes";
+            }
+        };
+    });
+}
+
+// Micro helper to consolidate application reload routines safely
+function triggerContextRefresh() {
+    if (typeof refreshTerminalContext === 'function') {
+        refreshTerminalContext();
+    } else if (typeof fetchVolunteers === 'function') {
+        fetchVolunteers();
+    } else {
+        window.location.reload();
+    }
+}
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.onclick = async (e) => {
                     const rawId = e.target.getAttribute('data-id');

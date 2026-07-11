@@ -214,7 +214,40 @@ function renderVerificationSystem() {
             </div>`;
         return;
     }
+    
+async function refreshTerminalContext() {
+            try {
+                // Fetch ALL volunteers
+                const { data: teamRows, error: rErr } = await supabase.from('volunteers').select('*').order('id', { ascending: false });
+                if (rErr) throw rErr;
+                masterVolunteersArray = teamRows;
 
+                // Fetch ALL hours logs for computations and audit trails
+                const { data: hoursRows, error: hErr } = await supabase.from('hours_log').select('*').order('id', { ascending: false });
+                if (hErr) throw hErr;
+                rawHoursLogs = hoursRows;
+
+                // 👇 ADD THESE THREE DIAGNOSTIC LINES HERE:
+                console.log("DEBUG - Volunteers Array:", masterVolunteersArray);
+                console.log("DEBUG - Raw Hours Logs:", rawHoursLogs);
+                console.log("DEBUG - Is ledger-container in HTML?:", document.getElementById('ledger-container'));
+
+                // Build performance lookup mapping hashes
+                aggregatedHoursMap = {};
+                rawHoursLogs.forEach(entry => {
+                    const count = parseFloat(entry.hours_count) || 0;
+                    aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
+                });
+
+                renderVerificationSystem();
+                renderActiveRoster();
+                renderAuditLedgerStream();
+
+            } catch (err) {
+                console.error(err);
+                alert("Terminal context refresh crash: " + err.message);
+            }
+        }
     verificationBox.innerHTML = pendingLogs.map(log => {
         const profile = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
         const volunteerName = profile ? profile.name : `Account ID: ${log.volunteer_id}`;

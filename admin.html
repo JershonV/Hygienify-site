@@ -279,7 +279,7 @@ function renderVerificationSystem() {
             });
         }
 
-     function renderActiveRoster() {
+    function renderActiveRoster() {
             const rosterBox = document.getElementById('roster-container');
             const selectDropdown = document.getElementById('volunteerSelect');
             
@@ -328,16 +328,21 @@ function renderVerificationSystem() {
                         </div>
                     </div>
                     
-                    <!-- EDIT LAYER UPDATED: Added Image URL input field -->
                     <div class="hidden space-y-5 p-2" id="edit-layer-${user.id}">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Volunteer Name</label>
                             <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
                         </div>
+                        
+                        <!-- FIXED: Real File attachment input row instead of simple URL string -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Profile Picture Link (URL)</label>
-                            <input type="text" id="input-img-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 font-mono text-sm" value="${user.image_url || ''}">
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
+                            <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
+                                <input type="file" id="input-file-${user.id}" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-cyan-500/10 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-500/20">
+                                <span id="file-status-${user.id}" class="text-xs text-slate-500 italic">No new file chosen</span>
+                            </div>
                         </div>
+
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Short Bio</label>
                             <textarea id="input-bio-${user.id}" rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500 resize-none">${user.bio || ''}</textarea>
@@ -349,13 +354,30 @@ function renderVerificationSystem() {
                     </div>
                 `;
                 rosterBox.appendChild(card);
+                
+                // Add an inline change detector to instantly show the filename when chosen
+                document.getElementById(`input-file-${user.id}`).onchange = (e) => {
+                    const file = e.target.files[0];
+                    const statusText = document.getElementById(`file-status-${user.id}`);
+                    if(file) {
+                        // Check for size restriction (5MB = 5 * 1024 * 1024 bytes)
+                        if (file.size > 5242880) {
+                            alert("This file is too large! Please choose an image smaller than 5MB.");
+                            e.target.value = '';
+                            statusText.innerText = "✖ File rejected (over 5MB limit)";
+                            statusText.className = "text-xs text-red-400 font-bold";
+                        } else {
+                            statusText.innerText = `✓ ${file.name}`;
+                            statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
+                        }
+                    }
+                };
             });
 
             attachRosterControlEvents();
         }
         
-       function attachRosterControlEvents() {
-            // Edit layout toggles
+      function attachRosterControlEvents() {
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -372,7 +394,6 @@ function renderVerificationSystem() {
                 };
             });
 
-            // Save processing functionality
             document.querySelectorAll('.save-btn').forEach(btn => {
                 btn.onclick = async (e) => {
                     const rawId = e.target.getAttribute('data-id');
@@ -380,31 +401,75 @@ function renderVerificationSystem() {
                     
                     const updatedName = document.getElementById(`input-name-${rawId}`).value;
                     const updatedBio = document.getElementById(`input-bio-${rawId}`).value;
-                    // CAPTURED: Read the value of the new picture input
-                    const updatedImg = document.getElementById(`input-img-${rawId}`).value;
+                    const fileInput = document.getElementById(`input-file-${rawId}`);
 
                     e.target.disabled = true;
                     e.target.innerText = "Saving...";
 
+                    // Find the original volunteer record to grab its existing image URL if no new file is uploaded
+                    const originalUser = masterVolunteersArray.find(v => String(v.id) === String(rawId));
+                    let finalImgUrl = originalUser ? originalUser.image_url : '';
+
                     try {
+                        // If a new local file was picked, transform it into string format before database submission
+                        if (fileInput.files && fileInput.files[0]) {
+                            const selectedFile = fileInput.files[0];
+                            
+                            // Re-verify size safety block prior to network payload building
+                            if (selectedFile.size > 5242880) {
+                                throw new Error("File exceeds 5MB size limit restriction.");
+                            }
+
+                            finalImgUrl = await new Promise((resolve, reject) => {
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.onerror = (error) => reject(error);
+                                reader.readAsDataURL(selectedFile);
+                            });
+                        }
+
                         const { error } = await supabase
                             .from('volunteers')
                             .update({ 
                                 name: updatedName, 
                                 bio: updatedBio,
-                                image_url: updatedImg // SAVES: Updates columns inside Supabase directly
+                                image_url: finalImgUrl
                             })
                             .eq('id', targetId);
 
                         if (error) throw error;
                         refreshTerminalContext();
                     } catch (err) {
-                        alert("Error committing edits: " + err.message);
+                        alert("Error saving: " + err.message);
                         e.target.disabled = false;
                         e.target.innerText = "Save Changes";
                     }
                 };
             });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const rawId = e.target.getAttribute('data-id');
+                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
+
+                    if (confirm("Permanently strip this profile entry off the public roster system?")) {
+                        e.target.disabled = true;
+                        try {
+                            const { error } = await supabase
+                                .from('volunteers')
+                                .delete()
+                                .eq('id', targetId);
+
+                            if (error) throw error;
+                            refreshTerminalContext();
+                        } catch (err) {
+                            alert("Error clearing record: " + err.message);
+                            e.target.disabled = false;
+                        }
+                    }
+                };
+            });
+        }
 
             // Remove workflow button bindings
             document.querySelectorAll('.delete-btn').forEach(btn => {

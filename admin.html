@@ -556,15 +556,18 @@
             }).join('');
         }
 
-        // ❌ Global Hour Log Delete Routine (Wipes row items smoothly)
+  // ❌ Global Hour Log Delete Routine (Wipes row items smoothly)
         async function deleteHoursRecord(requestId) {
             if (!confirm("Are you completely sure you want to permanently delete this hour record log?")) return;
+
+            // Normalize ID: Parse to integer if it's purely numeric, otherwise keep as string
+            const normalizedId = isNaN(requestId) ? requestId : parseInt(requestId, 10);
 
             try {
                 const { error } = await supabase
                     .from('hours_log')
                     .delete()
-                    .eq('id', requestId);
+                    .eq('id', normalizedId);
 
                 if (error) throw error;
                 await refreshTerminalContext();
@@ -572,6 +575,8 @@
                 alert("Failed to delete record: " + err.message);
             }
         }
+        
+        // Securely bind it to the window scope for the template engine
         window.deleteHoursRecord = deleteHoursRecord;
 
         // 📥 CSV Document Builder

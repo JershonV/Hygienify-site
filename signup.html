@@ -65,46 +65,39 @@
         // 🔒 MASTER LIST OF PRE-APPROVED EMAILS
         // =========================================================================
         // Keep this list identical to the authorized emails allowed to use the portal
-        const APPROVED_SIGNUP_EMAILS = [
-            "admin@hygienify.org",
-            "volunteer1@gmail.com",
-            "test@hygienify.org",
-            "coordinator@hygienify.org",
-            "boardmember@hygienify.org",
-            "stlouis.lead@hygienify.org",
-            "newvolunteer@gmail.com"
-        ];
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
 
-        document.getElementById('signupForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
+    // Simple frontend check to save time
+    if (password.length < 6) {
+        alert("🔒 Password must be at least 6 characters long.");
+        return;
+    }
 
-            // 1. First, check if the email is even allowed to be a volunteer
-            if (!APPROVED_SIGNUP_EMAILS.includes(email)) {
-                alert("⛔ Registration Error: This email address is not pre-approved on our volunteer verification list. Please request access from your director.");
-                return;
-            }
-
-            // 2. Next, load any accounts already saved in the browser memory
-            let customVolunteers = JSON.parse(localStorage.getItem('registeredVolunteers')) || {};
-
-            // 3. Check if they are trying to register an account that is already active
-            // We also check for your core base accounts so they can't be overwritten
-            const defaultAccounts = ["admin@hygienify.org", "volunteer1@gmail.com", "test@hygienify.org"];
-            
-            if (customVolunteers.hasOwnProperty(email) || defaultAccounts.includes(email)) {
-                alert("ℹ️ Notice: An account with this email address has already been configured and is ready to go. Redirecting you to the sign-in screen.");
-                window.location.href = 'portal.html';
-                return;
-            }
-
-            // 4. If it's a fresh, approved email, safely save their new password
-            customVolunteers[email] = password;
-            localStorage.setItem('registeredVolunteers', JSON.stringify(customVolunteers));
-
-            alert("🎉 Account Created Successfully! You are now fully verified. Redirecting you to sign in...");
-            window.location.href = 'portal.html';
+    try {
+        // 1. Tell Supabase Auth to try registering this new user
+        // Note: Replace 'supabase' with whatever your Supabase client variable is named in your script
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
         });
+
+        // 2. If Supabase rejects it (e.g., Row Level Security blocks it or email is bad)
+        if (error) {
+            alert(`⛔ Registration Error: ${error.message}`);
+            return;
+        }
+
+        // 3. Success! 
+        alert("🎉 Account Created Successfully! Please check your email for a confirmation link (if turned on) or click OK to sign in.");
+        window.location.href = 'portal.html';
+
+    } catch (err) {
+        console.error(err);
+        alert("💥 An unexpected error occurred during registration. Check your console log.");
+    }
+});
     </script>

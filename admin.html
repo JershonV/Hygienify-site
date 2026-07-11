@@ -283,41 +283,54 @@ function renderVerificationSystem() {
             const rosterBox = document.getElementById('roster-container');
             const selectDropdown = document.getElementById('volunteerSelect');
             
+            if (!rosterBox) return; // Prevent crashing if container isn't loaded yet
+            
             rosterBox.innerHTML = '';
-            selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
+            if (selectDropdown) {
+                selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
+            }
 
-            const activeProfiles = masterVolunteersArray.filter(v => v.is_approved === true);
-            document.getElementById('stat-total-volunteers').innerText = activeProfiles.length;
+            // Safe array validation check
+            const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
+            const activeProfiles = dataArray.filter(v => v.is_approved === true);
+            
+            const totalStatEl = document.getElementById('stat-total-volunteers');
+            if (totalStatEl) totalStatEl.innerText = activeProfiles.length;
 
+            const loaderEl = document.getElementById('roster-loader');
             if (activeProfiles.length === 0) {
-                document.getElementById('roster-loader').innerText = "Roster directory is currently empty.";
+                if (loaderEl) loaderEl.innerText = "Roster directory is currently empty.";
                 return;
             }
 
-            document.getElementById('roster-loader').classList.add('hidden');
+            if (loaderEl) loaderEl.classList.add('hidden');
             rosterBox.classList.remove('hidden');
 
             activeProfiles.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.innerText = user.name || "Anonymous User";
-                selectDropdown.appendChild(option);
+                if (selectDropdown) {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.innerText = user.name || "Anonymous User";
+                    selectDropdown.appendChild(option);
+                }
 
-                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
+                // Fallback protection check for missing hours objects
+                const hoursMap = (typeof aggregatedHoursMap !== 'undefined') ? aggregatedHoursMap : {};
+                const lifetimeHours = hoursMap[user.id] || 0;
 
                 const card = document.createElement('div');
-                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden";
+                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
                         <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
-                            <img src="${user.image_url}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
+                            <img src="${user.image_url || ''}" class="w-full h-full object-cover object-top" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256&h=256'">
                         </div>
                         <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
                                 <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
                                     <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${lifetimeHours.toFixed(1)} Hours</span>
+                                    <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
                                 </div>
                             </div>
                             <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
@@ -334,7 +347,6 @@ function renderVerificationSystem() {
                             <input type="text" id="input-name-${user.id}" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-base text-white focus:outline-none focus:border-cyan-500" value="${user.name || ''}">
                         </div>
                         
-                        <!-- FIXED: Real File attachment input row instead of simple URL string -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Update Profile Picture (Max 5MB)</label>
                             <div class="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl p-3">
@@ -355,42 +367,47 @@ function renderVerificationSystem() {
                 `;
                 rosterBox.appendChild(card);
                 
-                // Add an inline change detector to instantly show the filename when chosen
-                document.getElementById(`input-file-${user.id}`).onchange = (e) => {
-                    const file = e.target.files[0];
-                    const statusText = document.getElementById(`file-status-${user.id}`);
-                    if(file) {
-                        // Check for size restriction (5MB = 5 * 1024 * 1024 bytes)
-                        if (file.size > 5242880) {
-                            alert("This file is too large! Please choose an image smaller than 5MB.");
-                            e.target.value = '';
-                            statusText.innerText = "✖ File rejected (over 5MB limit)";
-                            statusText.className = "text-xs text-red-400 font-bold";
-                        } else {
-                            statusText.innerText = `✓ ${file.name}`;
-                            statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
+                const fInput = document.getElementById(`input-file-${user.id}`);
+                if (fInput) {
+                    fInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const statusText = document.getElementById(`file-status-${user.id}`);
+                        if(file && statusText) {
+                            if (file.size > 5242880) {
+                                alert("This file is too large! Please choose an image smaller than 5MB.");
+                                e.target.value = '';
+                                statusText.innerText = "✖ File rejected (over 5MB limit)";
+                                statusText.className = "text-xs text-red-400 font-bold";
+                            } else {
+                                statusText.innerText = `✓ ${file.name}`;
+                                statusText.className = "text-xs text-emerald-400 font-bold truncate max-w-[200px]";
+                            }
                         }
-                    }
-                };
+                    };
+                }
             });
 
             attachRosterControlEvents();
         }
-        
-      function attachRosterControlEvents() {
+
+        function attachRosterControlEvents() {
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.target.getAttribute('data-id');
-                    document.getElementById(`view-layer-${id}`).classList.add('hidden');
-                    document.getElementById(`edit-layer-${id}`).classList.remove('hidden');
+                    const viewL = document.getElementById(`view-layer-${id}`);
+                    const editL = document.getElementById(`edit-layer-${id}`);
+                    if (viewL) viewL.classList.add('hidden');
+                    if (editL) editL.classList.remove('hidden');
                 };
             });
 
             document.querySelectorAll('.cancel-btn').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.target.getAttribute('data-id');
-                    document.getElementById(`edit-layer-${id}`).classList.add('hidden');
-                    document.getElementById(`view-layer-${id}`).classList.remove('hidden');
+                    const viewL = document.getElementById(`view-layer-${id}`);
+                    const editL = document.getElementById(`edit-layer-${id}`);
+                    if (editL) editL.classList.add('hidden');
+                    if (viewL) viewL.classList.remove('hidden');
                 };
             });
 
@@ -399,23 +416,24 @@ function renderVerificationSystem() {
                     const rawId = e.target.getAttribute('data-id');
                     const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
                     
-                    const updatedName = document.getElementById(`input-name-${rawId}`).value;
-                    const updatedBio = document.getElementById(`input-bio-${rawId}`).value;
+                    const nameEl = document.getElementById(`input-name-${rawId}`);
+                    const bioEl = document.getElementById(`input-bio-${rawId}`);
                     const fileInput = document.getElementById(`input-file-${rawId}`);
+
+                    const updatedName = nameEl ? nameEl.value : '';
+                    const updatedBio = bioEl ? bioEl.value : '';
 
                     e.target.disabled = true;
                     e.target.innerText = "Saving...";
 
-                    // Find the original volunteer record to grab its existing image URL if no new file is uploaded
-                    const originalUser = masterVolunteersArray.find(v => String(v.id) === String(rawId));
+                    const dataArray = (typeof masterVolunteersArray !== 'undefined') ? masterVolunteersArray : [];
+                    const originalUser = dataArray.find(v => String(v.id) === String(rawId));
                     let finalImgUrl = originalUser ? originalUser.image_url : '';
 
                     try {
-                        // If a new local file was picked, transform it into string format before database submission
-                        if (fileInput.files && fileInput.files[0]) {
+                        if (fileInput && fileInput.files && fileInput.files[0]) {
                             const selectedFile = fileInput.files[0];
                             
-                            // Re-verify size safety block prior to network payload building
                             if (selectedFile.size > 5242880) {
                                 throw new Error("File exceeds 5MB size limit restriction.");
                             }
@@ -438,7 +456,15 @@ function renderVerificationSystem() {
                             .eq('id', targetId);
 
                         if (error) throw error;
-                        refreshTerminalContext();
+                        
+                        // Self-correcting update call if your reload function has a slightly different name
+                        if (typeof refreshTerminalContext === 'function') {
+                            refreshTerminalContext();
+                        } else if (typeof fetchVolunteers === 'function') {
+                            fetchVolunteers();
+                        } else {
+                            window.location.reload();
+                        }
                     } catch (err) {
                         alert("Error saving: " + err.message);
                         e.target.disabled = false;
@@ -461,7 +487,14 @@ function renderVerificationSystem() {
                                 .eq('id', targetId);
 
                             if (error) throw error;
-                            refreshTerminalContext();
+                            
+                            if (typeof refreshTerminalContext === 'function') {
+                                refreshTerminalContext();
+                            } else if (typeof fetchVolunteers === 'function') {
+                                fetchVolunteers();
+                            } else {
+                                window.location.reload();
+                            }
                         } catch (err) {
                             alert("Error clearing record: " + err.message);
                             e.target.disabled = false;
@@ -470,7 +503,6 @@ function renderVerificationSystem() {
                 };
             });
         }
-
             // Remove workflow button bindings
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.onclick = async (e) => {

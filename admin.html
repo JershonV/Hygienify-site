@@ -532,26 +532,32 @@ function renderHoursRequests(requests) {
     if (!container) return;
 
     if (requests.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm">No hours awaiting approval.</p>';
+        container.innerHTML = '<p class="text-slate-400 text-sm italic p-4">No logs or audits recorded.</p>';
         return;
     }
 
     container.innerHTML = requests.map(req => `
-        <div class="p-4 bg-slate-800 rounded-lg border border-slate-700 flex justify-between items-center mb-3">
-            <div>
-                <h4 class="font-bold text-white">${req.volunteers?.name || 'Unknown Volunteer'}</h4>
-                <p class="text-xs text-slate-400 mt-1">${req.description || 'No description provided'}</p>
-                <span class="inline-block mt-2 px-2 py-0.5 bg-sky-500/20 text-sky-400 rounded text-xs font-semibold">
-                    ${req.hours_requested} Hours Requested
-                </span>
+        <div class="relative group p-4 bg-white/5 rounded-xl border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3 pr-10">
+            
+            <!-- ❌ THE INLINE DELETE BUTTON (The X) -->
+            <button onclick="deleteHoursRecord(${req.id})" 
+                    class="absolute top-3 right-3 text-slate-500 hover:text-red-400 text-lg font-bold leading-none p-1 transition cursor-pointer" 
+                    title="Permanently delete this audit log">
+                &times;
+            </button>
+
+            <div class="min-w-0 flex-1">
+                <h4 class="font-extrabold text-white text-base truncate">${req.volunteers?.name || 'Unknown Volunteer'}</h4>
+                <p class="text-sm text-slate-300 mt-1 leading-relaxed">${req.description || 'No description provided'}</p>
+                <div class="mt-2 inline-flex items-center gap-1.5 bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-lg">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                    <span class="text-xs font-mono font-bold uppercase tracking-wide text-cyan-400">${req.hours_requested} Hours</span>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-medium transition">
-                    Approve
-                </button>
-                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-medium transition">
-                    Deny
-                </button>
+            
+            <div class="flex gap-2 w-full sm:w-auto justify-end">
+                <button onclick="updateHoursStatus(${req.id}, 'approved')" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl transition cursor-pointer">Approve</button>
+                <button onclick="updateHoursStatus(${req.id}, 'rejected')" class="text-xs bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-slate-950 font-black uppercase tracking-wider px-4 py-2 rounded-xl border border-red-500/20 transition cursor-pointer">Deny</button>
             </div>
         </div>
     `).join('');
@@ -742,6 +748,28 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
     }
 });
 
+        async function deleteHoursRecord(requestId) {
+    // ⚠️ Security sanity check so you don't misclick and erase data accidentally
+    if (!confirm("Are you completely sure you want to permanently delete this hour audit record? This action cannot be undone.")) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('hour_logs') // Make sure this matches your exact database table name
+            .delete()
+            .eq('id', requestId);
+
+        if (error) throw error;
+        
+        // Immediately refresh the views to visually drop the card out of the UI
+        if (typeof fetchPendingHours === 'function') fetchPendingHours();
+        triggerContextRefresh();
+        
+    } catch (err) {
+        alert("Failed to delete the record: " + err.message);
+    }
+}
     </script>
 </body>
 </html>

@@ -672,15 +672,7 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
         window.location.href = "portal.html";
     }
 });
-        function triggerContextRefresh() {
-    if (typeof refreshTerminalContext === 'function') {
-        refreshTerminalContext();
-    } else if (typeof fetchVolunteers === 'function') {
-        fetchVolunteers();
-    } else {
-        window.location.reload();
-    }
-}
+
     </script>
 </body>
 </html>

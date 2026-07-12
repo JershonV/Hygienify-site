@@ -391,9 +391,9 @@
                                 ${matches.map(signup => {
                                     const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                                     const name = profile ? profile.name : 'Awaiting Roster Update';
-                                    const internalId = profile ? profile.id : null;
+                                    const trackingId = profile ? profile.user_id : null; // Changed to target user_id UUID
 
-                                    if (!internalId) {
+                                    if (!trackingId) {
                                         return `<div class="text-[11px] text-slate-600 bg-white/[0.01] p-2 rounded-xl">⚠️ Account sync verification required for volunteer profile.</div>`;
                                     }
 
@@ -401,8 +401,8 @@
                                         <div class="flex items-center justify-between bg-white/[0.01] border border-white/5 p-2 rounded-xl text-xs font-mono">
                                             <span class="font-bold text-slate-200">👤 ${name}</span>
                                             <div class="flex items-center gap-2">
-                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${internalId}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
-                                                <button onclick="commitEventHours('${internalId}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
+                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${trackingId}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
+                                                <button onclick="commitEventHours('${trackingId}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
                                             </div>
                                         </div>
                                     `;
@@ -621,12 +621,12 @@
             activeProfiles.forEach(user => {
                 if (selectDropdown) {
                     const option = document.createElement('option');
-                    option.value = user.id;
+                    option.value = user.user_id; // FIXED: Sets dropdown parameters to use user_id UUID string
                     option.innerText = user.name || "Anonymous User";
                     selectDropdown.appendChild(option);
                 }
 
-                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
+                const lifetimeHours = aggregatedHoursMap[user.user_id] || 0; // FIXED: Pull data mapping based on tracking identifier
                 
                 // MANAGE STATUS DESIGNATORS Dynamically
                 const currentStatus = user.status || "Active";
@@ -828,8 +828,8 @@
             }
 
             ledgerBox.innerHTML = rawHoursLogs.map(entry => {
-                const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
-                const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
+                const profile = masterVolunteersArray.find(v => String(v.user_id) === String(entry.volunteer_id)); // FIXED: Linked match logic via UUID
+                const volunteerName = profile ? profile.name : `UUID Reference: ${entry.volunteer_id}`;
                 
                 const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
                 const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
@@ -885,7 +885,7 @@
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
             
             rawHoursLogs.forEach(log => {
-                const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
+                const user = masterVolunteersArray.find(v => String(v.user_id) === String(log.volunteer_id)); // FIXED: Unified map criteria to target tracking UUID
                 dataRows.push([
                     log.id,
                     log.created_at ? log.created_at.split('T')[0] : 'N/A',

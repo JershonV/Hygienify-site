@@ -1,4 +1,3 @@
-HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -351,6 +350,7 @@ HTML
                 const { error } = await supabase.from('volunteers').upsert({
                     user_id: currentUser.id,
                     name: fullNameValue,
+                    body: bioTextValue, // Map correctly if your table uses bio
                     bio: bioTextValue,
                     image_url: base64AvatarStr || null,
                     status: statusToApply
@@ -478,20 +478,50 @@ HTML
         }
 
         window.executeShiftSignup = async function(selectedEventId, profileHasRegistered) {
-            if (globalUserStatus === "Pending Approval") {
-                alert("🔒 Access Denied: Your registration is currently pending administration review.");
-                return;
-            }
-            if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
-                alert("🔒 Access Denied: This account status is marked as Inactive.");
-                return;
-            }
             if (profileHasRegistered) return;
+
             try {
-                const { error } = await supabase.from('event_signups').insert({ event_id: selectedEventId, user_id: currentUser.id, registered_at: new Date().toISOString() });
+                // 1. LIVE CHECK: Query the database for the active workflow status string
+                const { data: profile, error: profileError } = await supabase
+                    .from('volunteers')
+                    .select('status, name')
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+
+                if (profileError || !profile) {
+                    alert("🔒 Access Denied: Could not verify your volunteer profile details.");
+                    return;
+                }
+
+                // Admin structural override bypass rules matching checkVolunteerProfile
+                const isAdmin = currentUser.email === 'jershonvinodh@gmail.com' || profile.name === 'Jershon Vinodh';
+                const freshStatus = isAdmin ? "Admin" : (profile.status || "Pending Approval");
+
+                // 2. ENFORCE STATUS CHECKS ON HIT
+                if (freshStatus === "Pending Approval") {
+                    alert("⏳ Access Denied: Your registration is currently pending administration review.");
+                    return;
+                }
+
+                if (freshStatus.toLowerCase() === "inactive" || freshStatus.toLowerCase() === "inative") {
+                    alert("🔒 Access Denied: This account status is marked as Inactive.");
+                    return;
+                }
+
+                // 3. PROCEED WITH SIGNUP
+                const { error } = await supabase
+                    .from('event_signups')
+                    .insert({ 
+                        event_id: selectedEventId, 
+                        user_id: currentUser.id, 
+                        registered_at: new Date().toISOString() 
+                    });
+                    
                 if (error) throw error;
+                
                 alert("🎉 Position claimed!");
                 await renderOpportunitiesData();
+                
             } catch (err) {
                 alert(`Error: ${err.message}`);
             }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Hygienify</title>
-    <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <link class="w-9 h-9 object-contain" rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -98,7 +98,6 @@
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Operation Date</label>
                             <input type="date" id="eventDate" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
                         </div>
-                        <!-- Added Time-Frame Block Parameters -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Start Time</label>
@@ -242,7 +241,6 @@
         let rawHoursLogs = [];
         let aggregatedHoursMap = {};
 
-        // Helper function to format 24h clock strings into clean AM/PM readability format
         function formatTimeString(timeStr) {
             if (!timeStr) return '';
             const [hours, minutes] = timeStr.split(':');
@@ -290,7 +288,6 @@
                 if (hErr) throw hErr;
                 rawHoursLogs = hoursRows || [];
 
-                // Reset and aggregate runtime hours hash maps
                 aggregatedHoursMap = {};
                 rawHoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
@@ -300,7 +297,7 @@
                 renderVerificationSystem();
                 renderActiveRoster();
                 renderAuditLedgerStream();
-                await renderAdminEventsTracker(); // Run event system sync loop
+                await renderAdminEventsTracker(); 
 
             } catch (err) {
                 console.error("Sync Crash: ", err);
@@ -319,7 +316,6 @@
             const baseDescription = document.getElementById('eventDesc').value.trim();
             const submitBtn = e.target.querySelector('button[type="submit"]');
 
-            // Formats operational timeline attributes seamlessly into structural variables
             const description = `🕒 Time: ${formatTimeString(startTime)} - ${formatTimeString(endTime)}\n\n${baseDescription}`;
 
             submitBtn.disabled = true;
@@ -389,21 +385,25 @@
                         `;
                     }
 
-                    // Extracts and cleans timeline details for rendering clarity
                     const displayDesc = evt.description || '';
                     const hasTimeHeader = displayDesc.startsWith('🕒');
                     const timeHeader = hasTimeHeader ? displayDesc.split('\n\n')[0] : '';
                     const cleanedDesc = hasTimeHeader ? displayDesc.replace(timeHeader + '\n\n', '') : displayDesc;
 
                     return `
-                        <div class="border border-white/5 bg-slate-950/20 p-4 rounded-2xl space-y-3">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="text-sm font-bold text-white tracking-tight">${evt.title}</h4>
-                                    <p class="text-[11px] text-slate-400 font-mono">📍 ${evt.location || 'Remote'} | 📅 ${evt.event_date}</p>
+                        <div class="border border-white/5 bg-slate-950/20 p-4 rounded-2xl space-y-3 relative group/evt">
+                            <div class="flex justify-between items-start gap-4">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-sm font-bold text-white tracking-tight truncate">${evt.title}</h4>
+                                    <p class="text-[11px] text-slate-400 font-mono mt-0.5">📍 ${evt.location || 'Remote'} | 📅 ${evt.event_date}</p>
                                     ${timeHeader ? `<p class="text-[11px] text-cyan-400/90 font-mono mt-0.5">${timeHeader}</p>` : ''}
                                     <p class="text-xs text-slate-400 mt-2 line-clamp-2">${cleanedDesc}</p>
                                 </div>
+                                <!-- 🔴 NEW: DELETE EVENT BUTTON TRIGGER -->
+                                <button onclick="purgeDeploymentEvent('${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" 
+                                        class="flex-shrink-0 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer">
+                                    Delete Shift
+                                </button>
                             </div>
                             <div class="border-t border-white/5 pt-2">
                                 ${rosterMarkup}
@@ -416,6 +416,26 @@
                 feedContainer.innerHTML = `<p class="text-red-400 text-xs font-mono">Pipeline failure rendering event matrix: ${err.message}</p>`;
             }
         }
+
+        // 🔴 GLOBAL DEPLOYMENT PURGE ROUTINE
+        async function purgeDeploymentEvent(eventId, eventTitle) {
+            if (!confirm(`Are you completely sure you want to permanently delete "${eventTitle}"?\n\nThis will instantly remove the position and unregister all assigned volunteers.`)) return;
+
+            try {
+                // First, drop dependencies inside event_signups table to prevent RLS/FK errors
+                await supabase.from('event_signups').delete().eq('event_id', eventId);
+
+                // Now safely drop the event block row out of existence
+                const { error } = await supabase.from('events').delete().eq('id', eventId);
+                if (error) throw error;
+
+                alert("🗑️ Shift deployment records successfully cleared off system nodes.");
+                await refreshTerminalContext();
+            } catch (err) {
+                alert(`Purge routine error: ${err.message}`);
+            }
+        }
+        window.purgeDeploymentEvent = purgeDeploymentEvent;
 
         window.commitEventHours = async function(volunteerId, eventId, eventTitle) {
             const inputField = document.getElementById(`evt-hrs-${eventId}-${volunteerId}`);
@@ -629,7 +649,6 @@
             attachRosterControlEvents();
         }
 
-        // 🛠️ Handles buttons for Edit, Cancel, Remove, and Save changes
         function attachRosterControlEvents() {
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = (e) => {
@@ -723,7 +742,6 @@
             });
         }
 
-        // 📜 Renders the rolling historical system trail rows
         function renderAuditLedgerStream() {
             const ledgerBox = document.getElementById('ledger-container');
             if (!ledgerBox) return;
@@ -766,7 +784,6 @@
             }).join('');
         }
 
-        // ❌ Global Hour Log Delete Routine
         async function deleteHoursRecord(requestId) {
             if (!confirm("Are you completely sure you want to permanently delete this hour record log?")) return;
 
@@ -787,7 +804,6 @@
         
         window.deleteHoursRecord = deleteHoursRecord;
 
-        // 📥 CSV Document Builder
         document.getElementById('export-csv-btn').addEventListener('click', () => {
             if (!rawHoursLogs || rawHoursLogs.length === 0) return alert("No tracking rows found to export.");
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
@@ -813,7 +829,6 @@
             document.body.removeChild(temporaryLink);
         });
 
-        // ⏱️ Hours Submission Engine Form (Manual Fallback Allocation)
         document.getElementById('hoursForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -845,7 +860,6 @@
             }
         });
 
-        // Signout routing panel logic
         document.getElementById("logout-btn").addEventListener("click", async () => {
             try {
                 await supabase.auth.signOut();

@@ -1,3 +1,4 @@
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -228,11 +229,17 @@
                 const badge = document.getElementById('profileBadge');
                 badge.classList.remove('opacity-0');
 
-                // Admin rule priority definition
+                // Admin rule priority definition with auto database patching fallback
                 if (currentUser.email === 'jershonvinodh@gmail.com' || data.name === 'Jershon Vinodh') {
                     globalUserStatus = "Admin";
                     badge.textContent = "Admin";
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
+                    
+                    // Automatically patch status back to 'Active' in database if it isn't set yet
+                    if (data.status !== 'Active' && data.status !== 'Admin') {
+                        await supabase.from('volunteers').update({ status: 'Active' }).eq('user_id', currentUser.id);
+                        existingProfile.status = 'Active';
+                    }
                 } else {
                     // Fallback verification mapping
                     globalUserStatus = data.status || "Pending Approval";
@@ -333,10 +340,10 @@
             submitBtn.textContent = "Saving...";
 
             try {
-                // 🔥 FIX: Retain their current status from the DB instead of forcing 'Pending Approval' over existing active users
+                // Retain current status from DB or fall back to Admin/Active matching credentials
                 let statusToApply = "Pending Approval";
                 if (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') {
-                    statusToApply = 'Admin';
+                    statusToApply = 'Active';
                 } else if (existingProfile && existingProfile.status) {
                     statusToApply = existingProfile.status;
                 }
@@ -352,19 +359,19 @@
                 if (error) throw error;
                 
                 existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr, status: statusToApply };
-                globalUserStatus = statusToApply;
+                globalUserStatus = (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') ? 'Admin' : statusToApply;
 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
                 document.getElementById('displayName').textContent = fullNameValue;
                 document.getElementById('displayBio').textContent = bioTextValue;
 
                 const badge = document.getElementById('profileBadge');
-                badge.textContent = statusToApply;
-                if (statusToApply === 'Admin') {
+                badge.textContent = globalUserStatus;
+                if (globalUserStatus === 'Admin') {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
-                } else if (statusToApply === 'Active') {
+                } else if (globalUserStatus === 'Active') {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded";
-                } else if (statusToApply.toLowerCase() === 'inactive' || statusToApply.toLowerCase() === 'inative') {
+                } else if (globalUserStatus.toLowerCase() === 'inactive' || globalUserStatus.toLowerCase() === 'inative') {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/5 border border-rose-500/10 px-2 py-0.5 rounded";
                 } else {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2 py-0.5 rounded";
@@ -436,7 +443,6 @@
                     
                     let actionButtonHtml = "";
                     
-                    // Enforcement handler for lock states
                     if (globalUserStatus === "Admin") {
                         if (profileHasRegistered) {
                             actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 cursor-not-allowed">Claimed</button>`;

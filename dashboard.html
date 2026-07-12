@@ -102,7 +102,7 @@
                         <div class="flex-1 text-center sm:text-left space-y-1">
                             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                 <h3 id="displayName" class="text-lg font-bold text-white tracking-tight">---</h3>
-                                <span class="mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">Active Profile</span>
+                                <span id="profileBadge" class="mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">Active Profile</span>
                             </div>
                             <p id="displayBio" class="text-xs text-slate-400 leading-relaxed max-w-2xl">---</p>
                         </div>
@@ -189,14 +189,7 @@
 
                 currentUser = session.user;
                 
-                if (currentUser.email === 'jershonvinodh@gmail.com') {
-                    document.getElementById('onboarding-gate').classList.add('hidden');
-                    document.getElementById('profile-display-card').classList.add('hidden');
-                    document.getElementById('userWelcome').textContent = "Welcome back, Admin Jershon!";
-                    await loadWorkspaceFeeds();
-                    return;
-                }
-                
+                // Unified verification gate checking for all account types
                 const isProfileReady = await checkVolunteerProfile();
                 if (isProfileReady) {
                     document.getElementById('onboarding-gate').classList.add('hidden');
@@ -208,6 +201,12 @@
                     document.getElementById('profile-display-card').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').style.display = 'none';
+
+                    // Prefill name option for admin setup convenience if needed
+                    if (currentUser.email === 'jershonvinodh@gmail.com') {
+                        document.getElementById('profName').value = "Admin Jershon";
+                        document.getElementById('profBio').value = "System Administrator for Hygienify Workspace.";
+                    }
                 }
                 
                 await loadWorkspaceFeeds();
@@ -228,8 +227,16 @@
                 
                 existingProfile = data; 
                 
-                // Inject names into welcome text + display card
-                document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
+                // Add Admin styling nuances if this profile belongs to the administrator
+                if (currentUser.email === 'jershonvinodh@gmail.com') {
+                    document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
+                    const badge = document.getElementById('profileBadge');
+                    badge.textContent = "Workspace Admin";
+                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
+                } else {
+                    document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
+                }
+
                 document.getElementById('displayName').textContent = data.name;
                 document.getElementById('displayBio').textContent = data.bio || "No biography added yet.";
                 
@@ -260,11 +267,9 @@
 
         toggleEditBtn.addEventListener('click', () => {
             if (existingProfile) {
-                // Populate inputs matching updated columns
                 document.getElementById('profName').value = existingProfile.name || '';
                 document.getElementById('profBio').value = existingProfile.bio || '';
                 
-                // Form UI headers adjust to Edit Mode text
                 document.getElementById('formTitle').textContent = "Update Profile Details";
                 document.getElementById('formSubtitle').textContent = "Make adjustments to your public profile workspace context.";
                 
@@ -277,8 +282,8 @@
                 }
                 
                 cancelEditBtn.classList.remove('hidden');
-                profileDisplayCard.classList.add('hidden'); // Hide read-only state during edit
-                onboardingGate.classList.remove('hidden'); // Show form state
+                profileDisplayCard.classList.add('hidden'); 
+                onboardingGate.classList.remove('hidden'); 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
@@ -332,7 +337,6 @@
                 
                 if (error) throw error;
                 
-                // Update active profile states instantly
                 existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr };
                 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;

@@ -97,13 +97,40 @@
     </div>
 
     <!-- 🧠 Script Engine Utilities -->
-   <script type="module">
+  <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
     const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+    // =========================================================================
+    // 👁️ PASSWORD VISIBILITY TOGGLE (RESTORED & RUNNING RIGHT AWAY)
+    // =========================================================================
+    const passwordInput = document.getElementById('regPassword');
+    const toggleButton = document.getElementById('toggle-signup-password');
+    
+    if (passwordInput && toggleButton) {
+        const eyeOpen = toggleButton.querySelector('#eye-open');
+        const eyeClosed = toggleButton.querySelector('#eye-closed');
+
+        toggleButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            }
+        });
+    }
+
+    // =========================================================================
+    // ⚙️ FORM SUBMISSION & SUPABASE ROUTING LOGIC
+    // =========================================================================
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -120,7 +147,7 @@
                 email: email,
                 password: password,
                 options: {
-                    // MATCHES your Supabase Dashboard Site URL setup exactly to prevent 404 fallbacks
+                    // Force the token drop-off to line up perfectly with your site URL config
                     redirectTo: 'https://jershonv.github.io/Hygienify-site/index.html'
                 } 
             });
@@ -130,14 +157,12 @@
                 return;
             }
 
-            // Handles users that already registered previously
             if (data?.user && data.user.identities && data.user.identities.length === 0) {
                 alert("📧 An account with this email address already exists. Redirecting you to the sign-in portal.");
                 window.location.href = 'portal.html';
                 return;
             }
 
-            // Keep them on this registration page so they know they HAVE to open their email inbox first
             alert("🎉 Registration initiated! A validation link has been dispatched to your inbox. Please click the confirmation link inside that email to activate your profile.");
 
         } catch (err) {

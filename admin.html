@@ -212,6 +212,22 @@
                         </button>
                     </form>
                 </div>
+
+                <!-- 📢 Announcement Deployment Widget -->
+                <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 border-violet-500/20 bg-violet-500/[0.01]">
+                    <h3 class="text-lg sm:text-xl font-black tracking-wider uppercase text-white mb-6 flex items-center gap-2">
+                        <span class="text-violet-400">📢</span> Global Announcement
+                    </h3>
+                    <form id="announcementForm" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Broadcast Message</label>
+                            <textarea id="announcementText" required rows="4" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500" placeholder="Type system banner update here..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-violet-600 hover:bg-violet-500 text-white font-black uppercase text-xs tracking-widest py-4 rounded-xl transition-all cursor-pointer">
+                            Deploy Banner Announcement
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -292,12 +308,33 @@
                 const adminBodyEl = document.getElementById("admin-body");
                 if(adminBodyEl) adminBodyEl.classList.remove("hidden");
                 
+                await fetchLatestAnnouncement();
                 await refreshTerminalContext();
             } catch (err) {
                 console.error("Security Audit Crash:", err);
             }
         }
         securityAudit();
+
+        // 📢 Pull Existing Announcement content into textarea on layout initialization
+        async function fetchLatestAnnouncement() {
+            try {
+                const { data, error } = await supabase
+                    .from('announcements')
+                    .select('content')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                if (error) throw error;
+                const areaInput = document.getElementById('announcementText');
+                if (data && areaInput) {
+                    areaInput.value = data.content || '';
+                }
+            } catch (err) {
+                console.error("Failed fetching banner components:", err);
+            }
+        }
 
         // 🔄 Main Database Sync Controller
         async function refreshTerminalContext() {
@@ -327,6 +364,31 @@
                 alert("Terminal context refresh crash: " + err.message);
             }
         }
+
+        // 📢 ANNOUNCEMENT FORM SUBMIT ROUTINE
+        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const textContent = document.getElementById('announcementText').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Deploying parameters...";
+
+            try {
+                const { error } = await supabase
+                    .from('announcements')
+                    .insert([{ content: textContent }]);
+
+                if (error) throw error;
+
+                alert("📢 Global announcement banner updated successfully across student interfaces!");
+            } catch (err) {
+                alert(`Announcement Deployment Failed: ${err.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Deploy Banner Announcement";
+            }
+        });
 
         // EVENT ROSTER BUILDER ENGINE
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
@@ -391,7 +453,7 @@
                                 ${matches.map(signup => {
                                     const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                                     const name = profile ? profile.name : 'Awaiting Roster Update';
-                                    const trackingId = profile ? profile.user_id : null; // Changed to target user_id UUID
+                                    const trackingId = profile ? profile.user_id : null; 
 
                                     if (!trackingId) {
                                         return `<div class="text-[11px] text-slate-600 bg-white/[0.01] p-2 rounded-xl">⚠️ Account sync verification required for volunteer profile.</div>`;
@@ -621,12 +683,12 @@
             activeProfiles.forEach(user => {
                 if (selectDropdown) {
                     const option = document.createElement('option');
-                    option.value = user.user_id; // FIXED: Sets dropdown parameters to use user_id UUID string
+                    option.value = user.user_id; 
                     option.innerText = user.name || "Anonymous User";
                     selectDropdown.appendChild(option);
                 }
 
-                const lifetimeHours = aggregatedHoursMap[user.user_id] || 0; // FIXED: Pull data mapping based on tracking identifier
+                const lifetimeHours = aggregatedHoursMap[user.user_id] || 0; 
                 
                 // MANAGE STATUS DESIGNATORS Dynamically
                 const currentStatus = user.status || "Active";
@@ -828,7 +890,7 @@
             }
 
             ledgerBox.innerHTML = rawHoursLogs.map(entry => {
-                const profile = masterVolunteersArray.find(v => String(v.user_id) === String(entry.volunteer_id)); // FIXED: Linked match logic via UUID
+                const profile = masterVolunteersArray.find(v => String(v.user_id) === String(entry.volunteer_id)); 
                 const volunteerName = profile ? profile.name : `UUID Reference: ${entry.volunteer_id}`;
                 
                 const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
@@ -885,7 +947,7 @@
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
             
             rawHoursLogs.forEach(log => {
-                const user = masterVolunteersArray.find(v => String(v.user_id) === String(log.volunteer_id)); // FIXED: Unified map criteria to target tracking UUID
+                const user = masterVolunteersArray.find(v => String(v.user_id) === String(log.volunteer_id)); 
                 dataRows.push([
                     log.id,
                     log.created_at ? log.created_at.split('T')[0] : 'N/A',

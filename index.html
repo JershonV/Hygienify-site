@@ -322,6 +322,20 @@
         menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     });
+    <!-- Inside your index.html file, right before the closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
+
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
+      console.log('Verification successful! Moving to portal...');
+      window.location.href = 'portal.html'; 
+    }
+  });
 </script>
 </body>
 </html>

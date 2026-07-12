@@ -95,7 +95,6 @@
             <div id="profile-display-card" class="hidden w-full">
                 <div class="card-glass p-6 md:p-8 rounded-3xl border-white/5 bg-gradient-to-br from-white/[0.01] to-transparent">
                     <div class="flex flex-col sm:flex-row gap-6 items-center">
-                        <!-- Modified avatar wrapper with top-priority alignment focus -->
                         <div id="displayAvatarContainer" class="w-20 h-20 rounded-full border border-white/10 bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
                             <img id="displayAvatar" src="" class="w-full h-full object-cover object-top hidden" alt="Avatar">
                             <div id="displayAvatarFallback" class="text-xl font-bold text-cyan-400">?</div>
@@ -179,7 +178,7 @@
         let currentUser = null;
         let base64AvatarStr = "";
         let existingProfile = null; 
-        let globalUserStatus = "Pending Approval"; // Tracks access state application-wide
+        let globalUserStatus = "Pending Approval"; 
 
         async function runSecurityGate() {
             try {
@@ -229,18 +228,20 @@
                 const badge = document.getElementById('profileBadge');
                 badge.classList.remove('opacity-0');
 
-                // Determine hierarchy status ruleset
+                // Admin rule priority definition
                 if (currentUser.email === 'jershonvinodh@gmail.com' || data.name === 'Jershon Vinodh') {
                     globalUserStatus = "Admin";
                     badge.textContent = "Admin";
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
                 } else {
-                    // Fallback configuration if custom field isn't defined inside table structure yet
+                    // Fallback verification mapping
                     globalUserStatus = data.status || "Pending Approval";
                     badge.textContent = globalUserStatus;
 
                     if (globalUserStatus === "Active") {
                         badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded";
+                    } else if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
+                        badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/5 border border-rose-500/10 px-2 py-0.5 rounded";
                     } else {
                         badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2 py-0.5 rounded";
                     }
@@ -264,7 +265,6 @@
             }
         }
 
-        // ✏️ EDIT MODE HANDLERS
         const toggleEditBtn = document.getElementById('toggleEditProfileBtn');
         const onboardingGate = document.getElementById('onboarding-gate');
         const profileDisplayCard = document.getElementById('profile-display-card');
@@ -333,29 +333,39 @@
             submitBtn.textContent = "Saving...";
 
             try {
-                const generatedStatus = (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') ? 'Admin' : 'Pending Approval';
+                // 🔥 FIX: Retain their current status from the DB instead of forcing 'Pending Approval' over existing active users
+                let statusToApply = "Pending Approval";
+                if (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') {
+                    statusToApply = 'Admin';
+                } else if (existingProfile && existingProfile.status) {
+                    statusToApply = existingProfile.status;
+                }
                 
                 const { error } = await supabase.from('volunteers').upsert({
                     user_id: currentUser.id,
                     name: fullNameValue,
                     bio: bioTextValue,
                     image_url: base64AvatarStr || null,
-                    status: generatedStatus
+                    status: statusToApply
                 }, { onConflict: 'user_id' });
                 
                 if (error) throw error;
                 
-                existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr, status: generatedStatus };
-                globalUserStatus = generatedStatus;
+                existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr, status: statusToApply };
+                globalUserStatus = statusToApply;
 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
                 document.getElementById('displayName').textContent = fullNameValue;
                 document.getElementById('displayBio').textContent = bioTextValue;
 
                 const badge = document.getElementById('profileBadge');
-                badge.textContent = generatedStatus;
-                if (generatedStatus === 'Admin') {
+                badge.textContent = statusToApply;
+                if (statusToApply === 'Admin') {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
+                } else if (statusToApply === 'Active') {
+                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded";
+                } else if (statusToApply.toLowerCase() === 'inactive' || statusToApply.toLowerCase() === 'inative') {
+                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/5 border border-rose-500/10 px-2 py-0.5 rounded";
                 } else {
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2 py-0.5 rounded";
                 }
@@ -426,8 +436,16 @@
                     
                     let actionButtonHtml = "";
                     
-                    // Enforcement engine based on validation state
-                    if (globalUserStatus === "Pending Approval") {
+                    // Enforcement handler for lock states
+                    if (globalUserStatus === "Admin") {
+                        if (profileHasRegistered) {
+                            actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 cursor-not-allowed">Claimed</button>`;
+                        } else {
+                            actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}', false)" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
+                        }
+                    } else if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
+                        actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-rose-400/40 border border-white/5 cursor-not-allowed">Account Inactive</button>`;
+                    } else if (globalUserStatus === "Pending Approval") {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed">Pending Approval</button>`;
                     } else if (profileHasRegistered) {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 cursor-not-allowed">Claimed</button>`;
@@ -455,7 +473,11 @@
 
         window.executeShiftSignup = async function(selectedEventId, profileHasRegistered) {
             if (globalUserStatus === "Pending Approval") {
-                alert("🔒 Access Denied: Your registration context is currently pending administration review.");
+                alert("🔒 Access Denied: Your registration is currently pending administration review.");
+                return;
+            }
+            if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
+                alert("🔒 Access Denied: This account status is marked as Inactive.");
                 return;
             }
             if (profileHasRegistered) return;

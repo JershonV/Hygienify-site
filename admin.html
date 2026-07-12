@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Hygienify</title>
-    <link class="w-9 h-9 object-contain" rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -276,7 +276,7 @@
         </div>
     </main>
 
-  <script type="module">
+    <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
         const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
@@ -483,12 +483,13 @@
                                         return `<div class="text-[11px] text-slate-600 bg-white/[0.01] p-2 rounded-xl">⚠️ Account sync verification required for volunteer profile.</div>`;
                                     }
 
+                                    const safeTitle = evt.title.replace(/'/g, "\\'");
                                     return `
                                         <div class="flex items-center justify-between bg-white/[0.01] border border-white/5 p-2 rounded-xl text-xs font-mono">
                                             <span class="font-bold text-slate-200">👤 ${name}</span>
                                             <div class="flex items-center gap-2">
                                                 <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${trackingId}" class="w-16 bg-slate-900 border border-white/5 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
-                                                <button onclick="commitEventHours('${trackingId}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-bold text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
+                                                <button onclick="commitEventHours('${trackingId}', '${evt.id}', '${safeTitle}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-bold text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
                                             </div>
                                         </div>
                                     `;
@@ -501,6 +502,7 @@
                     const hasTimeHeader = displayDesc.startsWith('🕒');
                     const timeHeader = hasTimeHeader ? displayDesc.split('\n\n')[0] : '';
                     const cleanedDesc = hasTimeHeader ? displayDesc.replace(timeHeader + '\n\n', '') : displayDesc;
+                    const safeTitleForDelete = evt.title.replace(/'/g, "\\'");
 
                     return `
                         <div class="border border-white/5 bg-slate-950/20 p-4 rounded-2xl space-y-3 relative group/evt">
@@ -514,7 +516,7 @@
                                     ${timeHeader ? `<p class="text-[11px] text-cyan-400/90 font-mono mt-0.5">${timeHeader}</p>` : ''}
                                     <p class="text-xs text-slate-400 mt-2 line-clamp-2">${cleanedDesc}</p>
                                 </div>
-                                <button onclick="purgeDeploymentEvent('${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" 
+                                <button onclick="purgeDeploymentEvent('${evt.id}', '${safeTitleForDelete}')" 
                                         class="flex-shrink-0 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-[10px] font-semibold px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer">
                                     Delete Shift
                                 </button>
@@ -689,7 +691,6 @@
             });
         }
 
-        // Global functions exposed to window for handling queue approvals cleanly
         window.handleVerifyAction = async function(id) {
             const targetId = isNaN(id) ? id : parseInt(id, 10);
             try {
@@ -714,28 +715,23 @@
 
         async function executeVolunteerWipe(volunteerInternalId) {
             try {
-                // Find user_id and email configuration details first
                 const { data: targetVol } = await supabase.from('volunteers').select('user_id, email').eq('id', volunteerInternalId).maybeSingle();
                 
                 let fallbackEmail = targetVol ? targetVol.email : null;
                 let userUuid = targetVol ? targetVol.user_id : null;
 
                 if (userUuid) {
-                    // Try getting email via database RPC if fallback schema is blank
                     if (!fallbackEmail) {
                         const { data: userData } = await supabase.rpc('get_user_email_by_id', { user_uuid: userUuid });
                         if (userData) fallbackEmail = userData;
                     }
-                    // Terminate all related event claims
                     await supabase.from('event_signups').delete().eq('user_id', userUuid);
                 }
                 
                 if (fallbackEmail) {
-                    // Drop them explicitly off allowed white list configuration
                     await supabase.from('allowed_emails').delete().eq('email', fallbackEmail.toLowerCase().trim());
                 }
                 
-                // Clear out row profile records completely
                 await supabase.from('volunteers').delete().eq('id', volunteerInternalId);
                 await refreshTerminalContext();
                 
@@ -784,7 +780,7 @@
 
                 const lifetimeHours = aggregatedHoursMap[user.user_id] || 0; 
                 const currentStatus = user.status || "Active";
-                const isUserInactive = currentStatus.toLowerCase() === 'inactive' || currentStatus.toLowerCase() === 'inative';
+                const isUserInactive = currentStatus.toLowerCase() === 'inactive';
                 const toggleBadgeColor = isUserInactive ? 'bg-rose-500/10 text-rose-400 border-rose-500/10' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/10';
 
                 const card = document.createElement('div');
@@ -866,7 +862,7 @@
                 btn.onclick = async (e) => {
                     const id = e.target.getAttribute('data-id');
                     const statusText = e.target.getAttribute('data-status');
-                    const nextStatusValue = (statusText.toLowerCase() === 'inactive' || statusText.toLowerCase() === 'inative') ? 'Active' : 'Inactive';
+                    const nextStatusValue = (statusText.toLowerCase() === 'inactive') ? 'Active' : 'Inactive';
                     
                     e.target.disabled = true;
                     try {

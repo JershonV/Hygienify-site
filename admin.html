@@ -371,7 +371,7 @@
                 rawHoursLogs = hoursRows || [];
 
                 // Fetch event signups and map them to window cache for notification processing
-                const { data: signupsList, error: signupErr } = await supabase.from('event_signups').select('event_id, user_id');
+                const { data: signupsList, error: signupErr } = await supabase.from('event_signups').select('id, event_id, user_id, admin_read');
                 if (!signupErr) {
                     window.latestSignupsCache = signupsList || [];
                 }
@@ -572,6 +572,22 @@
             }
         }
 
+        // Global function handler bound to window to process alerts marking routine
+        window.dismissAlertItem = async function(type, rowId) {
+            try {
+                const targetTable = type === 'account' ? 'volunteers' : 'event_signups';
+                const { error } = await supabase
+                    .from(targetTable)
+                    .update({ admin_read: true })
+                    .eq('id', rowId);
+
+                if (error) throw error;
+                await refreshTerminalContext();
+            } catch (err) {
+                console.error("Failed to dismiss item: ", err);
+            }
+        }
+
         function renderVerificationSystem() {
             const queueBox = document.getElementById('queue-container');
             const queueLoader = document.getElementById('queue-loader');
@@ -582,27 +598,31 @@
             if(!queueBox) return;
             queueBox.innerHTML = '';
 
-            // 1. Grab pending account creations
-            const pendingAccounts = masterVolunteersArray.filter(v => v.status === 'Pending Approval');
+            // 1. Grab unread pending account creations
+            const pendingAccounts = masterVolunteersArray.filter(v => v.status === 'Pending Approval' && !v.admin_read);
 
             // 2. Build multi-channel unified alerts array for the bell drop-down
             let activeAlerts = [];
 
-            // Feed pending profiles into active alert notifications array
+            // Feed unread pending profiles into active alert notifications array
             pendingAccounts.forEach(user => {
                 activeAlerts.push({
+                    id: user.id,
                     title: user.name || 'New Registration',
                     meta: 'Awaiting profile verification',
                     type: 'account'
                 });
             });
 
-            // Feed new live shift/event signups into active alert notifications array
+            // Feed unread live shift/event signups into active alert notifications array
             const globalSignups = window.latestSignupsCache || [];
-            globalSignups.forEach(signup => {
+            const unreadSignups = globalSignups.filter(s => !s.admin_read);
+
+            unreadSignups.forEach(signup => {
                 const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                 const name = profile ? profile.name : 'A volunteer';
                 activeAlerts.push({
+                    id: signup.id,
                     title: `${name} joined a shift!`,
                     meta: 'Registered for an open event position',
                     type: 'signup'
@@ -620,11 +640,14 @@
                 if (bellAlertsList) {
                     bellAlertsList.innerHTML = activeAlerts.map(alertItem => `
                         <div class="p-2 rounded-xl ${alertItem.type === 'account' ? 'bg-amber-500/5 border-amber-500/10' : 'bg-cyan-500/5 border-cyan-500/10'} border flex items-center justify-between gap-2 text-[11px]">
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <p class="font-bold text-slate-200 truncate">${alertItem.title}</p>
                                 <p class="text-[10px] text-slate-400 font-mono">${alertItem.meta}</p>
                             </div>
-                            <span class="w-1.5 h-1.5 rounded-full ${alertItem.type === 'account' ? 'bg-amber-400' : 'bg-cyan-400'} flex-shrink-0 animate-pulse"></span>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <button onclick="dismissAlertItem('${alertItem.type}', '${alertItem.id}')" class="text-[9px] font-bold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-1.5 py-0.5 rounded transition-all cursor-pointer">Dismiss</button>
+                                <span class="w-1.5 h-1.5 rounded-full ${alertItem.type === 'account' ? 'bg-amber-400' : 'bg-cyan-400'} animate-pulse"></span>
+                            </div>
                         </div>
                     `).join('');
                 }
@@ -639,8 +662,9 @@
                 }
             }
 
-            // Keep original Pending Approvals Visual Layout unchanged
-            if (pendingAccounts.length === 0) {
+            // Keep original Pending Approvals Visual Layout unchanged (showing all non-approved accounts)
+            const allPendingToDisplay = masterVolunteersArray.filter(v => v.status === 'Pending Approval');
+            if (allPendingToDisplay.length === 0) {
                 if(queueLoader) {
                     queueLoader.innerText = "✓ System check complete. No accounts awaiting authorization.";
                     queueLoader.className = "text-xs font-medium text-slate-500 font-mono py-1";
@@ -652,7 +676,7 @@
             if(queueLoader) queueLoader.classList.add('hidden');
             queueBox.classList.remove('hidden');
 
-            pendingAccounts.forEach(user => {
+            allPendingToDisplay.forEach(user => {
                 const node = document.createElement('div');
                 node.className = "bg-white/[0.02] border border-amber-500/10 rounded-2xl p-4 flex flex-col sm:flex-row items-start justify-between gap-4";
                 node.innerHTML = `
@@ -680,7 +704,7 @@
                     e.target.disabled = true;
                     e.target.innerText = "Verifying...";
                     try {
-                        const { error } = await supabase.from('volunteers').update({ status: 'Active' }).eq('id', targetId);
+                        const { error } = await supabase.from('volunteers').update({ status: 'Active', admin_read: true }).eq('id', targetId);
                         if (error) throw error;
                         refreshTerminalContext();
                     } catch (err) { 

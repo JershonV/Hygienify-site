@@ -560,18 +560,18 @@
                     
                     if (globalUserStatus === "Admin") {
                         if (profileHasRegistered) {
-                            actionButtonHtml = `<button onclick="executeShiftUnclaim('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
+                            actionButtonHtml = `<button data-id="${opportunity.id}" data-action="unclaim" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
                         } else {
-                            actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
+                            actionButtonHtml = `<button data-id="${opportunity.id}" data-action="claim" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
                         }
                     } else if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-rose-400/40 border border-white/5 cursor-not-allowed">Account Inactive</button>`;
                     } else if (globalUserStatus === "Pending Approval") {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed">Pending Approval</button>`;
                     } else if (profileHasRegistered) {
-                        actionButtonHtml = `<button onclick="executeShiftUnclaim('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
+                        actionButtonHtml = `<button data-id="${opportunity.id}" data-action="unclaim" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
                     } else {
-                        actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
+                        actionButtonHtml = `<button data-id="${opportunity.id}" data-action="claim" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
                     }
 
                     return `
@@ -587,12 +587,26 @@
                             </div>
                         </div>`;
                 }).join('');
+
+                // 🔌 NATIVE ROBUST DOM EVENT listeners attachment context loop
+                elementFeedContainer.querySelectorAll('button[data-id]').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const targetId = btn.getAttribute('data-id');
+                        const actionType = btn.getAttribute('data-action');
+                        if (actionType === 'claim') {
+                            await executeShiftSignup(targetId);
+                        } else if (actionType === 'unclaim') {
+                            await executeShiftUnclaim(targetId);
+                        }
+                    });
+                });
+
             } catch (err) {
                 elementFeedContainer.innerHTML = `<div class="col-span-full p-6 text-center text-slate-500 text-xs border border-dashed border-white/10 rounded-xl font-medium tracking-wide">No open shifts posted.</div>`;
             }
         }
 
-        window.executeShiftSignup = async function(selectedEventId) {
+        async function executeShiftSignup(selectedEventId) {
             try {
                 const { data: profile, error: profileError } = await supabase
                     .from('volunteers')
@@ -636,7 +650,7 @@
             }
         }
 
-        window.executeShiftUnclaim = async function(selectedEventId) {
+        async function executeShiftUnclaim(selectedEventId) {
             if (!confirm("Are you sure you want to unclaim this volunteer position shift?")) return;
             
             try {

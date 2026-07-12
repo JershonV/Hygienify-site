@@ -15,19 +15,21 @@
             overflow-x: hidden; 
         }
         
-        /* 🎨 CUSTOM SCROLLBAR GLOBAL STYLES */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* 🎨 OPTIMIZED COMPACT CUSTOM SCROLLBAR STYLES (#3) */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-        ::-webkit-scrollbar-track {
-            background: #020617;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 8px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #164e63;
-            border-radius: 10px;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        ::-webkit-scrollbar-thumb:hover {
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #22d3ee;
         }
 
@@ -107,7 +109,7 @@
                 </button>
             </header>
 
-            <!-- 📢 WORKSPACE ANNOUNCEMENTS BANNER -->
+            <!-- 📢 WORKSPACE ANNOUNCEMENTS BANNER (#4: Edit text below freely) -->
             <div class="card-glass rounded-3xl p-6 bg-gradient-to-r from-cyan-950/20 to-slate-900/40 border-cyan-500/10">
                 <div class="flex items-start gap-4">
                     <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl text-cyan-400 shrink-0">
@@ -499,15 +501,15 @@
 
                 if (ledgerContainer) {
                     ledgerContainer.innerHTML = data.map(log => {
-                        // Extract and format clean timestamp output details
                         const rawDateStr = log.created_at || log.logged_at;
+                        // #2: INCREASE DATE READABILITY WITH TEXT-XS AND HIGH CONTRAST BADGING
                         const cleanDate = rawDateStr ? new Date(rawDateStr).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'N/A';
 
                         return `
-                            <div class="p-3 bg-white/[0.01] border border-white/5 rounded-xl space-y-1">
-                                <div class="flex justify-between items-center">
+                            <div class="p-3.5 bg-white/[0.01] border border-white/5 rounded-xl space-y-2">
+                                <div class="flex justify-between items-center gap-2">
                                     <span class="text-xs font-black text-indigo-400 font-mono">+${parseFloat(log.hours_count).toFixed(1)} Hrs</span>
-                                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-1.5 py-0.5 rounded">${cleanDate}</span>
+                                    <span class="text-[11px] text-cyan-300 font-bold font-sans bg-cyan-950/40 border border-cyan-500/10 px-2 py-0.5 rounded-md shadow-sm">${cleanDate}</span>
                                 </div>
                                 <p class="text-[11px] text-slate-300 font-medium leading-relaxed">${log.description || 'Service contribution log entry.'}</p>
                             </div>
@@ -620,7 +622,6 @@
             }
         }
 
-        // 🛑 UNCLAIM SHIFT MUTATION WORKFLOW ROUTINE
         window.executeShiftUnclaim = async function(selectedEventId) {
             if (!confirm("Are you sure you want to unclaim this volunteer position shift?")) return;
             

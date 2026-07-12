@@ -210,12 +210,37 @@
 
         async function checkVolunteerProfile() {
             try {
-                // Fetch the real database row connected to your authenticated user ID
-                const { data, error } = await supabase
+                // 1. Try to find the profile bound to your exact auth ID
+                let { data, error } = await supabase
                     .from('volunteers')
-                    .select('name, bio, image_url')
+                    .select('id, name, bio, image_url, user_id')
                     .eq('user_id', currentUser.id)
                     .maybeSingle();
+
+                // 2. AUTO-RESCUE LINKAGE: If your row isn't found by User ID, check if the original orphan row exists by name
+                if (!data && currentUser.email === 'jershonvinodh@gmail.com') {
+                    const { data: nameMatch } = await supabase
+                        .from('volunteers')
+                        .select('id, name, bio, image_url, user_id')
+                        .eq('name', 'Jershon Vinodh')
+                        .is('user_id', null) 
+                        .limit(1)
+                        .maybeSingle();
+
+                    if (nameMatch) {
+                        // Automatically overwrite the 'null' user_id field with your real Auth ID string!
+                        const { data: fixedRow, error: saveErr } = await supabase
+                            .from('volunteers')
+                            .update({ user_id: currentUser.id })
+                            .eq('id', nameMatch.id)
+                            .select()
+                            .single();
+                        
+                        if (!saveErr && fixedRow) {
+                            data = fixedRow; 
+                        }
+                    }
+                }
 
                 if (error || !data) return false;
                 
@@ -225,9 +250,9 @@
                 document.getElementById('displayName').textContent = data.name;
                 document.getElementById('displayBio').textContent = data.bio || "No biography added yet.";
                 
-                // If it's your email, swap the visual badge styling to "Admin" seamlessly
+                // Keep you as Admin style visually on the dashboard
                 const badge = document.getElementById('profileBadge');
-                if (currentUser.email === 'jershonvinodh@gmail.com') {
+                if (currentUser.email === 'jershonvinodh@gmail.com' || data.name === 'Jershon Vinodh') {
                     badge.textContent = "Admin";
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
                 } else {

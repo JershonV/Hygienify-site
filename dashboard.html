@@ -200,12 +200,6 @@
                     document.getElementById('profile-display-card').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').style.display = 'none';
-
-                    // Onboarding default setup text falls back here ONLY if table row doesn't exist
-                    if (currentUser.email === 'jershonvinodh@gmail.com') {
-                        document.getElementById('profName').value = "Admin Jershon";
-                        document.getElementById('profBio').value = "System Administrator for Hygienify Workspace.";
-                    }
                 }
                 
                 await loadWorkspaceFeeds();
@@ -216,33 +210,24 @@
 
         async function checkVolunteerProfile() {
             try {
-                // Step 1: ALWAYS query the database entry row first to populate real fields
+                // Fetch the real database row connected to your authenticated user ID
                 const { data, error } = await supabase
                     .from('volunteers')
                     .select('name, bio, image_url')
                     .eq('user_id', currentUser.id)
                     .maybeSingle();
 
-                const isAdminEmail = (currentUser.email === 'jershonvinodh@gmail.com');
-
-                // If error or missing row for an everyday volunteer account, push to onboarding gate
-                if (!data && !isAdminEmail) return false;
-                if (error && !isAdminEmail) return false;
-
-                // Step 2: Establish the base dataset reference (fallback defaults to placeholder string if table row is empty)
-                existingProfile = data || {
-                    name: "Admin Jershon",
-                    bio: "System Administrator for Hygienify Workspace.",
-                    image_url: ""
-                };
+                if (error || !data) return false;
                 
-                document.getElementById('userWelcome').textContent = `Welcome back, ${existingProfile.name}!`;
-                document.getElementById('displayName').textContent = existingProfile.name;
-                document.getElementById('displayBio').textContent = existingProfile.bio || "No biography added yet.";
+                existingProfile = data; 
                 
-                // Step 3: Explicitly check styling properties & print correct badges
+                document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
+                document.getElementById('displayName').textContent = data.name;
+                document.getElementById('displayBio').textContent = data.bio || "No biography added yet.";
+                
+                // If it's your email, swap the visual badge styling to "Admin" seamlessly
                 const badge = document.getElementById('profileBadge');
-                if (isAdminEmail) {
+                if (currentUser.email === 'jershonvinodh@gmail.com') {
                     badge.textContent = "Admin";
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
                 } else {
@@ -252,14 +237,14 @@
 
                 const avatarImg = document.getElementById('displayAvatar');
                 const avatarFallback = document.getElementById('displayAvatarFallback');
-                if (existingProfile.image_url) {
-                    avatarImg.src = existingProfile.image_url;
+                if (data.image_url) {
+                    avatarImg.src = data.image_url;
                     avatarImg.classList.remove('hidden');
                     avatarFallback.classList.add('hidden');
                 } else {
                     avatarImg.classList.add('hidden');
                     avatarFallback.classList.remove('hidden');
-                    avatarFallback.textContent = existingProfile.name.charAt(0).toUpperCase();
+                    avatarFallback.textContent = data.name.charAt(0).toUpperCase();
                 }
 
                 return true;

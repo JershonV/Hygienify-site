@@ -315,7 +315,10 @@
                 aggregatedHoursMap = {};
                 rawHoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
-                    aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
+                    // Aggregate using user_id mapping
+                    if (entry.user_id) {
+                        aggregatedHoursMap[entry.user_id] = (aggregatedHoursMap[entry.user_id] || 0) + count;
+                    }
                 });
 
                 renderVerificationSystem();
@@ -393,9 +396,8 @@
                                 ${matches.map(signup => {
                                     const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                                     const name = profile ? profile.name : 'Awaiting Roster Update';
-                                    const internalId = profile ? profile.id : null;
 
-                                    if (!internalId) {
+                                    if (!signup.user_id) {
                                         return `<div class="text-[11px] text-slate-600 bg-white/[0.01] p-2 rounded-xl">⚠️ Account sync verification required for volunteer profile.</div>`;
                                     }
 
@@ -403,8 +405,8 @@
                                         <div class="flex items-center justify-between bg-white/[0.01] border border-white/5 p-2 rounded-xl text-xs font-mono">
                                             <span class="font-bold text-slate-200">👤 ${name}</span>
                                             <div class="flex items-center gap-2">
-                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${internalId}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
-                                                <button onclick="commitEventHours('${internalId}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
+                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${signup.user_id}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
+                                                <button onclick="commitEventHours('${signup.user_id}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
                                             </div>
                                         </div>
                                     `;
@@ -463,8 +465,8 @@
         }
         window.purgeDeploymentEvent = purgeDeploymentEvent;
 
-        window.commitEventHours = async function(volunteerId, eventId, eventTitle) {
-            const inputField = document.getElementById(`evt-hrs-${eventId}-${volunteerId}`);
+        window.commitEventHours = async function(userId, eventId, eventTitle) {
+            const inputField = document.getElementById(`evt-hrs-${eventId}-${userId}`);
             const baseValue = parseFloat(inputField.value);
 
             if (isNaN(baseValue) || baseValue <= 0) {
@@ -474,7 +476,7 @@
 
             try {
                 const { error } = await supabase.from('hours_log').insert([{
-                    volunteer_id: volunteerId,
+                    user_id: userId,
                     hours_count: baseValue,
                     description: `Logged via event: ${eventTitle}`
                 }]);
@@ -621,14 +623,14 @@
             rosterBox.classList.remove('hidden');
 
             activeProfiles.forEach(user => {
-                if (selectDropdown) {
+                if (selectDropdown && user.user_id) {
                     const option = document.createElement('option');
-                    option.value = user.id;
+                    option.value = user.user_id; // Set value to auth UUID to appease hours_log schema
                     option.innerText = user.name || "Anonymous User";
                     selectDropdown.appendChild(option);
                 }
 
-                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
+                const lifetimeHours = aggregatedHoursMap[user.user_id] || 0;
                 
                 // 🔵 #3: MANAGE STATUS DESIGNATORS Dynamically
                 const currentStatus = user.status || "Active";
@@ -830,8 +832,9 @@
             }
 
             ledgerBox.innerHTML = rawHoursLogs.map(entry => {
-                const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
-                const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
+                // Match with master array on user_id instead of internal increment id
+                const profile = masterVolunteersArray.find(v => String(v.user_id) === String(entry.user_id));
+                const volunteerName = profile ? profile.name : `Account Node: ${entry.user_id ? entry.user_id.substring(0,8) : 'Unknown'}`;
                 
                 const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
                 const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
@@ -887,7 +890,7 @@
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
             
             rawHoursLogs.forEach(log => {
-                const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
+                const user = masterVolunteersArray.find(v => String(v.user_id) === String(log.user_id));
                 dataRows.push([
                     log.id,
                     log.created_at ? log.created_at.split('T')[0] : 'N/A',
@@ -912,7 +915,7 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const volunteerSelect = document.getElementById('volunteerSelect');
             
-            const volunteerId = volunteerSelect.value;
+            const userId = volunteerSelect.value;
             const hourValue = parseFloat(document.getElementById('hoursCount').value);
             const operationDesc = document.getElementById('hoursDesc').value.trim();
 
@@ -922,7 +925,7 @@
             try {
                 const { error } = await supabase
                     .from('hours_log')
-                    .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
+                    .insert([{ user_id: userId, hours_count: hourValue, description: operationDesc }]);
 
                 if (error) throw error;
 

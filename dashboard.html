@@ -194,16 +194,17 @@
 
         async function checkVolunteerProfile() {
             try {
+                // 🛠️ MIGRATED: Targeting 'volunteers' via 'user_id' matching columns 'name', 'bio', 'image_url'
                 const { data, error } = await supabase
-                    .from('volunteer_profiles')
-                    .select('full_name, bio, avatar_url')
-                    .eq('id', currentUser.id)
+                    .from('volunteers')
+                    .select('name, bio, image_url')
+                    .eq('user_id', currentUser.id)
                     .maybeSingle();
 
                 if (error || !data) return false;
                 
                 existingProfile = data; // Keep context referenced
-                document.getElementById('userWelcome').textContent = `Welcome back, ${data.full_name}!`;
+                document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
                 return true;
             } catch (err) {
                 return false;
@@ -217,16 +218,16 @@
 
         toggleEditBtn.addEventListener('click', () => {
             if (existingProfile) {
-                // Populate inputs
-                document.getElementById('profName').value = existingProfile.full_name || '';
+                // Populate inputs matching updated columns
+                document.getElementById('profName').value = existingProfile.name || '';
                 document.getElementById('profBio').value = existingProfile.bio || '';
                 
                 // Form UI headers adjust to Edit Mode text
                 document.getElementById('formTitle').textContent = "Update Profile Details";
                 document.getElementById('formSubtitle').textContent = "Make adjustments to your public profile workspace context.";
                 
-                if (existingProfile.avatar_url) {
-                    base64AvatarStr = existingProfile.avatar_url;
+                if (existingProfile.image_url) {
+                    base64AvatarStr = existingProfile.image_url;
                     const imgPreviewNode = document.getElementById('avatarPreview');
                     imgPreviewNode.src = base64AvatarStr;
                     imgPreviewNode.classList.remove('hidden');
@@ -274,18 +275,18 @@
             const bioTextValue = document.getElementById('profBio').value.trim();
 
             try {
-                // Using 'upsert' instead of insert so existing keys update effortlessly
-                const { error } = await supabase.from('volunteer_profiles').upsert({
-                    id: currentUser.id,
-                    full_name: fullNameValue,
+                // 🛠️ MIGRATED: Upsert updates using 'user_id' target mapping into new column structures 
+                const { error } = await supabase.from('volunteers').upsert({
+                    user_id: currentUser.id,
+                    name: fullNameValue,
                     bio: bioTextValue,
-                    avatar_url: base64AvatarStr || null
-                });
+                    image_url: base64AvatarStr || null
+                }, { onConflict: 'user_id' });
                 
                 if (error) throw error;
                 
                 // Update local caching instance references 
-                existingProfile = { full_name: fullNameValue, bio: bioTextValue, avatar_url: base64AvatarStr };
+                existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr };
                 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
                 onboardingGate.classList.add('hidden');

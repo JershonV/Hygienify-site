@@ -97,86 +97,54 @@
     </div>
 
     <!-- 🧠 Script Engine Utilities -->
-    <script type="module">
-        function initSignupPasswordToggle() {
-            const passwordInput = document.getElementById('regPassword');
-            const toggleButton = document.getElementById('toggle-signup-password');
-            
-            if (!passwordInput || !toggleButton) return;
-            
-            const eyeOpen = toggleButton.querySelector('#eye-open');
-            const eyeClosed = toggleButton.querySelector('#eye-closed');
+   <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-            toggleButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    eyeOpen.classList.remove('hidden');
-                    eyeClosed.classList.add('hidden');
-                } else {
-                    passwordInput.type = 'password';
-                    eyeOpen.classList.add('hidden');
-                    eyeClosed.classList.remove('hidden');
-                }
-            });
+    const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const password = document.getElementById('regPassword').value;
+
+        if (password.length < 6) {
+            alert("🔒 Password must be at least 6 characters long.");
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initSignupPasswordToggle();
-        });
-    </script>
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    // MATCHES your Supabase Dashboard Site URL setup exactly to prevent 404 fallbacks
+                    redirectTo: 'https://jershonv.github.io/Hygienify-site/index.html'
+                } 
+            });
 
-    <script type="module">
-        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-        const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-        // =========================================================================
-        // ⚙️ FORM SUBMISSION LOGIC (WITH ALREADY-EXISTS HANDLING)
-        // =========================================================================
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
-
-            if (password.length < 6) {
-                alert("🔒 Password must be at least 6 characters long.");
+            if (error) {
+                alert(`⛔ Registration Error: ${error.message}`);
                 return;
             }
 
-try {
-    const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-            // 🎯 Updated to point exactly to your live repository path
-            redirectTo: 'https://jershonv.github.io/Hygienify-site/portal.html'
-        } // <-- Fixed: Added this missing bracket to close options!
-    });
-
-                if (error) {
-                    alert(`⛔ Registration Error: ${error.message}`);
-                    return;
-                }
-
-                // Check if identity already exists on the database
-                if (data?.user && data.user.identities && data.user.identities.length === 0) {
-                    alert("📧 An account with this email address already exists. Redirecting you to the sign-in portal.");
-                    window.location.href = 'portal.html';
-                    return;
-                }
-
-                alert("🎉 Account Created Successfully! Please check your email for a confirmation link or click OK to sign in.");
+            // Handles users that already registered previously
+            if (data?.user && data.user.identities && data.user.identities.length === 0) {
+                alert("📧 An account with this email address already exists. Redirecting you to the sign-in portal.");
                 window.location.href = 'portal.html';
-
-            } catch (err) {
-                console.error(err);
-                alert("💥 An unexpected error occurred during registration. Check your console log.");
+                return;
             }
-        });
-    </script>
+
+            // Keep them on this registration page so they know they HAVE to open their email inbox first
+            alert("🎉 Registration initiated! A validation link has been dispatched to your inbox. Please click the confirmation link inside that email to activate your profile.");
+
+        } catch (err) {
+            console.error(err);
+            alert("💥 An unexpected error occurred during registration. Check your console log.");
+        }
+    });
+</script>
 </body>
 </html>

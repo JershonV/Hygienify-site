@@ -105,14 +105,14 @@
             </div>
         </div>
 
-<div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
-    <a href="index.html" class="nav-link active text-slate-400 hover:text-white transition">Home</a>
-    <a href="about.html" class="nav-link text-slate-400 hover:text-white transition">About</a>
-    <a href="programs.html" class="nav-link text-slate-400 hover:text-white transition">Programs</a>
-    <a href="volunteer.html" class="nav-link text-slate-400 hover:text-white transition">Volunteer</a>
-    <a href="team.html" class="nav-link text-slate-400 hover:text-white transition">Team</a>
-    <a href="goals.html" class="nav-link text-slate-400 hover:text-white transition">Goals</a>
-</div>
+        <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
+            <a href="index.html" class="nav-link active text-slate-400 hover:text-white transition">Home</a>
+            <a href="about.html" class="nav-link text-slate-400 hover:text-white transition">About</a>
+            <a href="programs.html" class="nav-link text-slate-400 hover:text-white transition">Programs</a>
+            <a href="volunteer.html" class="nav-link text-slate-400 hover:text-white transition">Volunteer</a>
+            <a href="team.html" class="nav-link text-slate-400 hover:text-white transition">Team</a>
+            <a href="goals.html" class="nav-link text-slate-400 hover:text-white transition">Goals</a>
+        </div>
 
         <a href="https://hcb.hackclub.com/donations/start/hygienify" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
 
@@ -225,7 +225,7 @@
                 <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
             </div>
             <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
-                →
+                &rarr;
             </div>
         </a>
     </div>
@@ -266,7 +266,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 text-center">
-        <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">© 2026 Hygienify • Empowering Community Health</p>
+        <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">&copy; 2026 Hygienify • Empowering Community Health</p>
     </div>
 </footer>
 
@@ -322,7 +322,9 @@
         menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     });
-    <!-- Inside your index.html file, right before the closing </body> tag -->
+</script>
+
+<!-- 🔐 Supabase Core Engine Integration -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';

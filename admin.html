@@ -276,7 +276,7 @@
         </div>
     </main>
 
-    <script type="module">
+  <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
         const SUPABASE_URL = 'https://dzqrlgtmsgclybxfcnyv.supabase.co'; 
@@ -370,7 +370,6 @@
                 if (hErr) throw hErr;
                 rawHoursLogs = hoursRows || [];
 
-                // Fetch event signups and map them to window cache for notification processing
                 const { data: signupsList, error: signupErr } = await supabase.from('event_signups').select('id, event_id, user_id, admin_read');
                 if (!signupErr) {
                     window.latestSignupsCache = signupsList || [];
@@ -572,7 +571,6 @@
             }
         }
 
-        // Global function handler bound to window to process alerts marking routine
         window.dismissAlertItem = async function(type, rowId) {
             try {
                 const targetTable = type === 'account' ? 'volunteers' : 'event_signups';
@@ -598,13 +596,9 @@
             if(!queueBox) return;
             queueBox.innerHTML = '';
 
-            // 1. Grab unread pending account creations
-            const pendingAccounts = masterVolunteersArray.filter(v => v.status === 'Pending Approval' && !v.admin_read);
-
-            // 2. Build multi-channel unified alerts array for the bell drop-down
+            const pendingAccounts = masterVolunteersArray.filter(v => v.status === 'Pending Approval' && v.admin_read !== true);
             let activeAlerts = [];
 
-            // Feed unread pending profiles into active alert notifications array
             pendingAccounts.forEach(user => {
                 activeAlerts.push({
                     id: user.id,
@@ -614,9 +608,8 @@
                 });
             });
 
-            // Feed unread live shift/event signups into active alert notifications array
             const globalSignups = window.latestSignupsCache || [];
-            const unreadSignups = globalSignups.filter(s => !s.admin_read);
+            const unreadSignups = globalSignups.filter(s => s.admin_read !== true);
 
             unreadSignups.forEach(signup => {
                 const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
@@ -629,7 +622,6 @@
                 });
             });
 
-            // Handle Navigation Notification Bell UI Updates
             if (activeAlerts.length > 0) {
                 if (bellBadge) {
                     bellBadge.innerText = activeAlerts.length;
@@ -662,7 +654,6 @@
                 }
             }
 
-            // Keep original Pending Approvals Visual Layout unchanged (showing all non-approved accounts)
             const allPendingToDisplay = masterVolunteersArray.filter(v => v.status === 'Pending Approval');
             if (allPendingToDisplay.length === 0) {
                 if(queueLoader) {
@@ -690,62 +681,65 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                        <button data-id="${user.id}" class="deny-btn text-[11px] font-medium bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer">Deny</button>
-                        <button data-id="${user.id}" class="approve-btn text-[11px] font-semibold bg-amber-500 text-black hover:bg-amber-400 px-3 py-1.5 rounded-xl transition-all cursor-pointer">Verify Profile</button>
+                        <button onclick="handleDenyAction('${user.id}')" class="text-[11px] font-medium bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer">Deny</button>
+                        <button onclick="handleVerifyAction('${user.id}')" class="text-[11px] font-semibold bg-amber-500 text-black hover:bg-amber-400 px-3 py-1.5 rounded-xl transition-all cursor-pointer">Verify Profile</button>
                     </div>
                 `;
                 queueBox.appendChild(node);
             });
+        }
 
-            queueBox.querySelectorAll('.approve-btn').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const rawId = e.target.getAttribute('data-id');
-                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-                    e.target.disabled = true;
-                    e.target.innerText = "Verifying...";
-                    try {
-                        const { error } = await supabase.from('volunteers').update({ status: 'Active', admin_read: true }).eq('id', targetId);
-                        if (error) throw error;
-                        refreshTerminalContext();
-                    } catch (err) { 
-                        alert("Verification error: " + err.message); 
-                        e.target.disabled = false;
-                        e.target.innerText = "Verify Profile";
-                    }
-                };
-            });
+        // Global functions exposed to window for handling queue approvals cleanly
+        window.handleVerifyAction = async function(id) {
+            const targetId = isNaN(id) ? id : parseInt(id, 10);
+            try {
+                const { error } = await supabase.from('volunteers').update({ status: 'Active', admin_read: true }).eq('id', targetId);
+                if (error) throw error;
+                await refreshTerminalContext();
+            } catch (err) {
+                alert("Verification error: " + err.message);
+            }
+        }
 
-            queueBox.querySelectorAll('.deny-btn').forEach(btn => {
-                btn.onclick = async (e) => {
-                    const rawId = e.target.getAttribute('data-id');
-                    const targetId = isNaN(rawId) ? rawId : parseInt(rawId, 10);
-                    if (confirm("Reject and permanently wipe this registration attempt?")) {
-                        e.target.disabled = true;
-                        try {
-                            await executeVolunteerWipe(targetId);
-                        } catch (err) { 
-                            alert("Error dropping request: " + err.message); 
-                            e.target.disabled = false;
-                        }
-                    }
-                };
-            });
+        window.handleDenyAction = async function(id) {
+            const targetId = isNaN(id) ? id : parseInt(id, 10);
+            if (confirm("Reject and permanently wipe this registration attempt?")) {
+                try {
+                    await executeVolunteerWipe(targetId);
+                } catch (err) {
+                    alert("Error dropping request: " + err.message);
+                }
+            }
         }
 
         async function executeVolunteerWipe(volunteerInternalId) {
             try {
-                const { data: targetVol } = await supabase.from('volunteers').select('user_id').eq('id', volunteerInternalId).maybeSingle();
-                if (targetVol && targetVol.user_id) {
-                    const { data: userData } = await supabase.rpc('get_user_email_by_id', { user_uuid: targetVol.user_id });
-                    let emailToDrop = userData;
-                    
-                    if (emailToDrop) {
-                        await supabase.from('allowed_emails').delete().eq('email', emailToDrop.toLowerCase().trim());
+                // Find user_id and email configuration details first
+                const { data: targetVol } = await supabase.from('volunteers').select('user_id, email').eq('id', volunteerInternalId).maybeSingle();
+                
+                let fallbackEmail = targetVol ? targetVol.email : null;
+                let userUuid = targetVol ? targetVol.user_id : null;
+
+                if (userUuid) {
+                    // Try getting email via database RPC if fallback schema is blank
+                    if (!fallbackEmail) {
+                        const { data: userData } = await supabase.rpc('get_user_email_by_id', { user_uuid: userUuid });
+                        if (userData) fallbackEmail = userData;
                     }
+                    // Terminate all related event claims
+                    await supabase.from('event_signups').delete().eq('user_id', userUuid);
                 }
                 
+                if (fallbackEmail) {
+                    // Drop them explicitly off allowed white list configuration
+                    await supabase.from('allowed_emails').delete().eq('email', fallbackEmail.toLowerCase().trim());
+                }
+                
+                // Clear out row profile records completely
                 await supabase.from('volunteers').delete().eq('id', volunteerInternalId);
                 await refreshTerminalContext();
+                
+                alert("🗑️ Volunteer records wiped completely from Roster, Event Signups, and Authorized email streams.");
             } catch (err) {
                 throw new Error("Wipe sequencing error: " + err.message);
             }

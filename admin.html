@@ -55,7 +55,30 @@
             <img src="logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain">
             <h1 class="text-lg font-bold tracking-tight text-white">Admin Panel</h1>
         </div>
-        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end relative">
+            
+            <!-- Notification Bell Component -->
+            <div class="relative">
+                <button id="notification-bell-btn" class="relative p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 transition-all text-slate-300 hover:text-cyan-400 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <!-- Notification Counter Badge -->
+                    <span id="bell-badge" class="absolute -top-1 -right-1 bg-amber-500 text-black font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center hidden animate-pulse">0</span>
+                </button>
+
+                <!-- Notification Dropdown Panel Menu -->
+                <div id="notification-dropdown" class="absolute right-0 mt-3 w-80 bg-slate-900 border border-white/10 rounded-2xl p-4 shadow-2xl hidden z-50 space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">System Activity Alerts</h4>
+                        <span id="bell-panel-count" class="text-[11px] font-mono font-bold bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-lg border border-amber-500/20">0 Pending</span>
+                    </div>
+                    <div id="bell-alerts-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <p class="text-[11px] text-slate-500 italic font-mono py-2 text-center">No structural alerts active.</p>
+                    </div>
+                </div>
+            </div>
+
             <span id="admin-email" class="text-xs font-medium text-slate-300 bg-white/5 border border-white/10 px-4 py-2 rounded-xl truncate max-w-[180px] sm:max-w-xs font-mono"></span>
             <button id="logout-btn" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-xs font-semibold px-4 py-2 rounded-xl cursor-pointer transition-all border border-red-500/20">
                 Sign Out
@@ -90,7 +113,7 @@
             </div>
         </div>
 
-        <!-- 🔄 MAIN MANAGEMENT WORKSPACE MIDDLE SECTION -->
+        <!-- MAIN MANAGEMENT WORKSPACE MIDDLE SECTION -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <!-- Left & Center Column: Shifts & Active Claims -->
@@ -197,7 +220,7 @@
             </div>
         </div>
 
-        <!-- ⏳ SYSTEM APPROVAL QUEUE (Full width below configuration blocks) -->
+        <!-- SYSTEM APPROVAL QUEUE (Full width below configuration blocks) -->
         <div class="admin-card rounded-3xl p-6 border-amber-500/10 bg-amber-500/[0.005]">
             <h3 class="text-base font-bold tracking-wide text-amber-400 mb-4 flex items-center gap-2">
                 <span>⏳</span> Pending Approvals Queue
@@ -208,7 +231,7 @@
             </div>
         </div>
 
-        <!-- 👥 ACTIVE USER DIRECTORY LIST ROSTER -->
+        <!-- ACTIVE USER DIRECTORY LIST ROSTER -->
         <div class="admin-card rounded-3xl p-6">
             <h3 class="text-base font-bold tracking-wide text-white mb-5 flex items-center gap-2">
                 <span class="text-cyan-400">👥</span> Active Enrolled Roster
@@ -219,7 +242,7 @@
             </div>
         </div>
 
-        <!-- 📜 TIME TRACKING AUDIT MATRIX TRAIL -->
+        <!-- TIME TRACKING AUDIT MATRIX TRAIL -->
         <div class="admin-card rounded-3xl p-6 bg-slate-950/20 backdrop-blur-md">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/5">
                 <div>
@@ -265,6 +288,22 @@
         let masterVolunteersArray = [];
         let rawHoursLogs = [];
         let aggregatedHoursMap = {};
+
+        // Notification Bell Click Interaction
+        const bellBtn = document.getElementById('notification-bell-btn');
+        const bellDropdown = document.getElementById('notification-dropdown');
+        if (bellBtn && bellDropdown) {
+            bellBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                bellDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => {
+                bellDropdown.classList.add('hidden');
+            });
+            bellDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
 
         function formatTimeString(timeStr) {
             if (!timeStr) return '';
@@ -530,10 +569,45 @@
         function renderVerificationSystem() {
             const queueBox = document.getElementById('queue-container');
             const queueLoader = document.getElementById('queue-loader');
+            const bellBadge = document.getElementById('bell-badge');
+            const bellPanelCount = document.getElementById('bell-panel-count');
+            const bellAlertsList = document.getElementById('bell-alerts-list');
+
             if(!queueBox) return;
             queueBox.innerHTML = '';
 
-            const pendingAccounts = masterVolunteersArray.filter(v => v.is_approved === false);
+            // Schema Fix: Query applications based on text status variable matching your layout rules
+            const pendingAccounts = masterVolunteersArray.filter(v => v.status === 'Pending Approval');
+
+            // Handle Navigation Notification Bell Logic
+            if (pendingAccounts.length > 0) {
+                if (bellBadge) {
+                    bellBadge.innerText = pendingAccounts.length;
+                    bellBadge.classList.remove('hidden');
+                }
+                if (bellPanelCount) bellPanelCount.innerText = `${pendingAccounts.length} Pending`;
+                
+                if (bellAlertsList) {
+                    bellAlertsList.innerHTML = pendingAccounts.map(user => `
+                        <div class="p-2 rounded-xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-between gap-2 text-[11px]">
+                            <div class="min-w-0">
+                                <p class="font-bold text-slate-200 truncate">${user.name || 'New Registration'}</p>
+                                <p class="text-[10px] text-slate-400 font-mono">Awaiting profile verification</p>
+                            </div>
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 animate-ping"></span>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                if (bellBadge) {
+                    bellBadge.classList.add('hidden');
+                    bellBadge.innerText = "0";
+                }
+                if (bellPanelCount) bellPanelCount.innerText = "0 Pending";
+                if (bellAlertsList) {
+                    bellAlertsList.innerHTML = `<p class="text-[11px] text-slate-500 italic font-mono py-2 text-center">No structural alerts active.</p>`;
+                }
+            }
 
             if (pendingAccounts.length === 0) {
                 if(queueLoader) {
@@ -575,7 +649,8 @@
                     e.target.disabled = true;
                     e.target.innerText = "Verifying...";
                     try {
-                        const { error } = await supabase.from('volunteers').update({ is_approved: true, status: 'Active' }).eq('id', targetId);
+                        // Schema Fix: Remove non-existent is_approved flag and just route via status text change
+                        const { error } = await supabase.from('volunteers').update({ status: 'Active' }).eq('id', targetId);
                         if (error) throw error;
                         refreshTerminalContext();
                     } catch (err) { 
@@ -634,7 +709,8 @@
                 selectDropdown.innerHTML = '<option value="" disabled selected>Select from active roster...</option>';
             }
 
-            const activeProfiles = masterVolunteersArray.filter(v => v.is_approved === true);
+            // Schema Fix: Active status captures profiles that are not pending registration approval
+            const activeProfiles = masterVolunteersArray.filter(v => v.status === 'Active' || v.status === 'Inactive');
             
             const totalStatEl = document.getElementById('stat-total-volunteers');
             if (totalStatEl) totalStatEl.innerText = activeProfiles.length;

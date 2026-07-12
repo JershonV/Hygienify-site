@@ -107,7 +107,7 @@
                 </button>
             </header>
 
-            <!-- 📢 WORKSPACE ANNOUNCEMENTS BANNER (#1) -->
+            <!-- 📢 WORKSPACE ANNOUNCEMENTS BANNER -->
             <div class="card-glass rounded-3xl p-6 bg-gradient-to-r from-cyan-950/20 to-slate-900/40 border-cyan-500/10">
                 <div class="flex items-start gap-4">
                     <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl text-cyan-400 shrink-0">
@@ -171,7 +171,7 @@
                 </div>
             </div>
 
-            <!-- ⏱️ METRICS AND STATS GRID DESIGNATION (#1) -->
+            <!-- ⏱️ METRICS AND STATS GRID DESIGNATION -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 <div class="card-glass p-5 rounded-2xl bg-gradient-to-br from-cyan-500/[0.01] to-transparent">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Verified Placements</span>
@@ -197,7 +197,7 @@
                 </div>
             </div>
 
-            <!-- SHIFT COMPLIANCE LIST & HISTORICAL LOGS SIDE-BY-SIDE GRID (#1) -->
+            <!-- SHIFT COMPLIANCE LIST & HISTORICAL LOGS SIDE-BY-SIDE GRID -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <!-- Open Opportunities Feed Block -->
@@ -213,7 +213,7 @@
                     </div>
                 </div>
 
-                <!-- 📜 INDIVIDUAL PERSONAL TIME LOG MATRIX FEED (#1) -->
+                <!-- 📜 INDIVIDUAL PERSONAL TIME LOG MATRIX FEED -->
                 <div class="space-y-4">
                     <div>
                         <h3 class="text-lg font-extrabold text-white tracking-tight">Personal Service Ledger</h3>
@@ -291,20 +291,17 @@
                 const standingDisplay = document.getElementById('standingStatusDisplay');
                 badge.classList.remove('opacity-0');
 
-                // Admin rule priority definition with auto database patching fallback
                 if (currentUser.email === 'jershonvinodh@gmail.com' || data.name === 'Jershon Vinodh') {
                     globalUserStatus = "Admin";
                     badge.textContent = "Admin";
                     badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
                     if(standingDisplay) standingDisplay.innerHTML = `<span class="text-cyan-400 font-extrabold tracking-widest">🛡️ Global Administrator</span>`;
                     
-                    // Automatically patch status back to 'Active' in database if it isn't set yet
                     if (data.status !== 'Active' && data.status !== 'Admin') {
                         await supabase.from('volunteers').update({ status: 'Active' }).eq('user_id', currentUser.id);
                         existingProfile.status = 'Active';
                     }
                 } else {
-                    // Fallback verification mapping (#3)
                     globalUserStatus = data.status || "Pending Approval";
                     badge.textContent = globalUserStatus;
 
@@ -315,8 +312,6 @@
                         badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/5 border border-rose-500/10 px-2 py-0.5 rounded";
                         if(standingDisplay) standingDisplay.innerHTML = `<span class="text-rose-400 font-extrabold tracking-widest">🔴 Status Suspended</span>`;
                         
-                        // 🪓 AUTOMATIC WORKFLOW CLEANUP TRIGGER (#4)
-                        // If marked inactive, drop all active database signups instantly
                         await supabase.from('event_signups').delete().eq('user_id', currentUser.id);
                     } else {
                         badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2 py-0.5 rounded";
@@ -482,11 +477,10 @@
             document.getElementById('loading-gate').classList.add('hidden');
         }
 
-        // ⏱️ TOTAL HOURS CALCULATOR MATRIX ROUTINE (#2 & #1)
+        // ⏱️ TOTAL HOURS CALCULATOR MATRIX ROUTINE
         async function fetchUserMetrics() {
             const ledgerContainer = document.getElementById('personalLedgerContainer');
             try {
-                // FIXED: Querying hours entries from the actual hours_log dataset table matching the tracking UUID
                 const { data, error } = await supabase
                     .from('hours_log')
                     .select('*')
@@ -498,22 +492,27 @@
                 const accumulatedSum = data ? data.reduce((acc, row) => acc + parseFloat(row.hours_count || 0), 0) : 0;
                 document.getElementById('hoursDisplay').textContent = accumulatedSum.toFixed(1);
 
-                // Populate side panel ledger trail dynamically
                 if (!data || data.length === 0) {
                     if (ledgerContainer) ledgerContainer.innerHTML = `<p class="text-slate-500 text-xs italic font-mono py-8 text-center">No service hours logged to your record trail yet.</p>`;
                     return;
                 }
 
                 if (ledgerContainer) {
-                    ledgerContainer.innerHTML = data.map(log => `
-                        <div class="p-3 bg-white/[0.01] border border-white/5 rounded-xl space-y-1">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-black text-indigo-400 font-mono">+${parseFloat(log.hours_count).toFixed(1)} Hrs</span>
-                                <span class="text-[10px] text-slate-500 font-mono">ID: #${log.id}</span>
+                    ledgerContainer.innerHTML = data.map(log => {
+                        // Extract and format clean timestamp output details
+                        const rawDateStr = log.created_at || log.logged_at;
+                        const cleanDate = rawDateStr ? new Date(rawDateStr).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'}) : 'N/A';
+
+                        return `
+                            <div class="p-3 bg-white/[0.01] border border-white/5 rounded-xl space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-black text-indigo-400 font-mono">+${parseFloat(log.hours_count).toFixed(1)} Hrs</span>
+                                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-1.5 py-0.5 rounded">${cleanDate}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-300 font-medium leading-relaxed">${log.description || 'Service contribution log entry.'}</p>
                             </div>
-                            <p class="text-[11px] text-slate-300 font-medium leading-relaxed">${log.description || 'Service contribution log entry.'}</p>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             } catch (err) {
                 document.getElementById('hoursDisplay').textContent = "0.0";
@@ -545,18 +544,18 @@
                     
                     if (globalUserStatus === "Admin") {
                         if (profileHasRegistered) {
-                            actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 cursor-not-allowed">Claimed</button>`;
+                            actionButtonHtml = `<button onclick="executeShiftUnclaim('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
                         } else {
-                            actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}', false)" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
+                            actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
                         }
                     } else if (globalUserStatus.toLowerCase() === "inactive" || globalUserStatus.toLowerCase() === "inative") {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-rose-400/40 border border-white/5 cursor-not-allowed">Account Inactive</button>`;
                     } else if (globalUserStatus === "Pending Approval") {
                         actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed">Pending Approval</button>`;
                     } else if (profileHasRegistered) {
-                        actionButtonHtml = `<button disabled class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 cursor-not-allowed">Claimed</button>`;
+                        actionButtonHtml = `<button onclick="executeShiftUnclaim('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">Unclaim Shift</button>`;
                     } else {
-                        actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}', ${profileHasRegistered})" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
+                        actionButtonHtml = `<button onclick="executeShiftSignup('${opportunity.id}')" class="text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-white text-slate-950 hover:bg-cyan-400 transition-all">Claim Shift</button>`;
                     }
 
                     return `
@@ -577,9 +576,7 @@
             }
         }
 
-        window.executeShiftSignup = async function(selectedEventId, profileHasRegistered) {
-            if (profileHasRegistered) return;
-
+        window.executeShiftSignup = async function(selectedEventId) {
             try {
                 const { data: profile, error: profileError } = await supabase
                     .from('volunteers')
@@ -620,6 +617,26 @@
                 
             } catch (err) {
                 alert(`Error: ${err.message}`);
+            }
+        }
+
+        // 🛑 UNCLAIM SHIFT MUTATION WORKFLOW ROUTINE
+        window.executeShiftUnclaim = async function(selectedEventId) {
+            if (!confirm("Are you sure you want to unclaim this volunteer position shift?")) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('event_signups')
+                    .delete()
+                    .eq('event_id', selectedEventId)
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                alert("👋 Shift unclaimed successfully.");
+                await loadWorkspaceFeeds();
+            } catch (err) {
+                alert(`Error removing registration context: ${err.message}`);
             }
         }
 

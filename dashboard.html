@@ -91,6 +91,25 @@
                 </button>
             </header>
 
+            <!-- PROFILE VISUAL CARD BANNER (Displays Active profile data when not editing) -->
+            <div id="profile-display-card" class="hidden w-full">
+                <div class="card-glass p-6 md:p-8 rounded-3xl border-white/5 bg-gradient-to-br from-white/[0.01] to-transparent">
+                    <div class="flex flex-col sm:flex-row gap-6 items-center">
+                        <div id="displayAvatarContainer" class="w-20 h-20 rounded-full border border-white/10 bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
+                            <img id="displayAvatar" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+                            <div id="displayAvatarFallback" class="text-xl font-bold text-cyan-400">?</div>
+                        </div>
+                        <div class="flex-1 text-center sm:text-left space-y-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <h3 id="displayName" class="text-lg font-bold text-white tracking-tight">---</h3>
+                                <span class="mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">Active Profile</span>
+                            </div>
+                            <p id="displayBio" class="text-xs text-slate-400 leading-relaxed max-w-2xl">---</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- PROFILE INLINE SETUP & EDIT BANNER -->
             <div id="onboarding-gate" class="hidden w-full">
                 <div class="card-glass p-6 md:p-8 rounded-3xl border-cyan-500/20 bg-gradient-to-br from-cyan-500/[0.02] to-transparent">
@@ -158,7 +177,7 @@
 
         let currentUser = null;
         let base64AvatarStr = "";
-        let existingProfile = null; // Store fetched data for edit populating
+        let existingProfile = null; 
 
         async function runSecurityGate() {
             try {
@@ -172,6 +191,7 @@
                 
                 if (currentUser.email === 'jershonvinodh@gmail.com') {
                     document.getElementById('onboarding-gate').classList.add('hidden');
+                    document.getElementById('profile-display-card').classList.add('hidden');
                     document.getElementById('userWelcome').textContent = "Welcome back, Admin Jershon!";
                     await loadWorkspaceFeeds();
                     return;
@@ -180,9 +200,13 @@
                 const isProfileReady = await checkVolunteerProfile();
                 if (isProfileReady) {
                     document.getElementById('onboarding-gate').classList.add('hidden');
-                    document.getElementById('toggleEditProfileBtn').style.display = 'flex'; // Reveal Edit option
+                    document.getElementById('profile-display-card').classList.remove('hidden');
+                    document.getElementById('toggleEditProfileBtn').classList.remove('hidden');
+                    document.getElementById('toggleEditProfileBtn').style.display = 'flex'; 
                 } else {
                     document.getElementById('onboarding-gate').classList.remove('hidden');
+                    document.getElementById('profile-display-card').classList.add('hidden');
+                    document.getElementById('toggleEditProfileBtn').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').style.display = 'none';
                 }
                 
@@ -194,7 +218,6 @@
 
         async function checkVolunteerProfile() {
             try {
-                // 🛠️ MIGRATED: Targeting 'volunteers' via 'user_id' matching columns 'name', 'bio', 'image_url'
                 const { data, error } = await supabase
                     .from('volunteers')
                     .select('name, bio, image_url')
@@ -203,8 +226,26 @@
 
                 if (error || !data) return false;
                 
-                existingProfile = data; // Keep context referenced
+                existingProfile = data; 
+                
+                // Inject names into welcome text + display card
                 document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
+                document.getElementById('displayName').textContent = data.name;
+                document.getElementById('displayBio').textContent = data.bio || "No biography added yet.";
+                
+                // Populate visual avatar image if saved
+                const avatarImg = document.getElementById('displayAvatar');
+                const avatarFallback = document.getElementById('displayAvatarFallback');
+                if (data.image_url) {
+                    avatarImg.src = data.image_url;
+                    avatarImg.classList.remove('hidden');
+                    avatarFallback.classList.add('hidden');
+                } else {
+                    avatarImg.classList.add('hidden');
+                    avatarFallback.classList.remove('hidden');
+                    avatarFallback.textContent = data.name.charAt(0).toUpperCase();
+                }
+
                 return true;
             } catch (err) {
                 return false;
@@ -214,6 +255,7 @@
         // ✏️ EDIT MODE HANDLERS
         const toggleEditBtn = document.getElementById('toggleEditProfileBtn');
         const onboardingGate = document.getElementById('onboarding-gate');
+        const profileDisplayCard = document.getElementById('profile-display-card');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
 
         toggleEditBtn.addEventListener('click', () => {
@@ -235,13 +277,15 @@
                 }
                 
                 cancelEditBtn.classList.remove('hidden');
-                onboardingGate.classList.remove('hidden');
+                profileDisplayCard.classList.add('hidden'); // Hide read-only state during edit
+                onboardingGate.classList.remove('hidden'); // Show form state
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
         cancelEditBtn.addEventListener('click', () => {
             onboardingGate.classList.add('hidden');
+            profileDisplayCard.classList.remove('hidden');
         });
 
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
@@ -273,9 +317,12 @@
             e.preventDefault();
             const fullNameValue = document.getElementById('profName').value.trim();
             const bioTextValue = document.getElementById('profBio').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Saving...";
 
             try {
-                // 🛠️ MIGRATED: Upsert updates using 'user_id' target mapping into new column structures 
                 const { error } = await supabase.from('volunteers').upsert({
                     user_id: currentUser.id,
                     name: fullNameValue,
@@ -285,15 +332,35 @@
                 
                 if (error) throw error;
                 
-                // Update local caching instance references 
+                // Update active profile states instantly
                 existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr };
                 
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
+                document.getElementById('displayName').textContent = fullNameValue;
+                document.getElementById('displayBio').textContent = bioTextValue;
+
+                const avatarImg = document.getElementById('displayAvatar');
+                const avatarFallback = document.getElementById('displayAvatarFallback');
+                if (base64AvatarStr) {
+                    avatarImg.src = base64AvatarStr;
+                    avatarImg.classList.remove('hidden');
+                    avatarFallback.classList.add('hidden');
+                } else {
+                    avatarImg.classList.add('hidden');
+                    avatarFallback.classList.remove('hidden');
+                    avatarFallback.textContent = fullNameValue.charAt(0).toUpperCase();
+                }
+                
                 onboardingGate.classList.add('hidden');
+                profileDisplayCard.classList.remove('hidden');
+                toggleEditBtn.classList.remove('hidden');
                 toggleEditBtn.style.display = 'flex';
                 alert("🎉 Profile configured successfully!");
             } catch (err) {
                 alert(`Error: ${err.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Save Details";
             }
         });
 

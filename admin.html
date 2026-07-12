@@ -77,7 +77,7 @@
             </div>
         </div>
 
-        <!-- 🎪 NEW: SHIFT OPERATIONS AREA (PUBLISH EVENTS & TRACK CLAIMED ROSTERS) -->
+        <!-- 🎪 SHIFT OPERATIONS AREA (PUBLISH EVENTS & TRACK CLAIMED ROSTERS) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Side Column: Form Deployment -->
             <div class="space-y-8">
@@ -97,6 +97,17 @@
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Operation Date</label>
                             <input type="date" id="eventDate" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
+                        </div>
+                        <!-- Added Time-Frame Block Parameters -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Start Time</label>
+                                <input type="time" id="eventStartTime" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">End Time</label>
+                                <input type="time" id="eventEndTime" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Role Expectations Summary</label>
@@ -231,6 +242,17 @@
         let rawHoursLogs = [];
         let aggregatedHoursMap = {};
 
+        // Helper function to format 24h clock strings into clean AM/PM readability format
+        function formatTimeString(timeStr) {
+            if (!timeStr) return '';
+            const [hours, minutes] = timeStr.split(':');
+            let h = parseInt(hours, 10);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12; 
+            return `${h}:${minutes} ${ampm}`;
+        }
+
         async function securityAudit() {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
@@ -286,14 +308,19 @@
             }
         }
 
-        // --- NEW COMPONENT FEATURE: EVENT ROSTER BUILDER ENGINE ---
+        // EVENT ROSTER BUILDER ENGINE
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = document.getElementById('eventTitle').value.trim();
             const location = document.getElementById('eventLocation').value.trim();
             const event_date = document.getElementById('eventDate').value;
-            const description = document.getElementById('eventDesc').value.trim();
+            const startTime = document.getElementById('eventStartTime').value;
+            const endTime = document.getElementById('eventEndTime').value;
+            const baseDescription = document.getElementById('eventDesc').value.trim();
             const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            // Formats operational timeline attributes seamlessly into structural variables
+            const description = `🕒 Time: ${formatTimeString(startTime)} - ${formatTimeString(endTime)}\n\n${baseDescription}`;
 
             submitBtn.disabled = true;
             submitBtn.innerText = "Publishing...";
@@ -302,7 +329,7 @@
                 const { error } = await supabase.from('events').insert({ title, location, event_date, description });
                 if (error) throw error;
 
-                alert("🚀 Position published successfully onto active student pipeline dashboards!");
+                alert("🚀 Shift parameters published successfully onto active student pipeline dashboards!");
                 document.getElementById('eventForm').reset();
                 await refreshTerminalContext();
             } catch (err) {
@@ -340,7 +367,6 @@
                             <div class="space-y-2 mt-2">
                                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Claims List:</p>
                                 ${matches.map(signup => {
-                                    // Match local client profiles by mapping user_id fields
                                     const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                                     const name = profile ? profile.name : 'Awaiting Roster Update';
                                     const internalId = profile ? profile.id : null;
@@ -363,12 +389,20 @@
                         `;
                     }
 
+                    // Extracts and cleans timeline details for rendering clarity
+                    const displayDesc = evt.description || '';
+                    const hasTimeHeader = displayDesc.startsWith('🕒');
+                    const timeHeader = hasTimeHeader ? displayDesc.split('\n\n')[0] : '';
+                    const cleanedDesc = hasTimeHeader ? displayDesc.replace(timeHeader + '\n\n', '') : displayDesc;
+
                     return `
                         <div class="border border-white/5 bg-slate-950/20 p-4 rounded-2xl space-y-3">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h4 class="text-sm font-bold text-white tracking-tight">${evt.title}</h4>
                                     <p class="text-[11px] text-slate-400 font-mono">📍 ${evt.location || 'Remote'} | 📅 ${evt.event_date}</p>
+                                    ${timeHeader ? `<p class="text-[11px] text-cyan-400/90 font-mono mt-0.5">${timeHeader}</p>` : ''}
+                                    <p class="text-xs text-slate-400 mt-2 line-clamp-2">${cleanedDesc}</p>
                                 </div>
                             </div>
                             <div class="border-t border-white/5 pt-2">

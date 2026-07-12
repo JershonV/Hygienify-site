@@ -10,6 +10,23 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
         
+        /* 🔵 #4: HIGH-TECH CYAN NEON SCROLLBAR GLOBAL STYLES */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 100%);
+            border-radius: 9999px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+        }
+
         .admin-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.08);
@@ -108,6 +125,13 @@
                                 <input type="time" id="eventEndTime" required class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
                             </div>
                         </div>
+                        
+                        <!-- 🔵 #1: CAPACITY LIMIT OPTION FOR EVENT SIGNUPS -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Max Attendance Capacity (Optional)</label>
+                            <input type="number" min="1" id="eventMaxVolunteers" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="Leave empty for unlimited spots">
+                        </div>
+
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Role Expectations Summary</label>
                             <textarea id="eventDesc" required rows="3" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500" placeholder="Provide event context guidelines..."></textarea>
@@ -313,6 +337,8 @@
             const event_date = document.getElementById('eventDate').value;
             const startTime = document.getElementById('eventStartTime').value;
             const endTime = document.getElementById('eventEndTime').value;
+            const capVal = document.getElementById('eventMaxVolunteers').value;
+            const max_volunteers = capVal ? parseInt(capVal, 10) : null;
             const baseDescription = document.getElementById('eventDesc').value.trim();
             const submitBtn = e.target.querySelector('button[type="submit"]');
 
@@ -322,7 +348,8 @@
             submitBtn.innerText = "Publishing...";
 
             try {
-                const { error } = await supabase.from('events').insert({ title, location, event_date, description });
+                // 🔵 #1: SAVE WITH MAX_VOLUNTEERS COLUMN MAPPING
+                const { error } = await supabase.from('events').insert({ title, location, event_date, description, max_volunteers });
                 if (error) throw error;
 
                 alert("🚀 Shift parameters published successfully onto active student pipeline dashboards!");
@@ -354,6 +381,7 @@
 
                 feedContainer.innerHTML = eventsList.map(evt => {
                     const matches = signupsList.filter(s => s.event_id === evt.id);
+                    const capacityLabel = evt.max_volunteers ? `${matches.length} / ${evt.max_volunteers} Claimed` : `${matches.length} Claimed`;
                     
                     let rosterMarkup = "";
                     if (matches.length === 0) {
@@ -394,12 +422,14 @@
                         <div class="border border-white/5 bg-slate-950/20 p-4 rounded-2xl space-y-3 relative group/evt">
                             <div class="flex justify-between items-start gap-4">
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="text-sm font-bold text-white tracking-tight truncate">${evt.title}</h4>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h4 class="text-sm font-bold text-white tracking-tight truncate">${evt.title}</h4>
+                                        <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400 font-bold border border-white/10">${capacityLabel}</span>
+                                    </div>
                                     <p class="text-[11px] text-slate-400 font-mono mt-0.5">📍 ${evt.location || 'Remote'} | 📅 ${evt.event_date}</p>
                                     ${timeHeader ? `<p class="text-[11px] text-cyan-400/90 font-mono mt-0.5">${timeHeader}</p>` : ''}
                                     <p class="text-xs text-slate-400 mt-2 line-clamp-2">${cleanedDesc}</p>
                                 </div>
-                                <!-- 🔴 NEW: DELETE EVENT BUTTON TRIGGER -->
                                 <button onclick="purgeDeploymentEvent('${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" 
                                         class="flex-shrink-0 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-black text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer">
                                     Delete Shift
@@ -417,15 +447,11 @@
             }
         }
 
-        // 🔴 GLOBAL DEPLOYMENT PURGE ROUTINE
         async function purgeDeploymentEvent(eventId, eventTitle) {
             if (!confirm(`Are you completely sure you want to permanently delete "${eventTitle}"?\n\nThis will instantly remove the position and unregister all assigned volunteers.`)) return;
 
             try {
-                // First, drop dependencies inside event_signups table to prevent RLS/FK errors
                 await supabase.from('event_signups').delete().eq('event_id', eventId);
-
-                // Now safely drop the event block row out of existence
                 const { error } = await supabase.from('events').delete().eq('id', eventId);
                 if (error) throw error;
 
@@ -511,7 +537,7 @@
                     e.target.disabled = true;
                     e.target.innerText = "Verifying...";
                     try {
-                        const { error } = await supabase.from('volunteers').update({ is_approved: true }).eq('id', targetId);
+                        const { error } = await supabase.from('volunteers').update({ is_approved: true, status: 'Active' }).eq('id', targetId);
                         if (error) throw error;
                         refreshTerminalContext();
                     } catch (err) { 
@@ -529,9 +555,7 @@
                     if (confirm("Reject and permanently wipe this registration attempt?")) {
                         e.target.disabled = true;
                         try {
-                            const { error } = await supabase.from('volunteers').delete().eq('id', targetId);
-                            if (error) throw error;
-                            refreshTerminalContext();
+                            await executeVolunteerWipe(targetId);
                         } catch (err) { 
                             alert("Error dropping request: " + err.message); 
                             e.target.disabled = false;
@@ -539,6 +563,31 @@
                     }
                 };
             });
+        }
+
+        // 🔵 #2: CORE email unauthorization cleanup handler routine
+        async function executeVolunteerWipe(volunteerInternalId) {
+            try {
+                const { data: targetVol } = await supabase.from('volunteers').select('user_id').eq('id', volunteerInternalId).maybeSingle();
+                if (targetVol && targetVol.user_id) {
+                    const { data: userData } = await supabase.rpc('get_user_email_by_id', { user_uuid: targetVol.user_id });
+                    let emailToDrop = userData;
+                    
+                    if (!emailToDrop) {
+                        const { data: authUser } = await supabase.from('volunteers').select('name').eq('id', volunteerInternalId).maybeSingle();
+                        console.warn("Falling back from RPC detection logic...");
+                    }
+                    
+                    if (emailToDrop) {
+                        await supabase.from('allowed_emails').delete().eq('email', emailToDrop.toLowerCase().trim());
+                    }
+                }
+                
+                await supabase.from('volunteers').delete().eq('id', volunteerInternalId);
+                await refreshTerminalContext();
+            } catch (err) {
+                throw new Error("Wipe sequencing error: " + err.message);
+            }
         }
 
         // 👥 Renders the active roster list view
@@ -580,9 +629,14 @@
                 }
 
                 const lifetimeHours = aggregatedHoursMap[user.id] || 0;
+                
+                // 🔵 #3: MANAGE STATUS DESIGNATORS Dynamically
+                const currentStatus = user.status || "Active";
+                const isUserInactive = currentStatus.toLowerCase() === 'inactive' || currentStatus.toLowerCase() === 'inative';
+                const toggleBadgeColor = isUserInactive ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
 
                 const card = document.createElement('div');
-                card.className = "volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border border-white/5 mb-4";
+                card.className = `volunteer-widget rounded-[1.75rem] p-6 sm:p-8 relative overflow-hidden bg-white/5 border ${isUserInactive ? 'border-rose-500/20' : 'border-white/5'} mb-4`;
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row items-start gap-6" id="view-layer-${user.id}">
                         <div class="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/10 bg-slate-900 shadow-xl mx-auto sm:mx-0">
@@ -590,14 +644,21 @@
                         </div>
                         <div class="flex-1 min-w-0 space-y-2 w-full text-center sm:text-left">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
+                                <div class="flex items-center gap-2 justify-center sm:justify-start">
+                                    <h4 class="text-lg sm:text-xl font-extrabold text-white truncate" id="text-name-${user.id}">${user.name || 'Unnamed'}</h4>
+                                    <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${toggleBadgeColor}">${currentStatus}</span>
+                                </div>
                                 <div class="flex items-center gap-1.5 bg-cyan-500/5 border border-cyan-500/10 px-3 py-1 rounded-xl self-center sm:self-auto">
                                     <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
                                     <span class="text-xs font-black uppercase tracking-wider text-cyan-400 font-mono">${Number(lifetimeHours).toFixed(1)} Hours</span>
                                 </div>
                             </div>
                             <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
-                            <div class="pt-2 flex justify-center sm:justify-end gap-3 border-t border-white/5">
+                            <div class="pt-2 flex flex-wrap justify-center sm:justify-end gap-3 border-t border-white/5">
+                                <!-- 🔵 #3: STATUS ALTERATION BUTTON INTERACTION INTERFACE -->
+                                <button data-id="${user.id}" data-status="${currentStatus}" class="status-toggle-btn text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all cursor-pointer ${isUserInactive ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black' : 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-black'}">
+                                    Mark ${isUserInactive ? 'Active' : 'Inactive'}
+                                </button>
                                 <button data-id="${user.id}" class="edit-btn text-xs bg-white/5 hover:bg-cyan-500 hover:text-black font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 transition-all cursor-pointer">Edit</button>
                                 <button data-id="${user.id}" class="delete-btn text-xs bg-red-500/10 hover:bg-red-500 hover:text-black text-red-400 font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-red-500/20 transition-all cursor-pointer">Remove</button>
                             </div>
@@ -650,6 +711,25 @@
         }
 
         function attachRosterControlEvents() {
+            // 🔵 #3: SWITCH INLINE USER STATUS VALUES VIA DYNAMIC ACTION LISTENERS
+            document.querySelectorAll('.status-toggle-btn').forEach(btn => {
+                btn.onclick = async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const statusText = e.target.getAttribute('data-status');
+                    const nextStatusValue = (statusText.toLowerCase() === 'inactive' || statusText.toLowerCase() === 'inative') ? 'Active' : 'Inactive';
+                    
+                    e.target.disabled = true;
+                    try {
+                        const { error } = await supabase.from('volunteers').update({ status: nextStatusValue }).eq('id', id);
+                        if (error) throw error;
+                        await refreshTerminalContext();
+                    } catch(err) {
+                        alert("Could not update volunteer account status: " + err.message);
+                        e.target.disabled = false;
+                    }
+                };
+            });
+
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -677,9 +757,7 @@
                     e.target.innerText = "Removing...";
 
                     try {
-                        const { error } = await supabase.from('volunteers').delete().eq('id', targetId);
-                        if (error) throw error;
-                        await refreshTerminalContext();
+                        await executeVolunteerWipe(targetId);
                     } catch (err) {
                         alert("Error clearing record: " + err.message);
                         e.target.disabled = false;

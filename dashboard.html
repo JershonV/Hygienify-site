@@ -99,7 +99,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                             </svg>
                            <!-- Dynamic Badge Indicator Count -->
-<span id="noti-badge" class="hidden absolute -top-1.5 -right-1.5 bg-cyan-400 text-slate-950 text-xs font-black w-6 h-6 rounded-full flex items-center justify-center font-mono shadow-lg ring-2 ring-[#020617] animate-pulse">0</span>
+                            <span id="noti-badge" class="hidden absolute -top-1.5 -right-1.5 bg-cyan-400 text-slate-950 text-xs font-black w-6 h-6 rounded-full flex items-center justify-center font-mono shadow-lg ring-2 ring-[#020617] animate-pulse">0</span>
                         </button>
 
                         <!-- Dynamic Dropdown Panel Drawer -->
@@ -248,7 +248,7 @@
         </div>
     </main>
 
-<!-- 🧠 CORE INTERFACE OPERATIONS SCRIPT -->
+    <!-- 🧠 CORE INTERFACE OPERATIONS SCRIPT -->
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -798,12 +798,82 @@
             }
         }
 
+        // --- ⏱️ REAL-TIME HOURS NOTIFICATION ENGINE ROUTINE ---
+        function listenForHoursUpdates(currentUserId) {
+            if (!currentUserId) return;
+
+            supabase
+                .channel('realtime-hours-tracker')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT', // Triggers when admin inserts hours
+                        schema: 'public',
+                        table: 'hours_log',
+                        filter: `volunteer_id=eq.${currentUserId}`
+                    },
+                    (payload) => {
+                        const record = payload.new;
+                        const count = parseFloat(record.hours_count) || 0;
+                        const notes = record.description || 'General Service Contribution';
+                        
+                        triggerHoursNotification(`✨ +${count.toFixed(1)} Hours Approved!`, notes);
+                        
+                        // Dynamically refresh the totals badge metric and ledger cards instantly!
+                        fetchUserMetrics().catch(e => console.warn(e));
+                    }
+                )
+                .subscribe();
+        }
+
+        function triggerHoursNotification(title, msg) {
+            const wrapper = document.getElementById('toast-container');
+            if (!wrapper) return;
+
+            const element = document.createElement('div');
+            element.className = "p-4 rounded-2xl border border-cyan-500/30 text-white shadow-2xl transition-all duration-500 transform translate-y-10 opacity-0 pointer-events-auto flex gap-3 items-start backdrop-blur-md";
+            element.style.background = "linear-gradient(135deg, rgba(9, 13, 32, 0.95) 0%, rgba(2, 6, 23, 0.9) 100%)";
+            
+            element.innerHTML = `
+                <div class="bg-cyan-500/10 text-cyan-400 p-2 rounded-xl text-xs font-bold border border-cyan-500/20 shrink-0">⏱️</div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-xs font-bold text-cyan-400 tracking-wide">${title}</h4>
+                    <p class="text-[11px] text-slate-300 mt-0.5 font-sans truncate">${msg}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-white text-xs font-bold cursor-pointer px-1">×</button>
+            `;
+
+            wrapper.appendChild(element);
+
+            // Trigger visual animate slide entry
+            setTimeout(() => {
+                element.classList.remove('translate-y-10', 'opacity-0');
+            }, 20);
+
+            // Timeout sequence for automatic fadeout clearing
+            setTimeout(() => {
+                element.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => element.remove(), 500);
+            }, 7000);
+        }
+
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.replace('portal.html');
         });
 
-        runSecurityGate();
+        // Initialize and lock down active engine session tracking
+        async function initializeDashboardApp() {
+            await runSecurityGate();
+            if (currentUser) {
+                listenForHoursUpdates(currentUser.id);
+            }
+        }
+
+        initializeDashboardApp();
     </script>
+
+    <!-- ⏱️ REAL-TIME LOGGED HOURS POPUP NOTIFICATION ANCHOR CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] space-y-3 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
 </body>
 </html>

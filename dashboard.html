@@ -221,7 +221,7 @@
         </div>
     </main>
 
-   <!-- 🧠 CORE INTERFACE OPERATIONS SCRIPT -->
+<!-- 🧠 CORE INTERFACE OPERATIONS SCRIPT -->
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -542,7 +542,12 @@
                 const { data: globalEventsList, error: eventsQueryErr } = await supabase.from('events').select('*').order('event_date', { ascending: true });
                 if (eventsQueryErr) throw eventsQueryErr;
 
-                const { data: userCurrentSignupsList } = await supabase.from('event_signups').select('event_id').eq('user_id', currentUser.id);
+                // 🔍 FULL RE-SYNC: Explicit clean check against the database to prevent cached local arrays
+                const { data: userCurrentSignupsList, error: checkError } = await supabase
+                    .from('event_signups')
+                    .select('event_id')
+                    .eq('user_id', currentUser.id);
+
                 const processedSignupsSet = new Set((userCurrentSignupsList || []).map(item => item.event_id));
 
                 const commitmentsCountEl = document.getElementById('commitmentsCount');
@@ -644,9 +649,7 @@
                 if (error) throw error;
                 
                 alert("🎉 Position claimed successfully!");
-                setTimeout(async () => {
-                    await loadWorkspaceFeeds();
-                }, 100);
+                await loadWorkspaceFeeds();
                 
             } catch (err) {
                 alert(`Error: ${err.message}`);
@@ -666,9 +669,7 @@
                 if (error) throw error;
 
                 alert("👋 Shift unclaimed successfully.");
-                setTimeout(async () => {
-                    await loadWorkspaceFeeds();
-                }, 100);
+                await loadWorkspaceFeeds();
             } catch (err) {
                 alert(`Error removing registration context: ${err.message}`);
             }

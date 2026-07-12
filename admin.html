@@ -10,7 +10,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
         
-        /* 🔵 #4: HIGH-TECH CYAN NEON SCROLLBAR GLOBAL STYLES */
+        /* 🎨 CUSTOM SCROLLBAR GLOBAL STYLES */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -19,9 +19,8 @@
             background: #020617;
         }
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 100%);
-            border-radius: 9999px;
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            background: #164e63;
+            border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #22d3ee;
@@ -126,7 +125,7 @@
                             </div>
                         </div>
                         
-                        <!-- 🔵 #1: CAPACITY LIMIT OPTION FOR EVENT SIGNUPS -->
+                        <!-- 🔵 CAPACITY LIMIT OPTION FOR EVENT SIGNUPS -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Max Attendance Capacity (Optional)</label>
                             <input type="number" min="1" id="eventMaxVolunteers" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="Leave empty for unlimited spots">
@@ -216,7 +215,7 @@
             </div>
         </div>
 
-        <!-- 📜 3. Wide Administrative Activity Ledger -->
+        <!-- 📜 Wide Administrative Activity Ledger -->
         <div class="admin-card rounded-[2.5rem] p-6 sm:p-8 bg-slate-950/40 border border-white/5 shadow-2xl backdrop-blur-md">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
                 <div>
@@ -315,10 +314,7 @@
                 aggregatedHoursMap = {};
                 rawHoursLogs.forEach(entry => {
                     const count = parseFloat(entry.hours_count) || 0;
-                    // Aggregate using user_id mapping
-                    if (entry.user_id) {
-                        aggregatedHoursMap[entry.user_id] = (aggregatedHoursMap[entry.user_id] || 0) + count;
-                    }
+                    aggregatedHoursMap[entry.volunteer_id] = (aggregatedHoursMap[entry.volunteer_id] || 0) + count;
                 });
 
                 renderVerificationSystem();
@@ -351,7 +347,6 @@
             submitBtn.innerText = "Publishing...";
 
             try {
-                // 🔵 #1: SAVE WITH MAX_VOLUNTEERS COLUMN MAPPING
                 const { error } = await supabase.from('events').insert({ title, location, event_date, description, max_volunteers });
                 if (error) throw error;
 
@@ -396,8 +391,9 @@
                                 ${matches.map(signup => {
                                     const profile = masterVolunteersArray.find(v => String(v.user_id) === String(signup.user_id));
                                     const name = profile ? profile.name : 'Awaiting Roster Update';
+                                    const internalId = profile ? profile.id : null;
 
-                                    if (!signup.user_id) {
+                                    if (!internalId) {
                                         return `<div class="text-[11px] text-slate-600 bg-white/[0.01] p-2 rounded-xl">⚠️ Account sync verification required for volunteer profile.</div>`;
                                     }
 
@@ -405,8 +401,8 @@
                                         <div class="flex items-center justify-between bg-white/[0.01] border border-white/5 p-2 rounded-xl text-xs font-mono">
                                             <span class="font-bold text-slate-200">👤 ${name}</span>
                                             <div class="flex items-center gap-2">
-                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${signup.user_id}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
-                                                <button onclick="commitEventHours('${signup.user_id}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
+                                                <input type="number" step="0.5" min="0.5" placeholder="Hrs" id="evt-hrs-${evt.id}-${internalId}" class="w-16 bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-center text-white text-[11px] focus:outline-none focus:border-cyan-500">
+                                                <button onclick="commitEventHours('${internalId}', '${evt.id}', '${evt.title.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500 text-cyan-400 hover:text-black font-black uppercase text-[9px] px-2.5 py-1 rounded-lg transition-all cursor-pointer">Log</button>
                                             </div>
                                         </div>
                                     `;
@@ -465,8 +461,8 @@
         }
         window.purgeDeploymentEvent = purgeDeploymentEvent;
 
-        window.commitEventHours = async function(userId, eventId, eventTitle) {
-            const inputField = document.getElementById(`evt-hrs-${eventId}-${userId}`);
+        window.commitEventHours = async function(volunteerId, eventId, eventTitle) {
+            const inputField = document.getElementById(`evt-hrs-${eventId}-${volunteerId}`);
             const baseValue = parseFloat(inputField.value);
 
             if (isNaN(baseValue) || baseValue <= 0) {
@@ -476,7 +472,7 @@
 
             try {
                 const { error } = await supabase.from('hours_log').insert([{
-                    user_id: userId,
+                    volunteer_id: volunteerId,
                     hours_count: baseValue,
                     description: `Logged via event: ${eventTitle}`
                 }]);
@@ -567,7 +563,7 @@
             });
         }
 
-        // 🔵 #2: CORE email unauthorization cleanup handler routine
+        // CORE email unauthorization cleanup handler routine
         async function executeVolunteerWipe(volunteerInternalId) {
             try {
                 const { data: targetVol } = await supabase.from('volunteers').select('user_id').eq('id', volunteerInternalId).maybeSingle();
@@ -623,16 +619,16 @@
             rosterBox.classList.remove('hidden');
 
             activeProfiles.forEach(user => {
-                if (selectDropdown && user.user_id) {
+                if (selectDropdown) {
                     const option = document.createElement('option');
-                    option.value = user.user_id; // Set value to auth UUID to appease hours_log schema
+                    option.value = user.id;
                     option.innerText = user.name || "Anonymous User";
                     selectDropdown.appendChild(option);
                 }
 
-                const lifetimeHours = aggregatedHoursMap[user.user_id] || 0;
+                const lifetimeHours = aggregatedHoursMap[user.id] || 0;
                 
-                // 🔵 #3: MANAGE STATUS DESIGNATORS Dynamically
+                // MANAGE STATUS DESIGNATORS Dynamically
                 const currentStatus = user.status || "Active";
                 const isUserInactive = currentStatus.toLowerCase() === 'inactive' || currentStatus.toLowerCase() === 'inative';
                 const toggleBadgeColor = isUserInactive ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
@@ -657,7 +653,7 @@
                             </div>
                             <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal" id="text-bio-${user.id}">${user.bio || 'No profile description available.'}</p>
                             <div class="pt-2 flex flex-wrap justify-center sm:justify-end gap-3 border-t border-white/5">
-                                <!-- 🔵 #3: STATUS ALTERATION BUTTON INTERACTION INTERFACE -->
+                                <!-- STATUS ALTERATION BUTTON INTERACTION INTERFACE -->
                                 <button data-id="${user.id}" data-status="${currentStatus}" class="status-toggle-btn text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl border transition-all cursor-pointer ${isUserInactive ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black' : 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-black'}">
                                     Mark ${isUserInactive ? 'Active' : 'Inactive'}
                                 </button>
@@ -713,7 +709,7 @@
         }
 
         function attachRosterControlEvents() {
-            // 🔵 #3: SWITCH INLINE USER STATUS VALUES VIA DYNAMIC ACTION LISTENERS
+            // SWITCH INLINE USER STATUS VALUES VIA DYNAMIC ACTION LISTENERS
             document.querySelectorAll('.status-toggle-btn').forEach(btn => {
                 btn.onclick = async (e) => {
                     const id = e.target.getAttribute('data-id');
@@ -832,9 +828,8 @@
             }
 
             ledgerBox.innerHTML = rawHoursLogs.map(entry => {
-                // Match with master array on user_id instead of internal increment id
-                const profile = masterVolunteersArray.find(v => String(v.user_id) === String(entry.user_id));
-                const volunteerName = profile ? profile.name : `Account Node: ${entry.user_id ? entry.user_id.substring(0,8) : 'Unknown'}`;
+                const profile = masterVolunteersArray.find(v => String(v.id) === String(entry.volunteer_id));
+                const volunteerName = profile ? profile.name : `ID Reference: ${entry.volunteer_id}`;
                 
                 const dateObj = entry.created_at ? new Date(entry.created_at) : new Date();
                 const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
@@ -890,7 +885,7 @@
             let dataRows = [["Log ID", "Date Created", "Volunteer Name", "Hours Logged", "Activity Memo Description"]];
             
             rawHoursLogs.forEach(log => {
-                const user = masterVolunteersArray.find(v => String(v.user_id) === String(log.user_id));
+                const user = masterVolunteersArray.find(v => String(v.id) === String(log.volunteer_id));
                 dataRows.push([
                     log.id,
                     log.created_at ? log.created_at.split('T')[0] : 'N/A',
@@ -915,7 +910,7 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const volunteerSelect = document.getElementById('volunteerSelect');
             
-            const userId = volunteerSelect.value;
+            const volunteerId = volunteerSelect.value;
             const hourValue = parseFloat(document.getElementById('hoursCount').value);
             const operationDesc = document.getElementById('hoursDesc').value.trim();
 
@@ -925,7 +920,7 @@
             try {
                 const { error } = await supabase
                     .from('hours_log')
-                    .insert([{ user_id: userId, hours_count: hourValue, description: operationDesc }]);
+                    .insert([{ volunteer_id: volunteerId, hours_count: hourValue, description: operationDesc }]);
 
                 if (error) throw error;
 

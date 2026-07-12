@@ -102,7 +102,7 @@
                         <div class="flex-1 text-center sm:text-left space-y-1">
                             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                 <h3 id="displayName" class="text-lg font-bold text-white tracking-tight">---</h3>
-                                <span id="profileBadge" class="mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">Active Profile</span>
+                                <span id="profileBadge" class="mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded">Volunteer</span>
                             </div>
                             <p id="displayBio" class="text-xs text-slate-400 leading-relaxed max-w-2xl">---</p>
                         </div>
@@ -189,7 +189,6 @@
 
                 currentUser = session.user;
                 
-                // Unified verification gate checking for all account types
                 const isProfileReady = await checkVolunteerProfile();
                 if (isProfileReady) {
                     document.getElementById('onboarding-gate').classList.add('hidden');
@@ -202,7 +201,6 @@
                     document.getElementById('toggleEditProfileBtn').classList.add('hidden');
                     document.getElementById('toggleEditProfileBtn').style.display = 'none';
 
-                    // Prefill name option for admin setup convenience if needed
                     if (currentUser.email === 'jershonvinodh@gmail.com') {
                         document.getElementById('profName').value = "Admin Jershon";
                         document.getElementById('profBio').value = "System Administrator for Hygienify Workspace.";
@@ -223,24 +221,26 @@
                     .eq('user_id', currentUser.id)
                     .maybeSingle();
 
-                if (error || !data) return false;
+                if (error) return false;
+                
+                // If there is no entry row found in the table, return false to show onboarding
+                if (!data) return false;
                 
                 existingProfile = data; 
                 
-                // Add Admin styling nuances if this profile belongs to the administrator
-                if (currentUser.email === 'jershonvinodh@gmail.com') {
-                    document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
-                    const badge = document.getElementById('profileBadge');
-                    badge.textContent = "Workspace Admin";
-                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
-                } else {
-                    document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
-                }
-
+                document.getElementById('userWelcome').textContent = `Welcome back, ${data.name}!`;
                 document.getElementById('displayName').textContent = data.name;
                 document.getElementById('displayBio').textContent = data.bio || "No biography added yet.";
                 
-                // Populate visual avatar image if saved
+                const badge = document.getElementById('profileBadge');
+                if (currentUser.email === 'jershonvinodh@gmail.com') {
+                    badge.textContent = "Admin";
+                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
+                } else {
+                    badge.textContent = "Volunteer";
+                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded";
+                }
+
                 const avatarImg = document.getElementById('displayAvatar');
                 const avatarFallback = document.getElementById('displayAvatarFallback');
                 if (data.image_url) {

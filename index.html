@@ -335,15 +335,23 @@
         spotlight.style.setProperty('--y', `${e.clientY}px`);
     });
 
-    const btn = document.getElementById('menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    const menuPath = document.getElementById('menu-path');
-    btn.addEventListener('click', () => {
-        menu.classList.toggle('active');
-        const isOpen = menu.classList.contains('active');
-        menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
-        document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    });
+const btn = document.getElementById('menu-btn');
+const menu = document.getElementById('mobile-menu');
+const menuPath = document.getElementById('menu-path');
+
+btn.addEventListener('click', () => {
+    // Toggle the active class
+    menu.classList.toggle('active');
+    
+    // Check if the menu is now open
+    const isOpen = menu.classList.contains('active');
+    
+    // Update the button icon
+    menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
+    
+    // Crucial: Only set overflow hidden when open, and 'auto' when closed
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+});
 
 // 🔐 Supabase Core Engine Integration
 const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';

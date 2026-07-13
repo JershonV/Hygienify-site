@@ -90,20 +90,33 @@
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
+        
+        /* Smooth dynamic space filling logic for main nav styling */
+        .main-navigation {
+            top: 0;
+            transition: top 0.2s ease-out;
+        }
+        body.has-banner .main-navigation {
+            top: 36px; /* Offset match for banner height */
+        }
+        @media (max-width: 768px) {
+            body.has-banner .main-navigation {
+                top: 52px; /* Offset match for mobile multi-line banner height */
+            }
+        }
     </style>
 </head>
-<body>
-<!-- 💡 Neon Banner -->
- <div class="fixed top-0 w-full bg-slate-950 border-b border-purple-500/30 py-3 shadow-[0_0_15px_rgba(168,85,247,0.2)] z-[120]">
-        <p class="text-center text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-purple-400">
- <div class="fixed top-0 w-full bg-slate-950 border-b border-purple-500/30 py-2 shadow-[0_0_10px_rgba(168,85,247,0.15)] z-[120]">
-        <p class="text-center text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-purple-400">
-            <span class="animate-pulse">●</span> This non-profit is incorporated in the State of MO, and is awaiting 501(c)(3) approval
+<body class="has-banner">
+    <!-- 💡 Yellow Neon Banner Layout Container -->
+    <div id="announcement-banner" class="relative w-full bg-amber-500 py-2 px-8 shadow-[0_0_15px_rgba(245,158,11,0.2)] z-[120] text-slate-950 flex justify-center items-center">
+        <p class="text-center text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] pr-4">
+            <span class="inline-block animate-pulse text-amber-950 mr-1">●</span> This non-profit is incorporated in the State of MO, and is awaiting 501(c)(3) approval. 
+            <a href="bylaws.html" class="underline underline-offset-2 ml-1 text-slate-900 hover:text-black font-black">Follow updates live &rarr;</a>
         </p>
+        <button id="close-banner" class="absolute right-4 text-slate-900 hover:text-black font-bold text-sm p-1 leading-none transition" aria-label="Dismiss banner">&times;</button>
     </div>
 
-    <nav class="fixed top-[45px] w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
-    <nav class="fixed top-[35px] w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
+    <nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
@@ -282,6 +295,28 @@
 <div class="spotlight"></div>
 
 <script>
+    // Scroll handling to offset navbar cleanly when banner is visible vs out of view
+    const banner = document.getElementById('announcement-banner');
+    
+    function updateNavPosition() {
+        if (!banner) return;
+        const bannerHeight = banner.offsetHeight;
+        if (window.scrollY > bannerHeight || banner.style.display === 'none') {
+            document.body.classList.remove('has-banner');
+        } else {
+            document.body.classList.add('has-banner');
+        }
+    }
+
+    window.addEventListener('scroll', updateNavPosition);
+    window.addEventListener('resize', updateNavPosition);
+
+    // Dismiss banner action logic
+    document.getElementById('close-banner').addEventListener('click', () => {
+        banner.style.display = 'none';
+        updateNavPosition();
+    });
+
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {

@@ -349,7 +349,7 @@
     </main>
 
     <!-- Footer -->
-   <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
+  <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
     <!-- Top Interactive Dashboard Row -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
 
@@ -425,13 +425,13 @@
             <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
                 &copy; 2026 Hygienify • Empowering Community Health
             </p>
-            <!-- REPOSITIONED PRIVACY POLICY LANGUAGE -->
             <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
                 <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
             </p>
         </div>
         
-        <p class="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 whitespace-nowrap">
+        <!-- FIXED: Responsive wrapping & letter spacing prevents cut-off on mobile viewports -->
+        <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
             Governed by official 
             <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
         </p>

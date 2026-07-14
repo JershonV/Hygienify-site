@@ -186,47 +186,95 @@
     </main>
 
     <!-- Footer -->
-   <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left pt-4">
-            <div class="space-y-6">
-                <div class="flex items-center gap-3 justify-center md:justify-start">
-                    <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                        <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                        <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
-                    </div>
+  <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
+    <!-- Top Interactive Dashboard Row -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+
+        <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
+            <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
+                <img src="qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
+                <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
+            </div>
+        </div>
+
+        <a href="donate.html" 
+           class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
+            <div class="flex-1 pr-0 md:pr-16">
+                <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
+                <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
+                <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+            </div>
+            <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
+                &rarr;
+            </div>
+        </a>
+    </div>
+
+    <!-- Middle Informational Grid -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
+        
+        <!-- Left Brand Block -->
+        <div class="space-y-6">
+            <div class="flex items-center gap-3 justify-center md:justify-start">
+                <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                    <div class="hidden md:block h-5 w-px bg-white/20"></div>
+                    <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
                 </div>
-                <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">Hygienify Organization • St. Louis, MO</p>
             </div>
-
-            <div class="flex flex-col items-center">
-                <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-                <ul class="space-y-4 text-slate-500 text-sm font-medium">
-                    <li><a href="about.html" class="hover:text-cyan-400 transition">About Us</a></li>
-                    <li><a href="programs.html" class="hover:text-cyan-400 transition">Programs</a></li>
-                    <li><a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a></li>
-                    <li><a href="goals.html" class="hover:text-cyan-400 transition">Our Goals</a></li>
-                </ul>
-            </div>
-
-            <div class="flex flex-col items-center md:items-end">
-                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-                <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-6">
-                    hygienify.org@gmail.com
-                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
-                </a>
-                <a href="donate.html" class="bg-cyan-600/10 border border-cyan-500/20 hover:bg-cyan-600 hover:border-transparent text-cyan-400 hover:text-white px-6 py-2 rounded-full font-bold text-xs tracking-wider uppercase transition duration-300">
-                    Join the Mission
-                </a>
-            </div>
+            <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+                Hygienify Organization • St. Louis, MO
+            </p>
         </div>
 
-        <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 text-center">
-            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">&copy; 2026 Hygienify • Empowering Community Health</p>
+        <!-- Center Directory Navigation -->
+        <div class="flex flex-col items-center">
+            <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
+            <ul class="space-y-4 text-slate-500 text-sm font-medium">
+                <li><a href="about.html" class="hover:text-cyan-400 transition">About Us</a></li>
+                <li><a href="programs.html" class="hover:text-cyan-400 transition">Programs</a></li>
+                <li><a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a></li>
+                <li><a href="goals.html" class="hover:text-cyan-400 transition">Our Goals</a></li>
+            </ul>
         </div>
-    </footer>
 
+        <!-- Right Core Communications -->
+        <div class="flex flex-col items-center md:items-end justify-center">
+            <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
+            <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
+                hygienify.org@gmail.com
+                <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+            </a>
+
+            <div>
+                <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Institutional Regulatory Sub-Footer -->
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
+        <div class="space-y-2 md:text-left">
+            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
+                &copy; 2026 Hygienify • Empowering Community Health
+            </p>
+            <!-- REPOSITIONED PRIVACY POLICY LANGUAGE -->
+            <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
+                <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+            </p>
+        </div>
+        
+        <p class="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-500 whitespace-nowrap">
+            Governed by official 
+            <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
+        </p>
+    </div>
+</footer>
+    
     <!-- Interactive Mouse Spotlight Effect Overlay -->
     <div class="spotlight"></div>
 

@@ -6,7 +6,7 @@
     <title>Volunteer Portal | Hygienify</title>
     <link rel="icon" type="image/svg+xml" href="logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
         
@@ -28,22 +28,32 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-6 relative">
+<body class="flex flex-col md:flex-row items-center justify-center min-h-screen p-6 relative">
 
-<!-- Fully Optimized Safe Zone Home Navigation Link with Instant Touch Execution -->
-<a href="index.html" ontouchstart="window.location.href='index.html';" class="absolute top-10 left-10 z-50 flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 group" title="Return to Home">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-    </svg>
-</a>
+    <!-- 🖥️ DESKTOP ONLY: Fixed to top-left corner of the browser viewport -->
+    <a href="index.html" onclick="window.location.href='index.html';" class="hidden md:flex fixed top-8 left-8 z-50 items-center justify-center p-2.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 group" title="Return to Home">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+    </a>
     
-    <div id="auth-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl">
-<!-- Increased pt-16 for mobile clearance, md:pt-0 resets for desktop -->
-<div class="mb-8 text-center pt-16 md:pt-0">
-    <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Internal Access Only</span>
-    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Volunteer Sign In</h2>
-    <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ This portal is strictly for authorized volunteers only.</p>
-</div>
+    <!-- 📦 WIDGET CONTAINER CARD (SIGN IN) -->
+    <div id="auth-card" class="w-full max-w-2xl widget-glass p-8 md:p-16 shadow-2xl relative mt-4 md:mt-0">
+        
+        <!-- 📱 MOBILE ONLY: Positioned inside the widget layout flow -->
+        <div class="block md:hidden mb-6">
+            <a href="index.html" onclick="window.location.href='index.html';" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:bg-cyan-500/20 active:text-cyan-400 transition-all duration-200" title="Return to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            </a>
+        </div>
+
+        <div class="mb-8 text-center">
+            <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Internal Access Only</span>
+            <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Volunteer Sign In</h2>
+            <p class="text-xs text-amber-400/80 font-semibold tracking-wider uppercase mt-6">⚠️ This portal is strictly for authorized volunteers only.</p>
+        </div>
         
         <p class="text-slate-400 text-sm text-center mb-10 max-w-md mx-auto leading-relaxed">
             Please enter your pre-approved organizational email and password to access the profile manager.
@@ -57,7 +67,6 @@
             
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Password</label>
-                <!-- 👁️ Relative wrapper for overlaying the show/hide utility -->
                 <div class="relative">
                     <input type="password" id="authPassword" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pr-14 text-white focus:outline-none focus:border-cyan-500 transition text-base" placeholder="••••••••">
                     
@@ -87,7 +96,17 @@
     </div>
 
     <!-- Profile Portal Form -->
-    <div id="portal-card" class="w-full max-w-2xl widget-glass p-16 shadow-2xl hidden">
+    <div id="portal-card" class="w-full max-w-2xl widget-glass p-8 md:p-16 shadow-2xl hidden relative mt-4 md:mt-0">
+        
+        <!-- 📱 MOBILE ONLY: Positioned inside the widget layout flow -->
+        <div class="block md:hidden mb-6">
+            <a href="index.html" onclick="window.location.href='index.html';" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:bg-cyan-500/20 active:text-cyan-400 transition-all duration-200" title="Return to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            </a>
+        </div>
+
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 border-b border-white/5 pb-6">
             <div>
                 <h2 class="text-4xl font-black text-white tracking-tight">Profile Portal</h2>
@@ -111,7 +130,6 @@
             
             <div>
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Portrait Image File</label>
-                <!-- 🛠️ FIXED: Removed HTML "required" flag so portrait updates are elegantly flexible -->
                 <input type="file" id="imageFileInput" accept="image/*" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-slate-400 focus:outline-none focus:border-cyan-500 transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 file:cursor-pointer cursor-pointer">
             </div>
 
@@ -121,7 +139,6 @@
         </form>
     </div>
 
-<!-- 🧠 Updated JavaScript for BigInt Table Support -->
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -162,7 +179,6 @@
         initPasswordToggle();
     });
 
-    // 🔒 SECURE AUTOMATED SMART ROUTING ENGINE
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -194,7 +210,6 @@
                     return;
                 }
 
-                // 🔍 LOOKUP FIXED: Now queries by the user_id column instead of id
                 const { data: profile, error: profileErr } = await supabaseClient
                     .from('volunteers')
                     .select('user_id')
@@ -219,7 +234,6 @@
         }
     });
 
-    // 🌐 ANTI-DUPLICATION DATA INGESTION ENGINE
     document.getElementById('portalForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -258,8 +272,6 @@
                 });
             }
 
-            // 🛡️ UPSERT FIXED: We search on user_id to decide whether to update or create.
-            // Leaving the numeric 'id' completely alone lets your database auto-increment it natively!
             const { error: dbError } = await supabaseClient
                 .from('volunteers')
                 .upsert({ 
@@ -267,7 +279,7 @@
                     name: volunteerName, 
                     bio: volunteerBio, 
                     image_url: finalAvatarDataString
-                }, { onConflict: 'user_id' }); // Ensures protection works through our new user_id key
+                }, { onConflict: 'user_id' });
 
             if (dbError) throw dbError;
 

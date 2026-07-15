@@ -8,7 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #020617; 
+            color: #f8fafc; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -16,12 +22,21 @@
         ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
 
-        .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-glass { 
+            background: rgba(2, 6, 23, 0.8); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
 
         .logo-centerpiece {
             mix-blend-mode: screen; 
-            filter: brightness(1.2) contrast(1.2) drop-shadow(0 0 40px rgba(34, 211, 238, 0.3));
+            filter: brightness(1.2) contrast(1.2) drop-shadow(0 0 50px rgba(34, 211, 238, 0.25));
             image-rendering: -webkit-optimize-contrast;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .logo-centerpiece:hover {
+            transform: scale(1.05) rotate(2deg);
         }
 
         /* --- THE UNIFIED LOGIC --- */
@@ -30,16 +45,13 @@
             --reveal-shift: 40px;
             --reveal-opacity: 0;
 
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 2.5rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2rem;
             opacity: var(--reveal-opacity);
-
-            /* Combines the scroll position and the hover position */
             transform: translateY(calc(var(--reveal-shift) + var(--hover-lift)));
-
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        opacity 1.2s ease,
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                        opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
                         border-color 0.4s ease, 
                         background 0.4s ease, 
                         box-shadow 0.4s ease;
@@ -51,106 +63,158 @@
         }
 
         .widget-glass:hover, .footer-widget:hover {
-            --hover-lift: -12px;
-            border-color: rgba(34, 211, 238, 0.5);
-            background: rgba(34, 211, 238, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --hover-lift: -8px;
+            border-color: rgba(34, 211, 238, 0.4);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.06) 0%, rgba(59, 130, 246, 0.02) 100%);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(34, 211, 238, 0.15);
             z-index: 50;
         }
 
         .text-gradient {
-            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
-        #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
+        #mobile-menu { 
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s; 
+            opacity: 0; 
+            pointer-events: none; 
+            visibility: hidden; 
+        }
+        #mobile-menu.active { 
+            opacity: 1; 
+            pointer-events: auto; 
+            visibility: visible; 
+        }
         .menu-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px); border-radius: 1.5rem; transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; color: #f8fafc;
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px); 
+            border-radius: 1.5rem; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #f8fafc;
+        }
+        .menu-card:hover {
+            transform: scale(1.03);
+            border-color: rgba(255, 255, 255, 0.15);
         }
         .menu-card.active {
-            background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.4);
-            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.1); color: #22d3ee;
+            background: rgba(34, 211, 238, 0.08); 
+            border-color: rgba(34, 211, 238, 0.3);
+            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.05); 
+            color: #22d3ee;
         }
 
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #22d3ee;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
         .nav-link.active { color: #22d3ee !important; }
 
-        .qr-container { filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.2)); transition: all 0.4s ease; }
-        .footer-widget:hover .qr-container { filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.5)); }
+        .qr-container { 
+            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.1)); 
+            transition: all 0.4s ease; 
+        }
+        .footer-widget:hover .qr-container { 
+            filter: drop-shadow(0 0 25px rgba(34, 211, 238, 0.35)); 
+        }
 
         .spotlight {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: -1;
-            background: radial-gradient(600px circle at var(--x) var(--y), rgba(34, 211, 238, 0.07), transparent 80%);
+            background: radial-gradient(800px circle at var(--x) var(--y), rgba(34, 211, 238, 0.05), transparent 80%);
         }
 
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
         
-        /* Smooth dynamic space filling logic for main nav styling */
         .main-navigation {
             top: 0;
-            transition: top 0.2s ease-out;
+            transition: top 0.3s ease;
         }
         body.has-banner .main-navigation {
-            top: 36px; /* Offset match for banner height */
+            top: 36px;
         }
         @media (max-width: 768px) {
             body.has-banner .main-navigation {
-                top: 52px; /* Offset match for mobile multi-line banner height */
+                top: 52px;
             }
         }
 
-        /* Custom track styling for progress dynamic visualization slider */
+        /* Range Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
         input[type="range"]::-webkit-slider-runnable-track {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 9999px;
             height: 8px;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            background: #22d3ee;
-            border: 2px solid #020617;
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+            border: 3px solid #020617;
             border-radius: 50%;
-            height: 20px;
-            width: 20px;
-            margin-top: -6px;
+            height: 22px;
+            width: 22px;
+            margin-top: -8px;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
-            transition: transform 0.1s ease;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         input[type="range"]::-webkit-slider-thumb:active {
-            transform: scale(1.2);
+            transform: scale(1.3);
         }
     </style>
 </head>
 <body class="has-banner">
-    <!-- 💡 Yellow Neon Banner Layout Container -->
-    <div id="announcement-banner" class="relative w-full bg-amber-500 py-2 px-8 shadow-[0_0_15px_rgba(245,158,11,0.2)] z-[120] text-slate-950 flex justify-center items-center">
-        <p class="text-center text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] pr-4">
-            <span class="inline-block animate-pulse text-amber-950 mr-1">●</span> This non-profit is incorporated in the State of MO, and is awaiting 501(c)(3) approval. 
-            <a href="bylaws.html" class="underline underline-offset-2 ml-1 text-slate-900 hover:text-black font-black">View Bylaws &rarr;</a>
+    <!-- Announcement Banner -->
+    <div id="announcement-banner" class="relative w-full bg-amber-500 py-2.5 px-8 shadow-[0_0_20px_rgba(245,158,11,0.15)] z-[120] text-slate-950 flex justify-center items-center">
+        <p class="text-center text-[10px] font-bold uppercase tracking-[0.2em] pr-4">
+            <span class="inline-block animate-pulse text-amber-950 mr-1.5">●</span> This non-profit is incorporated in the State of MO, and is awaiting 501(c)(3) approval. 
+            <a href="bylaws.html" class="underline underline-offset-4 ml-1.5 text-slate-900 hover:text-black font-black transition">View Bylaws &rarr;</a>
         </p>
-        <button id="close-banner" class="absolute right-4 text-slate-900 hover:text-black font-bold text-sm p-1 leading-none transition" aria-label="Dismiss banner">&times;</button>
+        <button id="close-banner" class="absolute right-4 text-slate-900 hover:text-black font-bold text-lg p-1 leading-none transition" aria-label="Dismiss banner">&times;</button>
     </div>
 
-    <nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
+    <!-- Main Navigation -->
+    <nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-12 py-5 md:py-6">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+                <img src="logo_new2.svg" class="w-9 h-9 object-contain" alt="Logo">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                    <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                    <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+                    <span class="text-xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                    <div class="hidden md:block h-4 w-px bg-white/20"></div>
+                    <span class="hidden md:block text-[9px] font-black uppercase tracking-[0.25em] text-cyan-400/80">Non-Profit</span>
                 </div>
             </div>
 
-            <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
+            <div class="hidden md:flex gap-10 font-bold text-[11px] tracking-[0.2em] uppercase">
                 <a href="index.html" class="nav-link active text-slate-400 hover:text-white transition">Home</a>
                 <a href="about.html" class="nav-link text-slate-400 hover:text-white transition">About</a>
                 <a href="programs.html" class="nav-link text-slate-400 hover:text-white transition">Programs</a>
@@ -159,69 +223,71 @@
                 <a href="goals.html" class="nav-link text-slate-400 hover:text-white transition">Goals</a>
             </div>
 
-            <a href="donate.html" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
+            <a href="donate.html" class="hidden md:block bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-7 py-2.5 rounded-full font-bold text-xs tracking-wider transition-all shadow-[0_4px_20px_rgba(34,211,238,0.1)] hover:shadow-[0_4px_25px_rgba(34,211,238,0.25)]">DONATE</a>
 
             <button id="menu-btn" class="md:hidden text-white flex items-center gap-2 z-[120]">
-                <span id="btn-label" class="text-[10px] font-black uppercase tracking-[0.2em]">Menu</span>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span id="btn-label" class="text-[9px] font-black uppercase tracking-[0.2em]">Menu</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path id="menu-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
         </div>
     </nav>
 
+    <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
         <div class="w-full max-w-md grid grid-cols-2 gap-4">
-            <a href="index.html" class="menu-card active h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">01</span><span class="text-base font-medium">Home</span></a>
-            <a href="about.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">02</span><span class="text-base font-medium">About</span></a>
-            <a href="programs.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">03</span><span class="text-base font-medium">Programs</span></a>
-            <a href="volunteer.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">04</span><span class="text-base font-medium">Volunteer</span></a>
-            <a href="team.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">05</span><span class="text-base font-medium">Team</span></a>
-            <a href="goals.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">06</span><span class="text-base font-medium">Our Goals</span></a>
-            <a href="donate.html" class="menu-card h-16 col-span-2 bg-cyan-600 border-none text-white font-bold uppercase text-xs tracking-widest">Donate</a>
+            <a href="index.html" class="menu-card active h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">01</span><span class="text-sm font-semibold">Home</span></a>
+            <a href="about.html" class="menu-card h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">02</span><span class="text-sm font-semibold">About</span></a>
+            <a href="programs.html" class="menu-card h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">03</span><span class="text-sm font-semibold">Programs</span></a>
+            <a href="volunteer.html" class="menu-card h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">04</span><span class="text-sm font-semibold">Volunteer</span></a>
+            <a href="team.html" class="menu-card h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">05</span><span class="text-sm font-semibold">Team</span></a>
+            <a href="goals.html" class="menu-card h-28 flex-col gap-1.5"><span class="text-[9px] opacity-40 uppercase tracking-widest">06</span><span class="text-sm font-semibold">Our Goals</span></a>
+            <a href="donate.html" class="menu-card h-14 col-span-2 bg-gradient-to-r from-cyan-600 to-blue-600 border-none text-white font-bold uppercase text-xs tracking-widest">Donate</a>
         </div>
     </div>
 
+    <!-- Hero Header -->
     <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
         <div class="max-w-5xl mx-auto w-full text-center flex flex-col items-center reveal">
-            <div class="relative inline-block mb-16">
-                <div class="absolute -inset-10 bg-cyan-500/20 rounded-full blur-[80px] opacity-40"></div>
-                <img src="logo_new2.svg" class="relative w-full max-w-[280px] md:max-w-[320px] mx-auto logo-centerpiece" alt="Hygienify Centerpiece">
+            <div class="relative inline-block mb-12">
+                <div class="absolute -inset-10 bg-cyan-500/10 rounded-full blur-[100px] opacity-50"></div>
+                <img src="logo_new2.svg" class="relative w-full max-w-[240px] md:max-w-[280px] mx-auto logo-centerpiece" alt="Hygienify Centerpiece">
             </div>
 
-            <div class="flex flex-wrap justify-center items-center gap-4 mb-12">
-                <div class="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
+            <div class="flex flex-wrap justify-center items-center gap-3 mb-10">
+                <div class="px-4 py-1.5 rounded-full bg-cyan-500/5 border border-cyan-500/20 text-cyan-400 text-[9px] font-bold tracking-widest uppercase">
                     Serving the St. Louis Community
                 </div>
-                <a href="volunteer.html" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400 text-cyan-400 text-[10px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
-                    Get Involved
+                <a href="volunteer.html" class="px-5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/40 text-cyan-400 text-[9px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
+                    Get Involved &rarr;
                 </a>
             </div>
 
             <div class="relative">
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-white">
+                <h1 class="text-5xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-white">
                     <span class="text-gradient">Hygienify</span>
                 </h1>
-                <div class="pt-16 md:pt-24">
-                    <p class="text-slate-500 text-[11px] md:text-xs font-black tracking-[0.6em] uppercase opacity-80">
+                <div class="pt-12 md:pt-16">
+                    <p class="text-slate-500 text-[10px] md:text-xs font-black tracking-[0.5em] uppercase opacity-80">
                         Hygiene • Seminars • Community
                     </p>
                 </div>
-                <div class="mt-10 w-full max-w-4xl mx-auto">
-                    <p class="text-slate-200 text-base md:text-lg font-normal tracking-wide italic opacity-90 leading-relaxed">
-                        A non-profit geared toward distributing basic health essentials and improving hygienic practices.
+                <div class="mt-8 w-full max-w-2xl mx-auto">
+                    <p class="text-slate-300 text-sm md:text-base font-normal tracking-wide italic opacity-90 leading-relaxed">
+                        A youth-led non-profit geared toward distributing basic health essentials and improving hygienic practices across marginalized communities.
                     </p>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 📊 Interactive Campaign Goal Tracker Progress Banner -->
+    <!-- Interactive Campaign Goal Tracker -->
     <section class="py-12 px-6 md:px-8">
-        <div class="max-w-4xl mx-auto widget-glass p-6 md:p-12 reveal">
+        <div class="max-w-4xl mx-auto widget-glass p-8 md:p-12 reveal">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
                 <div>
-                    <span class="text-xs font-black tracking-[0.2em] text-cyan-400 uppercase block mb-2">Campaign Goal Tracker</span>
+                    <span class="text-[10px] font-black tracking-[0.25em] text-cyan-400 uppercase block mb-1">Campaign Goal Tracker</span>
                     <h3 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight">Supplying St. Louis</h3>
                 </div>
                 <div class="text-left md:text-right">
@@ -231,30 +297,30 @@
             </div>
 
             <!-- Custom Clean Progress Bar -->
-            <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 relative mb-8">
+            <div class="w-full h-3.5 bg-white/5 rounded-full overflow-hidden border border-white/5 relative mb-8">
                 <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-500 ease-out" style="width: 0%;"></div>
             </div>
 
             <!-- Dynamic Interactive Input Panel -->
-            <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+            <div class="bg-white/[0.01] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-3/5 space-y-4">
                     <div class="flex justify-between items-center">
-                        <label for="impact-slider" class="text-xs font-black uppercase tracking-wider text-slate-400">Simulate Impact</label>
+                        <label for="impact-slider" class="text-[10px] font-black uppercase tracking-wider text-slate-400">Simulate Your Impact</label>
                         <span id="slider-val" class="text-cyan-400 font-extrabold text-lg">$50.00</span>
                     </div>
-                    <input id="impact-slider" type="range" min="5" max="500" step="5" value="50" class="w-full bg-transparent accent-cyan-400 cursor-pointer">
-                    <div class="flex justify-between text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+                    <input id="impact-slider" type="range" min="5" max="500" step="5" value="50" class="w-full cursor-pointer">
+                    <div class="flex justify-between text-[9px] font-bold tracking-widest text-slate-500 uppercase">
                         <span>$5 Min</span>
                         <span>$500 Max</span>
                     </div>
                 </div>
 
-                <div class="w-full md:w-2/5 flex flex-col justify-center items-center md:items-start text-center md:text-left pt-6 md:pt-0 md:pl-6 md:border-l border-white/10">
-                    <p class="text-xs text-slate-400 uppercase tracking-widest font-black mb-1">Projected Outcome</p>
-                    <p id="outcome-desc" class="text-white text-sm md:text-base font-semibold leading-relaxed mb-4">
+                <div class="w-full md:w-2/5 flex flex-col justify-center items-center md:items-start text-center md:text-left pt-6 md:pt-0 md:pl-8 md:border-l border-white/10">
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-black mb-1.5">Projected Outcome</p>
+                    <p id="outcome-desc" class="text-white text-xs md:text-sm font-medium leading-relaxed mb-4">
                         A contribution of <span class="text-cyan-400 font-extrabold">$50</span> provides <span class="text-cyan-400 font-extrabold">10</span> critical hygiene kits!
                     </p>
-                    <a href="donate.html" class="w-full text-center bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-[0_4px_20px_rgba(34,211,238,0.15)] hover:shadow-[0_4px_25px_rgba(34,211,238,0.3)]">
+                    <a href="donate.html" class="w-full text-center bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white py-3 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all shadow-[0_4px_15px_rgba(34,211,238,0.15)]">
                         Make This Impact Real &rarr;
                     </a>
                 </div>
@@ -262,89 +328,84 @@
         </div>
     </section>
 
-    <!-- 📈 Stats Section (Hydrates dynamically with data-target overrides) -->
+    <!-- Stats Section -->
     <section class="py-24 px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="widget-glass p-12 reveal reveal-delay-1">
-                <div id="stat-kits" class="text-6xl font-black text-white mb-4 stat-number" data-target="7250">0</div>
-                <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
-                <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
+            <div class="widget-glass p-10 reveal reveal-delay-1">
+                <div id="stat-kits" class="text-5xl font-black text-white mb-3 stat-number" data-target="7250">0</div>
+                <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-xs">Hygiene Kits</h3>
+                <p class="mt-3 text-slate-500 text-sm font-medium leading-relaxed">Distributed to shelters and schools across the Greater St. Louis area.</p>
             </div>
-            <div class="widget-glass p-12 reveal reveal-delay-2">
-                <div id="stat-students" class="text-6xl font-black text-white mb-4 stat-number" data-target="1500">0</div>
-                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
-                <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
+            <div class="widget-glass p-10 reveal reveal-delay-2">
+                <div id="stat-students" class="text-5xl font-black text-white mb-3 stat-number" data-target="1500">0</div>
+                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs">Students</h3>
+                <p class="mt-3 text-slate-500 text-sm font-medium leading-relaxed">Empowered through interactive workshops and health seminars.</p>
             </div>
-            <div class="widget-glass p-12 reveal reveal-delay-3">
-                <div id="stat-volunteers" class="text-6xl font-black text-white mb-4 stat-number" data-target="84">0</div>
-                <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
-                <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
+            <div class="widget-glass p-10 reveal reveal-delay-3">
+                <div id="stat-volunteers" class="text-5xl font-black text-white mb-3 stat-number" data-target="84">0</div>
+                <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-xs">Volunteers</h3>
+                <p class="mt-3 text-slate-500 text-sm font-medium leading-relaxed">Collaborating with the local community to drive direct impact.</p>
             </div>
         </div>
     </section>
 
-    <section class="py-32 px-8 reveal">
-        <div class="max-w-5xl mx-auto text-center space-y-12">
-            <h2 class="text-4xl md:text-6xl font-light tracking-tight italic leading-tight text-slate-200">
-                "Change starts with you" 
+    <!-- Quote Section -->
+    <section class="py-24 px-8 reveal">
+        <div class="max-w-4xl mx-auto text-center space-y-8">
+            <h2 class="text-3xl md:text-5xl font-light tracking-tight italic leading-tight text-slate-200">
+                "Small acts of hygiene build monumental health." 
             </h2>
-            <div class="space-y-4">
-                <div class="h-px w-24 bg-cyan-500 mx-auto opacity-50"></div>
-                <p class="text-3xl font-black text-white">Jershon Vinodh</p>
-                <p class="text-sm font-black tracking-[0.4em] text-cyan-400 uppercase">Founder & Executive Director</p>
+            <div class="space-y-3">
+                <div class="h-px w-16 bg-cyan-500 mx-auto opacity-50"></div>
+                <p class="text-2xl font-extrabold text-white">Jershon Vinodh</p>
+                <p class="text-[10px] font-black tracking-[0.3em] text-cyan-400 uppercase">Founder & Executive Director</p>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-        <!-- Top Interactive Dashboard Row -->
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
                 <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
                     <img src="qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
-                    <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
+                    <h4 class="text-white font-bold text-lg mb-1">Mobile Access</h4>
+                    <p class="text-slate-400 text-xs max-w-[180px] leading-relaxed">Scan to explore our mission on your mobile device.</p>
                 </div>
             </div>
 
-            <a href="donate.html" 
-               class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
-                <div class="flex-1 pr-0 md:pr-16">
-                    <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
-                    <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
-                    <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+            <a href="donate.html" class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
+                <div class="flex-1 pr-0 md:pr-12">
+                    <span class="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em]">Support Us</span>
+                    <h4 class="text-white font-extrabold text-xl mt-1 mb-2">Hygienify the STL</h4>
+                    <p class="text-slate-400 text-xs max-w-[280px] leading-relaxed">Help us provide hygiene kits to students in need.</p>
                 </div>
-                <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
+                <div class="mt-6 md:mt-0 w-12 h-12 rounded-full bg-cyan-600/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
                     &rarr;
                 </div>
             </a>
         </div>
 
-        <!-- Middle Informational Grid -->
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
-            
-            <!-- Left Brand Block -->
-            <div class="space-y-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 text-center md:text-left border-t border-white/5 pt-16">
+            <div class="space-y-4">
                 <div class="flex items-center gap-3 justify-center md:justify-start">
-                    <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                        <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                        <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+                    <img src="logo_new2.svg" class="w-8 h-8 object-contain" alt="Logo">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg font-extrabold tracking-tighter text-white">Hygienify</span>
+                        <div class="h-3 w-px bg-white/20"></div>
+                        <span class="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
                     </div>
                 </div>
-                <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+                <p class="text-slate-600 font-bold text-[9px] tracking-[0.4em] uppercase">
                     Hygienify Organization • St. Louis, MO
                 </p>
             </div>
 
-            <!-- Center Directory Navigation -->
             <div class="flex flex-col items-center">
-                <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-                <ul class="space-y-4 text-slate-500 text-sm font-medium">
+                <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-[10px]">Organization</h4>
+                <ul class="space-y-3 text-slate-500 text-xs font-medium">
                     <li><a href="about.html" class="hover:text-cyan-400 transition">About Us</a></li>
                     <li><a href="programs.html" class="hover:text-cyan-400 transition">Programs</a></li>
                     <li><a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a></li>
@@ -352,41 +413,35 @@
                 </ul>
             </div>
 
-            <!-- Right Core Communications -->
             <div class="flex flex-col items-center md:items-end justify-center">
-                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-                <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
+                <p class="text-slate-500 text-[9px] font-black tracking-[0.3em] uppercase mb-2">Get in Touch</p>
+                <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 text-sm hover:text-white transition-all group relative mb-6">
                     hygienify.org@gmail.com
-                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500 transition-all duration-300 group-hover:w-full"></span>
                 </a>
-
-                <div>
-                    <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
-                </div>
+                <a href="volunteer.html" class="bg-cyan-500/5 border border-cyan-500/20 text-cyan-400 px-5 py-2 rounded-full text-[9px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
             </div>
         </div>
 
-        <!-- Bottom Institutional Regulatory Sub-Footer -->
         <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
             <div class="space-y-2 md:text-left">
-                <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
+                <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.4em]">
                     &copy; 2026 Hygienify • Empowering Community Health
                 </p>
-                <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
-                    <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+                <p class="text-[10px] text-slate-500 max-w-md leading-relaxed">
+                    <span class="text-slate-400 font-semibold tracking-wider uppercase text-[8px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
                 </p>
             </div>
-            
-            <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">
                 Governed by official 
-                <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
+                <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition ml-1 underline underline-offset-4">Corporate Bylaws & Policies</a>
             </p>
         </div>
     </footer>
 
     <div class="spotlight"></div>
 
-    <!-- 🔐 Supabase Core Engine Integration -->
+    <!-- Supabase Core Engine Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
@@ -402,9 +457,8 @@
       });
     </script>
 
-    <!-- Page Interface Interactions -->
+    <!-- Interface Interactions Script -->
     <script>
-        // Scroll handling to offset navbar cleanly when banner is visible vs out of view
         const banner = document.getElementById('announcement-banner');
         
         function updateNavPosition() {
@@ -420,7 +474,6 @@
         window.addEventListener('scroll', updateNavPosition);
         window.addEventListener('resize', updateNavPosition);
 
-        // Dismiss banner action logic
         document.getElementById('close-banner').addEventListener('click', () => {
             banner.style.display = 'none';
             updateNavPosition();
@@ -454,7 +507,7 @@
             document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         });
 
-        // --- 📊 Dynamic Sync Engine (Supabase-to-UI) ---
+        // Dynamic Sync Engine
         let BASE_KITS = 7250;
         let TARGET_KITS = 10000;
         let COST_PER_KIT = 5;
@@ -481,7 +534,7 @@
             updateUIElements(parseInt(e.target.value));
         });
 
-        // Initialize Stats Counting Engine
+        // Stats Counting Observer
         const statsObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -512,7 +565,6 @@
             });
         }, { threshold: 0.1 });
 
-        // Hydrates default values onto elements and queries Supabase Table row #1
         async function loadLiveCampaignStats() {
             try {
                 const { data, error } = await supabase
@@ -522,32 +574,22 @@
                     .single();
 
                 if (data && !error) {
-                    console.log("Successfully retrieved live stats from Supabase:", data);
-                    
-                    // Rewrite local state definitions
                     BASE_KITS = data.current_progress;
                     TARGET_KITS = data.target_goal;
                     COST_PER_KIT = data.cost_per_kit;
 
-                    // Dynamically set properties for count up sliders on page scroll
                     document.getElementById('stat-kits').setAttribute('data-target', data.current_progress);
                     document.getElementById('stat-students').setAttribute('data-target', data.total_students_helped);
                     document.getElementById('stat-volunteers').setAttribute('data-target', data.total_volunteers);
-                } else if (error) {
-                    console.warn("Failed retrieving live record. Using local baseline fallback. Error details:", error.message);
                 }
             } catch (err) {
-                console.error("Unknown network exception occurred fetching database stats:", err);
+                console.error("Database connection fallback used:", err);
             } finally {
-                // Instantly sync visual elements
                 updateUIElements();
-                
-                // Mount observers for elements on layout tree
                 document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
             }
         }
 
-        // Initialize fetching on page load
         window.addEventListener('DOMContentLoaded', loadLiveCampaignStats);
     </script>
 </body>

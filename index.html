@@ -392,8 +392,9 @@
       const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
       const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
 
-      // FIXED: Safely calling direct global initializer instead of relying on window.supabase wrapping
-      const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+      // FIXED: Safely extracting the createClient method before initializing variable to avoid the scope reference crash
+      const { createClient } = window.supabase;
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
       supabase.auth.onAuthStateChange((event, session) => {
         if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {

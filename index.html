@@ -392,10 +392,10 @@
       const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
       const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
 
-      // Declare client globally to make it accessible to scripts further down the page
-      const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+      // Assign to window context to guarantee global access and bypass local scope syntax blocks
+      window.supabaseClientInstance = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-      supabase.auth.onAuthStateChange((event, session) => {
+      window.supabaseClientInstance.auth.onAuthStateChange((event, session) => {
         if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
           console.log('Verification successful! Moving to portal...');
           window.location.href = 'portal.html'; 
@@ -560,7 +560,7 @@
         async function loadLiveCampaignStats() {
             try {
                 // 1. Get initial baseline data payload from campaign_stats
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClientInstance
                     .from('campaign_stats')
                     .select('*')
                     .eq('id', 1)
@@ -576,7 +576,7 @@
                 }
 
                 // 2. Subscribe to real-time updates of row id #1
-                supabase
+                window.supabaseClientInstance
                     .channel('live-campaign-tracker')
                     .on(
                         'postgres_changes',

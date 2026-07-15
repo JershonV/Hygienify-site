@@ -451,7 +451,7 @@
             }
         });
 
-        // Hamburger Mobile Menu controls
+ // Hamburger Mobile Menu controls
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('mobile-menu');
         const menuPath = document.getElementById('menu-path');
@@ -492,9 +492,9 @@
 
         // Handles applying newly fetched or real-time pushed DB stats to variables & the UI elements
         function applyStatsUpdate(data) {
-            BASE_KITS = data.current_progress;
-            TARGET_KITS = data.target_goal;
-            COST_PER_KIT = data.cost_per_kit;
+            BASE_KITS = parseInt(data.current_progress || data.kits_distributed || data.kits_delivered) || 7250;
+            TARGET_KITS = parseInt(data.target_goal || data.kits_goal) || 10000;
+            COST_PER_KIT = parseInt(data.cost_per_kit) || 5;
 
             // Instantly updates goal calculator
             updateUIElements();
@@ -505,17 +505,22 @@
             const volunteerEl = document.getElementById('stat-volunteers');
 
             if (kitEl) {
-                kitEl.setAttribute('data-target', data.current_progress);
-                kitEl.textContent = Math.round(data.current_progress).toLocaleString();
+                kitEl.setAttribute('data-target', BASE_KITS);
+                kitEl.textContent = BASE_KITS.toLocaleString();
             }
             if (studentEl) {
-                studentEl.setAttribute('data-target', data.total_students_helped);
-                studentEl.textContent = Math.round(data.total_students_helped).toLocaleString();
+                const students = parseInt(data.total_students_helped || data.students_helped) || 1500;
+                studentEl.setAttribute('data-target', students);
+                studentEl.textContent = students.toLocaleString();
             }
             if (volunteerEl) {
-                volunteerEl.setAttribute('data-target', data.total_volunteers);
-                volunteerEl.textContent = Math.round(data.total_volunteers).toLocaleString();
+                const volunteers = parseInt(data.total_volunteers || data.volunteers_count) || 84;
+                volunteerEl.setAttribute('data-target', volunteers);
+                volunteerEl.textContent = volunteers.toLocaleString();
             }
+
+            // Trigger the animated counting effect on the elements
+            document.querySelectorAll(".stat-number").forEach(el => statsObserver.observe(el));
         }
 
         // Initialize Stats Counting Engine
@@ -552,18 +557,20 @@
         // Hydrates default values and sets up Realtime Event Listeners
         async function loadLiveCampaignStats() {
             try {
-                // 1. Get initial baseline data payload
+                // 1. Get initial baseline data payload from campaign_stats
                 const { data, error } = await supabase
                     .from('campaign_stats')
                     .select('*')
                     .eq('id', 1)
-                    .single();
+                    .maybeSingle(); // Safe fall-through
 
                 if (data && !error) {
                     console.log("Successfully retrieved live stats from Supabase:", data);
                     applyStatsUpdate(data);
-                } else if (error) {
-                    console.warn("Failed retrieving live record. Using local baseline fallback. Error details:", error.message);
+                } else {
+                    console.warn("Failed retrieving live record. Using local baseline fallback. Error details:", error ? error.message : "No data");
+                    // Still attach observer to default numbers if DB fails
+                    document.querySelectorAll(".stat-number").forEach(el => statsObserver.observe(el));
                 }
 
                 // 2. Subscribe to real-time updates of row id #1
@@ -578,25 +585,23 @@
                             filter: 'id=eq.1'
                         },
                         (payload) => {
-                            console.log('Realtime database change detected:', payload.new);
+                            console.log('Realtime change received!', payload.new);
                             applyStatsUpdate(payload.new);
                         }
                     )
                     .subscribe();
 
             } catch (err) {
-                console.error("Unknown network exception occurred fetching database stats:", err);
-            } finally {
-                // Instantly sync layout
-                updateUIElements();
-                
-                // Mount observers for elements on layout tree
-                document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
+                console.error("Critical error in loadLiveCampaignStats:", err);
+                document.querySelectorAll(".stat-number").forEach(el => statsObserver.observe(el));
             }
         }
 
-        // Initialize fetching on page load
-        window.addEventListener('DOMContentLoaded', loadLiveCampaignStats);
+        // Initialize Fetch once DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLiveCampaignStats();
+            updateUIElements(); // Set initial layout
+        });
     </script>
 </body>
 </html>

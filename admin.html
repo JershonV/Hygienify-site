@@ -534,11 +534,61 @@
         // MANUAL COUNTER MODULE PERSISTENCE
         let manualCount = parseInt(localStorage.getItem('manual_volunteer_count') || '0', 10);
         
+        // DEBOUNCED DATABASE UPDATER FOR MANUAL COUNTER
+        function triggerManualCountDatabaseSync() {
+            const statusBadge = document.getElementById('sync-status-badge');
+            if (statusBadge) {
+                statusBadge.innerText = "Syncing changes...";
+                statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400";
+            }
+
+            clearTimeout(databaseSaveTimeout);
+            databaseSaveTimeout = setTimeout(async () => {
+                const sliders = {
+                    distributed: document.getElementById('slider-distributed'),
+                    goal: document.getElementById('slider-goal'),
+                    cost: document.getElementById('slider-cost'),
+                    students: document.getElementById('slider-students')
+                };
+
+                const payload = {
+                    total_volunteers: manualCount,
+                    current_progress: parseInt(sliders.distributed?.value || 0),
+                    target_goal: parseInt(sliders.goal?.value || 0),
+                    cost_per_kit: parseFloat(sliders.cost?.value || 0),
+                    total_students_helped: parseInt(sliders.students?.value || 0)
+                };
+
+                try {
+                    const { error } = await supabase
+                        .from('campaign_stats')
+                        .update(payload)
+                        .eq('id', 1);
+
+                    if (error) throw error;
+
+                    if (statusBadge) {
+                        statusBadge.innerText = "Synced to Cloud";
+                        statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400";
+                    }
+                    appendSystemLog('UPDATE', '/api/campaign_stats/id_1', `Synced total_volunteers: ${manualCount}`);
+                } catch (err) {
+                    console.error("Database sync failed for volunteer count:", err);
+                    if (statusBadge) {
+                        statusBadge.innerText = "Sync Error!";
+                        statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400";
+                    }
+                    appendSystemLog('FAIL', '/api/campaign_stats/id_1', err.message);
+                }
+            }, 800);
+        }
+
         window.adjustManualCounter = function(amount) {
             manualCount = Math.max(0, manualCount + amount);
             localStorage.setItem('manual_volunteer_count', manualCount);
             const display = document.getElementById('manual-volunteer-count');
             if (display) display.innerText = manualCount;
+            triggerManualCountDatabaseSync();
         };
 
         // Expose global administrative actions explicitly to window to prevent Module-scoping issues
@@ -644,13 +694,15 @@
                     adminBodyEl.classList.add("flex");
                 }
                 
-                // Initialize Manual Counter interface element value
+                // Fetch stats before setting initial manual manualCount values
+                await initMetricsTuners(); 
+
+                // Update Manual Counter interface element value
                 const manualDisplay = document.getElementById('manual-volunteer-count');
                 if (manualDisplay) manualDisplay.innerText = manualCount;
 
                 await fetchLatestAnnouncement();
                 await refreshTerminalContext();
-                await initMetricsTuners(); 
             } catch (err) {
                 console.error("Security Audit Crash:", err);
             }
@@ -736,7 +788,8 @@
                 current_progress: 7250,
                 target_goal: 10000,
                 cost_per_kit: 10.00,
-                total_students_helped: 1500
+                total_students_helped: 1500,
+                total_volunteers: 0
             };
 
             try {
@@ -752,8 +805,12 @@
                         current_progress: parseInt(data.current_progress) || 0,
                         target_goal: parseInt(data.target_goal) || 0,
                         cost_per_kit: parseFloat(data.cost_per_kit) || 0.00,
-                        total_students_helped: parseInt(data.total_students_helped) || 0
+                        total_students_helped: parseInt(data.total_students_helped) || 0,
+                        total_volunteers: parseInt(data.total_volunteers) || 0
                     };
+                    // Sync the retrieved value to manualCount
+                    manualCount = currentStats.total_volunteers;
+                    localStorage.setItem('manual_volunteer_count', manualCount);
                 }
             } catch (err) {
                 console.warn("Could not retrieve current stats from database. Using fallback local states.", err);
@@ -818,6 +875,7 @@
                 clearTimeout(databaseSaveTimeout);
                 databaseSaveTimeout = setTimeout(async () => {
                     const payload = {
+                        total_volunteers: manualCount,
                         current_progress: parseInt(sliders.distributed?.value || 0),
                         target_goal: parseInt(sliders.goal?.value || 0),
                         cost_per_kit: parseFloat(sliders.cost?.value || 0),

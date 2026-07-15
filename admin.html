@@ -86,7 +86,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen hidden flex flex-col md:flex-row" id="admin-body">
+<body class="min-h-screen hidden flex-col md:flex-row" id="admin-body">
 
     <!-- DESKTOP SIDEBAR -->
     <aside class="hidden md:flex flex-col w-64 h-screen sticky top-0 premium-sidebar p-5 flex-shrink-0 justify-between z-40">
@@ -625,7 +625,10 @@
                 if (sidebarEmailEl) sidebarEmailEl.innerText = activeEmail;
                 
                 const adminBodyEl = document.getElementById("admin-body");
-                if(adminBodyEl) adminBodyEl.classList.remove("hidden");
+                if (adminBodyEl) {
+                    adminBodyEl.classList.remove("hidden");
+                    adminBodyEl.classList.add("flex");
+                }
                 
                 await fetchLatestAnnouncement();
                 await refreshTerminalContext();
@@ -745,29 +748,29 @@
             }
 
             // B: Map retrieved database variables back to sliders
-            sliders.distributed.value = currentStats.current_progress;
-            sliders.goal.value = currentStats.target_goal;
-            sliders.cost.value = currentStats.cost_per_kit;
-            sliders.students.value = currentStats.total_students_helped;
-            sliders.volunteers.value = currentStats.total_volunteers;
+            if (sliders.distributed) sliders.distributed.value = currentStats.current_progress;
+            if (sliders.goal) sliders.goal.value = currentStats.target_goal;
+            if (sliders.cost) sliders.cost.value = currentStats.cost_per_kit;
+            if (sliders.students) sliders.students.value = currentStats.total_students_helped;
+            if (sliders.volunteers) sliders.volunteers.value = currentStats.total_volunteers;
 
             // C: Re-calculate and redraw view logic
             function updateCalculations(triggeredSliderName) {
-                const distributed = parseInt(sliders.distributed.value);
-                const goal = parseInt(sliders.goal.value);
-                const cost = parseFloat(sliders.cost.value);
-                const students = parseInt(sliders.students.value);
-                const volunteers = parseInt(sliders.volunteers.value);
+                const distributed = parseInt(sliders.distributed?.value || 0);
+                const goal = parseInt(sliders.goal?.value || 0);
+                const cost = parseFloat(sliders.cost?.value || 0);
+                const students = parseInt(sliders.students?.value || 0);
+                const volunteers = parseInt(sliders.volunteers?.value || 0);
 
                 const percentage = goal > 0 ? ((distributed / goal) * 100).toFixed(1) : 0;
                 const totalCostImpact = distributed * cost;
 
                 // Update input texts (Decimals for costs, integer mapping for others)
-                txts.distributed.innerText = Number(distributed).toLocaleString();
-                txts.goal.innerText = Number(goal).toLocaleString();
-                txts.cost.innerText = `$${cost.toFixed(2)}`;
-                txts.students.innerText = Number(students).toLocaleString();
-                txts.volunteers.innerText = Number(volunteers).toLocaleString();
+                if (txts.distributed) txts.distributed.innerText = Number(distributed).toLocaleString();
+                if (txts.goal) txts.goal.innerText = Number(goal).toLocaleString();
+                if (txts.cost) txts.cost.innerText = `$${cost.toFixed(2)}`;
+                if (txts.students) txts.students.innerText = Number(students).toLocaleString();
+                if (txts.volunteers) txts.volunteers.innerText = Number(volunteers).toLocaleString();
 
                 // Sync progress bars and displays
                 const progBarCurrent = document.getElementById('progress-bar-current');
@@ -793,7 +796,7 @@
                 if (kpiCompletion) kpiCompletion.innerText = `${percentage}%`;
                 if (kpiImpact) kpiImpact.innerText = `$${Number(totalCostImpact).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-                if (triggeredSliderName) {
+                if (triggeredSliderName && sliders[triggeredSliderName]) {
                     appendSystemLog('PATCH', `/api/operations/${triggeredSliderName}`, `Mutated local setting to ${sliders[triggeredSliderName].value}`);
                     triggerDatabaseDebounceSync();
                 }
@@ -810,11 +813,11 @@
                 clearTimeout(databaseSaveTimeout);
                 databaseSaveTimeout = setTimeout(async () => {
                     const payload = {
-                        current_progress: parseInt(sliders.distributed.value),
-                        target_goal: parseInt(sliders.goal.value),
-                        cost_per_kit: parseFloat(sliders.cost.value),
-                        total_students_helped: parseInt(sliders.students.value),
-                        total_volunteers: parseInt(sliders.volunteers.value)
+                        current_progress: parseInt(sliders.distributed?.value || 0),
+                        target_goal: parseInt(sliders.goal?.value || 0),
+                        cost_per_kit: parseFloat(sliders.cost?.value || 0),
+                        total_students_helped: parseInt(sliders.students?.value || 0),
+                        total_volunteers: parseInt(sliders.volunteers?.value || 0)
                     };
 
                     try {
@@ -1017,9 +1020,10 @@
         async function purgeDeploymentEvent(eventId, eventTitle) {
             if (!confirm(`Are you completely sure you want to permanently delete "${eventTitle}"?\n\nThis will instantly remove the position and unregister all assigned volunteers.`)) return;
 
+            const normalizedId = isNaN(eventId) ? eventId : parseInt(eventId, 10);
             try {
-                await supabase.from('event_signups').delete().eq('event_id', eventId);
-                const { error } = await supabase.from('events').delete().eq('id', eventId);
+                await supabase.from('event_signups').delete().eq('event_id', normalizedId);
+                const { error } = await supabase.from('events').delete().eq('id', normalizedId);
                 if (error) throw error;
 
                 alert("🗑️ Shift deployment records successfully cleared off system nodes.");
@@ -1055,12 +1059,13 @@
         }
 
         window.dismissAlertItem = async function(type, rowId) {
+            const normalizedId = isNaN(rowId) ? rowId : parseInt(rowId, 10);
             try {
                 const targetTable = type === 'account' ? 'volunteers' : 'event_signups';
                 const { error } = await supabase
                     .from(targetTable)
                     .update({ admin_read: true })
-                    .eq('id', rowId);
+                    .eq('id', normalizedId);
 
                 if (error) throw error;
                 await refreshTerminalContext();

@@ -216,9 +216,20 @@
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Hygienify Administrative Hub</h2>
                         <p class="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed">Manage volunteer onboarding permissions, verify student profiles, publish upcoming project openings, and adjust structural event guidelines.</p>
                     </div>
-                    <div class="bg-violet-500/5 border border-violet-500/10 rounded-2xl px-6 py-4 text-center w-full md:w-auto min-w-[160px]">
-                        <span class="text-xs text-slate-400 tracking-wide block font-medium mb-0.5">Active Volunteers</span>
+                    
+                    <!-- DYNAMIC VOLUNTEER METER IN TOP BAR -->
+                    <div class="bg-violet-500/5 border border-violet-500/10 rounded-2xl px-6 py-4 flex flex-col items-center justify-center w-full md:w-auto min-w-[200px]">
+                        <span class="text-xs text-slate-400 tracking-wide block font-medium mb-0.5">Database Volunteers (Static)</span>
                         <span id="stat-total-volunteers" class="text-3xl font-bold text-violet-400 font-mono">...</span>
+                        
+                        <!-- NEW: INTERACTIVE MANUAL TUNER FOR METRIC SYNC -->
+                        <div class="w-full mt-3 pt-3 border-t border-white/5 space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-slate-500 font-bold uppercase">Manual Total Counter</span>
+                                <span id="slider-txt-volunteers" class="text-violet-400 font-bold font-mono">85</span>
+                            </div>
+                            <input type="range" id="slider-volunteers" min="0" max="250" step="1" value="85" class="w-full cursor-pointer">
+                        </div>
                     </div>
                 </div>
 
@@ -294,7 +305,10 @@
                     </div>
 
                     <div class="space-y-4 pt-2">
-                        <h4 class="text-xs font-extrabold text-slate-300 tracking-wider uppercase mb-4">Operational Tuner Modifiers</h4>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-xs font-extrabold text-slate-300 tracking-wider uppercase">Operational Tuner Modifiers</h4>
+                            <span id="sync-status-badge" class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">Synced to Cloud</span>
+                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
@@ -313,12 +327,13 @@
                                 <input type="range" id="slider-goal" min="1000" max="25000" step="250" value="10000" class="w-full cursor-pointer">
                             </div>
 
+                            <!-- DECIMAL SLIDER AND STEPPING CUSTOMIZATION -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center text-xs">
                                     <span class="text-slate-400 font-medium">Cost per Kit ($)</span>
-                                    <span id="slider-txt-cost" class="text-violet-400 font-bold font-mono">$5</span>
+                                    <span id="slider-txt-cost" class="text-violet-400 font-bold font-mono">$10.00</span>
                                 </div>
-                                <input type="range" id="slider-cost" min="1" max="25" step="1" value="5" class="w-full cursor-pointer">
+                                <input type="range" id="slider-cost" min="0.50" max="30.00" step="0.10" value="10.00" class="w-full cursor-pointer">
                             </div>
 
                             <div class="space-y-2">
@@ -326,7 +341,7 @@
                                     <span class="text-slate-400 font-medium">Students Helped</span>
                                     <span id="slider-txt-students" class="text-violet-400 font-bold font-mono">1,500</span>
                                 </div>
-                                <input type="range" id="slider-students" min="100" max="5000" step="50" value="1500" class="w-full cursor-pointer">
+                                <input type="range" id="slider-students" min="0" max="10000" step="50" value="1500" class="w-full cursor-pointer">
                             </div>
                         </div>
                     </div>
@@ -510,6 +525,7 @@
         let masterVolunteersArray = [];
         let rawHoursLogs = [];
         let aggregatedHoursMap = {};
+        let databaseSaveTimeout = null; // Used to debounce slider database writes
 
         // Expose global administrative actions explicitly to window to prevent Module-scoping issues
         window.switchTab = function(tabId) {
@@ -613,7 +629,7 @@
                 
                 await fetchLatestAnnouncement();
                 await refreshTerminalContext();
-                initMetricsTuners();
+                await initMetricsTuners(); // Set up and initialize with live database states
             } catch (err) {
                 console.error("Security Audit Crash:", err);
             }
@@ -671,19 +687,24 @@
             }
         }
 
-        function initMetricsTuners() {
+        // ==========================================
+        // DYNAMIC TUNERS & DEBOUNCED DATABASE SYNC
+        // ==========================================
+        async function initMetricsTuners() {
             const sliders = {
                 distributed: document.getElementById('slider-distributed'),
                 goal: document.getElementById('slider-goal'),
                 cost: document.getElementById('slider-cost'),
-                students: document.getElementById('slider-students')
+                students: document.getElementById('slider-students'),
+                volunteers: document.getElementById('slider-volunteers')
             };
 
             const txts = {
                 distributed: document.getElementById('slider-txt-distributed'),
                 goal: document.getElementById('slider-txt-goal'),
                 cost: document.getElementById('slider-txt-cost'),
-                students: document.getElementById('slider-txt-students')
+                students: document.getElementById('slider-txt-students'),
+                volunteers: document.getElementById('slider-txt-volunteers')
             };
 
             const logTime = document.getElementById('init-log-time');
@@ -692,20 +713,63 @@
                 logTime.innerText = now.toLocaleTimeString();
             }
 
+            // A: Load live database variables (Row 1)
+            let currentStats = {
+                current_progress: 7250,
+                target_goal: 10000,
+                cost_per_kit: 10.00,
+                total_students_helped: 1500,
+                total_volunteers: 85
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('campaign_stats')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle();
+
+                if (error) throw error;
+                if (data) {
+                    currentStats = {
+                        current_progress: parseInt(data.current_progress) || 0,
+                        target_goal: parseInt(data.target_goal) || 0,
+                        cost_per_kit: parseFloat(data.cost_per_kit) || 0.00,
+                        total_students_helped: parseInt(data.total_students_helped) || 0,
+                        total_volunteers: parseInt(data.total_volunteers) || 0
+                    };
+                }
+            } catch (err) {
+                console.warn("Could not retrieve current stats from database. Using fallback local states.", err);
+                appendSystemLog('GET', '/api/operations/id_1', 'Fallback loaded (Verify connections!)');
+            }
+
+            // B: Map retrieved database variables back to sliders
+            sliders.distributed.value = currentStats.current_progress;
+            sliders.goal.value = currentStats.target_goal;
+            sliders.cost.value = currentStats.cost_per_kit;
+            sliders.students.value = currentStats.total_students_helped;
+            sliders.volunteers.value = currentStats.total_volunteers;
+
+            // C: Re-calculate and redraw view logic
             function updateCalculations(triggeredSliderName) {
                 const distributed = parseInt(sliders.distributed.value);
                 const goal = parseInt(sliders.goal.value);
-                const cost = parseInt(sliders.cost.value);
+                const cost = parseFloat(sliders.cost.value);
                 const students = parseInt(sliders.students.value);
+                const volunteers = parseInt(sliders.volunteers.value);
 
                 const percentage = goal > 0 ? ((distributed / goal) * 100).toFixed(1) : 0;
                 const totalCostImpact = distributed * cost;
 
+                // Update input texts (Decimals for costs, integer mapping for others)
                 txts.distributed.innerText = Number(distributed).toLocaleString();
                 txts.goal.innerText = Number(goal).toLocaleString();
-                txts.cost.innerText = `$${cost}`;
+                txts.cost.innerText = `$${cost.toFixed(2)}`;
                 txts.students.innerText = Number(students).toLocaleString();
+                txts.volunteers.innerText = Number(volunteers).toLocaleString();
 
+                // Sync progress bars and displays
                 const progBarCurrent = document.getElementById('progress-bar-current');
                 const progTextOverlay = document.getElementById('progress-text-overlay');
                 const barValCurrent = document.getElementById('bar-val-current');
@@ -727,11 +791,54 @@
                 const kpiCompletion = document.getElementById('kpi-completion');
                 const kpiImpact = document.getElementById('kpi-impact');
                 if (kpiCompletion) kpiCompletion.innerText = `${percentage}%`;
-                if (kpiImpact) kpiImpact.innerText = `$${Number(totalCostImpact).toLocaleString()}`;
+                if (kpiImpact) kpiImpact.innerText = `$${Number(totalCostImpact).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
                 if (triggeredSliderName) {
-                    appendSystemLog('PATCH', `/api/operations/${triggeredSliderName}`, `Mutated system parameter to ${sliders[triggeredSliderName].value}`);
+                    appendSystemLog('PATCH', `/api/operations/${triggeredSliderName}`, `Mutated local setting to ${sliders[triggeredSliderName].value}`);
+                    triggerDatabaseDebounceSync();
                 }
+            }
+
+            // D: Debounce Cloud Storage Updates (Prevent Database rate-limiting while dragging)
+            function triggerDatabaseDebounceSync() {
+                const statusBadge = document.getElementById('sync-status-badge');
+                if (statusBadge) {
+                    statusBadge.innerText = "Syncing changes...";
+                    statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400";
+                }
+
+                clearTimeout(databaseSaveTimeout);
+                databaseSaveTimeout = setTimeout(async () => {
+                    const payload = {
+                        current_progress: parseInt(sliders.distributed.value),
+                        target_goal: parseInt(sliders.goal.value),
+                        cost_per_kit: parseFloat(sliders.cost.value),
+                        total_students_helped: parseInt(sliders.students.value),
+                        total_volunteers: parseInt(sliders.volunteers.value)
+                    };
+
+                    try {
+                        const { error } = await supabase
+                            .from('campaign_stats')
+                            .update(payload)
+                            .eq('id', 1);
+
+                        if (error) throw error;
+
+                        if (statusBadge) {
+                            statusBadge.innerText = "Synced to Cloud";
+                            statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400";
+                        }
+                        appendSystemLog('UPDATE', '/api/campaign_stats/id_1', 'Saved to Cloud');
+                    } catch (err) {
+                        console.error("Database update transaction failed:", err);
+                        if (statusBadge) {
+                            statusBadge.innerText = "Sync Error!";
+                            statusBadge.className = "text-[9px] font-mono px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400";
+                        }
+                        appendSystemLog('FAIL', '/api/campaign_stats/id_1', err.message);
+                    }
+                }, 800); // Trigger save 800ms after the user finishes dragging
             }
 
             Object.keys(sliders).forEach(key => {

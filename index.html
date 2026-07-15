@@ -453,7 +453,7 @@
             }
         });
 
- // Hamburger Mobile Menu controls
+        // Hamburger Mobile Menu controls
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('mobile-menu');
         const menuPath = document.getElementById('menu-path');
@@ -494,9 +494,10 @@
 
         // Handles applying newly fetched or real-time pushed DB stats to variables & the UI elements
         function applyStatsUpdate(data) {
-            BASE_KITS = parseInt(data.current_progress || data.kits_distributed || data.kits_delivered) || 7250;
-            TARGET_KITS = parseInt(data.target_goal || data.kits_goal) || 10000;
-            COST_PER_KIT = parseInt(data.cost_per_kit) || 5;
+            // FIXED: Using Nullish Coalescing so that "0" is registered as a valid database-driven statistic rather than falling back to mockup values
+            BASE_KITS = (data.current_progress !== null && data.current_progress !== undefined) ? parseInt(data.current_progress) : 7250;
+            TARGET_KITS = (data.target_goal !== null && data.target_goal !== undefined) ? parseInt(data.target_goal) : 10000;
+            COST_PER_KIT = (data.cost_per_kit !== null && data.cost_per_kit !== undefined) ? parseInt(data.cost_per_kit) : 5;
 
             // Instantly updates goal calculator
             updateUIElements();
@@ -511,12 +512,12 @@
                 kitEl.textContent = BASE_KITS.toLocaleString();
             }
             if (studentEl) {
-                const students = parseInt(data.total_students_helped || data.students_helped) || 1500;
+                const students = (data.total_students_helped !== null && data.total_students_helped !== undefined) ? parseInt(data.total_students_helped) : 1500;
                 studentEl.setAttribute('data-target', students);
                 studentEl.textContent = students.toLocaleString();
             }
             if (volunteerEl) {
-                const volunteers = parseInt(data.total_volunteers || data.volunteers_count) || 84;
+                const volunteers = (data.total_volunteers !== null && data.total_volunteers !== undefined) ? parseInt(data.total_volunteers) : 84;
                 volunteerEl.setAttribute('data-target', volunteers);
                 volunteerEl.textContent = volunteers.toLocaleString();
             }

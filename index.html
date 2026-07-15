@@ -104,6 +104,29 @@
                 top: 52px; /* Offset match for mobile multi-line banner height */
             }
         }
+
+        /* Custom track styling for progress dynamic visualization slider */
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            height: 8px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            background: #22d3ee;
+            border: 2px solid #020617;
+            border-radius: 50%;
+            height: 20px;
+            width: 20px;
+            margin-top: -6px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body class="has-banner">
@@ -136,7 +159,7 @@
                 <a href="goals.html" class="nav-link text-slate-400 hover:text-white transition">Goals</a>
             </div>
 
-<a href="donate.html" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
+            <a href="donate.html" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
 
             <button id="menu-btn" class="md:hidden text-white flex items-center gap-2 z-[120]">
                 <span id="btn-label" class="text-[10px] font-black uppercase tracking-[0.2em]">Menu</span>
@@ -147,264 +170,385 @@
         </div>
     </nav>
 
-<div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
-    <div class="w-full max-w-md grid grid-cols-2 gap-4">
-        <a href="index.html" class="menu-card active h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">01</span><span class="text-base font-medium">Home</span></a>
-        <a href="about.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">02</span><span class="text-base font-medium">About</span></a>
-        <a href="programs.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">03</span><span class="text-base font-medium">Programs</span></a>
-        <a href="volunteer.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">04</span><span class="text-base font-medium">Volunteer</span></a>
-        <a href="team.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">05</span><span class="text-base font-medium">Team</span></a>
-        <a href="goals.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">06</span><span class="text-base font-medium">Our Goals</span></a>
-        <a href="donate.html" class="menu-card h-16 col-span-2 bg-cyan-600 border-none text-white font-bold uppercase text-xs tracking-widest">Donate</a>
-    </div>
-</div>
-
-<header class="min-h-screen flex items-center pt-32 pb-20 px-8">
-    <div class="max-w-5xl mx-auto w-full text-center flex flex-col items-center reveal">
-        <div class="relative inline-block mb-16">
-            <div class="absolute -inset-10 bg-cyan-500/20 rounded-full blur-[80px] opacity-40"></div>
-            <img src="logo_new2.svg" class="relative w-full max-w-[280px] md:max-w-[320px] mx-auto logo-centerpiece" alt="Hygienify Centerpiece">
-        </div>
-
-        <div class="flex flex-wrap justify-center items-center gap-4 mb-12">
-            <div class="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
-                Serving the St. Louis Community
-            </div>
-            <a href="volunteer.html" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400 text-cyan-400 text-[10px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
-                Get Involved
-            </a>
-        </div>
-
-        <div class="relative">
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-white">
-                <span class="text-gradient">Hygienify</span>
-            </h1>
-            <div class="pt-16 md:pt-24">
-                <p class="text-slate-500 text-[11px] md:text-xs font-black tracking-[0.6em] uppercase opacity-80">
-                    Hygiene • Seminars • Community
-                </p>
-            </div>
-            <div class="mt-10 w-full max-w-4xl mx-auto">
-                <p class="text-slate-200 text-base md:text-lg font-normal tracking-wide italic opacity-90 leading-relaxed">
-                    A non-profit geared toward distributing basic health essentials and improving hygienic practices.
-                </p>
-            </div>
+    <div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
+        <div class="w-full max-w-md grid grid-cols-2 gap-4">
+            <a href="index.html" class="menu-card active h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">01</span><span class="text-base font-medium">Home</span></a>
+            <a href="about.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">02</span><span class="text-base font-medium">About</span></a>
+            <a href="programs.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">03</span><span class="text-base font-medium">Programs</span></a>
+            <a href="volunteer.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">04</span><span class="text-base font-medium">Volunteer</span></a>
+            <a href="team.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">05</span><span class="text-base font-medium">Team</span></a>
+            <a href="goals.html" class="menu-card h-28 flex-col gap-1"><span class="text-[9px] opacity-40 uppercase tracking-widest">06</span><span class="text-base font-medium">Our Goals</span></a>
+            <a href="donate.html" class="menu-card h-16 col-span-2 bg-cyan-600 border-none text-white font-bold uppercase text-xs tracking-widest">Donate</a>
         </div>
     </div>
-</header>
 
-<section class="py-24 px-8">
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="widget-glass p-12 reveal reveal-delay-1">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="0">0</div>
-            <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
-            <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
-        </div>
-        <div class="widget-glass p-12 reveal reveal-delay-2">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="0">0</div>
-            <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
-            <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
-        </div>
-        <div class="widget-glass p-12 reveal reveal-delay-3">
-            <div class="text-6xl font-black text-white mb-4 stat-number" data-target="4">0</div>
-            <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
-            <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
-        </div>
-    </div>
-</section>
-
-<section class="py-32 px-8 reveal">
-    <div class="max-w-5xl mx-auto text-center space-y-12">
-        <h2 class="text-4xl md:text-6xl font-light tracking-tight italic leading-tight text-slate-200">
-            "Change starts with you" 
-        </h2>
-        <div class="space-y-4">
-            <div class="h-px w-24 bg-cyan-500 mx-auto opacity-50"></div>
-            <p class="text-3xl font-black text-white">Jershon Vinodh</p>
-            <p class="text-sm font-black tracking-[0.4em] text-cyan-400 uppercase">Founder & Executive Director</p>
-        </div>
-    </div>
-</section>
-
-<footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-    <!-- Top Interactive Dashboard Row -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-
-        <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
-            <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
-                <img src="qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
+    <header class="min-h-screen flex items-center pt-32 pb-20 px-8">
+        <div class="max-w-5xl mx-auto w-full text-center flex flex-col items-center reveal">
+            <div class="relative inline-block mb-16">
+                <div class="absolute -inset-10 bg-cyan-500/20 rounded-full blur-[80px] opacity-40"></div>
+                <img src="logo_new2.svg" class="relative w-full max-w-[280px] md:max-w-[320px] mx-auto logo-centerpiece" alt="Hygienify Centerpiece">
             </div>
-            <div>
-                <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
-                <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
-            </div>
-        </div>
 
-        <a href="donate.html" 
-           class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
-            <div class="flex-1 pr-0 md:pr-16">
-                <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
-                <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
-                <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+            <div class="flex flex-wrap justify-center items-center gap-4 mb-12">
+                <div class="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
+                    Serving the St. Louis Community
+                </div>
+                <a href="volunteer.html" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400 text-cyan-400 text-[10px] font-bold tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">
+                    Get Involved
+                </a>
             </div>
-            <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
-                &rarr;
-            </div>
-        </a>
-    </div>
 
-    <!-- Middle Informational Grid -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
-        
-        <!-- Left Brand Block -->
-        <div class="space-y-6">
-            <div class="flex items-center gap-3 justify-center md:justify-start">
-                <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                    <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                    <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+            <div class="relative">
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-none text-white">
+                    <span class="text-gradient">Hygienify</span>
+                </h1>
+                <div class="pt-16 md:pt-24">
+                    <p class="text-slate-500 text-[11px] md:text-xs font-black tracking-[0.6em] uppercase opacity-80">
+                        Hygiene • Seminars • Community
+                    </p>
+                </div>
+                <div class="mt-10 w-full max-w-4xl mx-auto">
+                    <p class="text-slate-200 text-base md:text-lg font-normal tracking-wide italic opacity-90 leading-relaxed">
+                        A non-profit geared toward distributing basic health essentials and improving hygienic practices.
+                    </p>
                 </div>
             </div>
-            <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
-                Hygienify Organization • St. Louis, MO
-            </p>
         </div>
+    </header>
 
-        <!-- Center Directory Navigation -->
-        <div class="flex flex-col items-center">
-            <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-            <ul class="space-y-4 text-slate-500 text-sm font-medium">
-                <li><a href="about.html" class="hover:text-cyan-400 transition">About Us</a></li>
-                <li><a href="programs.html" class="hover:text-cyan-400 transition">Programs</a></li>
-                <li><a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a></li>
-                <li><a href="goals.html" class="hover:text-cyan-400 transition">Our Goals</a></li>
-            </ul>
-        </div>
+    <!-- 📊 Interactive Campaign Goal Tracker Progress Banner -->
+    <section class="py-12 px-6 md:px-8">
+        <div class="max-w-4xl mx-auto widget-glass p-6 md:p-12 reveal">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+                <div>
+                    <span class="text-xs font-black tracking-[0.2em] text-cyan-400 uppercase block mb-2">Campaign Goal Tracker</span>
+                    <h3 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight">Supplying St. Louis</h3>
+                </div>
+                <div class="text-left md:text-right">
+                    <span class="text-slate-400 text-xs block font-bold">Goal Progress</span>
+                    <span id="tracker-fraction" class="text-white font-extrabold text-xl md:text-2xl">-- / -- Kits</span>
+                </div>
+            </div>
 
-        <!-- Right Core Communications -->
-        <div class="flex flex-col items-center md:items-end justify-center">
-            <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-            <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
-                hygienify.org@gmail.com
-                <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
-            </a>
+            <!-- Custom Clean Progress Bar -->
+            <div class="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 relative mb-8">
+                <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-500 ease-out" style="width: 0%;"></div>
+            </div>
 
-            <div>
-                <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
+            <!-- Dynamic Interactive Input Panel -->
+            <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8">
+                <div class="w-full md:w-3/5 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <label for="impact-slider" class="text-xs font-black uppercase tracking-wider text-slate-400">Simulate Impact</label>
+                        <span id="slider-val" class="text-cyan-400 font-extrabold text-lg">$50.00</span>
+                    </div>
+                    <input id="impact-slider" type="range" min="5" max="500" step="5" value="50" class="w-full bg-transparent accent-cyan-400 cursor-pointer">
+                    <div class="flex justify-between text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+                        <span>$5 Min</span>
+                        <span>$500 Max</span>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-2/5 flex flex-col justify-center items-center md:items-start text-center md:text-left pt-6 md:pt-0 md:pl-6 md:border-l border-white/10">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest font-black mb-1">Projected Outcome</p>
+                    <p id="outcome-desc" class="text-white text-sm md:text-base font-semibold leading-relaxed mb-4">
+                        A contribution of <span class="text-cyan-400 font-extrabold">$50</span> provides <span class="text-cyan-400 font-extrabold">10</span> critical hygiene kits!
+                    </p>
+                    <a href="donate.html" class="w-full text-center bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-[0_4px_20px_rgba(34,211,238,0.15)] hover:shadow-[0_4px_25px_rgba(34,211,238,0.3)]">
+                        Make This Impact Real &rarr;
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Bottom Institutional Regulatory Sub-Footer -->
-    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
-        <div class="space-y-2 md:text-left">
-            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
-                &copy; 2026 Hygienify • Empowering Community Health
-            </p>
-            <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
-                <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+    <!-- 📈 Stats Section (Hydrates dynamically with data-target overrides) -->
+    <section class="py-24 px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="widget-glass p-12 reveal reveal-delay-1">
+                <div id="stat-kits" class="text-6xl font-black text-white mb-4 stat-number" data-target="7250">0</div>
+                <h3 class="text-cyan-400 font-bold uppercase tracking-widest text-sm">Hygiene Kits</h3>
+                <p class="mt-4 text-slate-500 font-medium">Distributed to shelters and families across the Greater St. Louis area.</p>
+            </div>
+            <div class="widget-glass p-12 reveal reveal-delay-2">
+                <div id="stat-students" class="text-6xl font-black text-white mb-4 stat-number" data-target="1500">0</div>
+                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm">Students</h3>
+                <p class="mt-4 text-slate-500 font-medium">Empowered through interactive workshops and health seminars.</p>
+            </div>
+            <div class="widget-glass p-12 reveal reveal-delay-3">
+                <div id="stat-volunteers" class="text-6xl font-black text-white mb-4 stat-number" data-target="84">0</div>
+                <h3 class="text-indigo-400 font-bold uppercase tracking-widest text-sm">Volunteers</h3>
+                <p class="mt-4 text-slate-500 font-medium">Collaborating with the local community to drive impact.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 px-8 reveal">
+        <div class="max-w-5xl mx-auto text-center space-y-12">
+            <h2 class="text-4xl md:text-6xl font-light tracking-tight italic leading-tight text-slate-200">
+                "Change starts with you" 
+            </h2>
+            <div class="space-y-4">
+                <div class="h-px w-24 bg-cyan-500 mx-auto opacity-50"></div>
+                <p class="text-3xl font-black text-white">Jershon Vinodh</p>
+                <p class="text-sm font-black tracking-[0.4em] text-cyan-400 uppercase">Founder & Executive Director</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
+        <!-- Top Interactive Dashboard Row -->
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+
+            <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
+                <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
+                    <img src="qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
+                    <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
+                </div>
+            </div>
+
+            <a href="donate.html" 
+               class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
+                <div class="flex-1 pr-0 md:pr-16">
+                    <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
+                    <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
+                    <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+                </div>
+                <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
+                    &rarr;
+                </div>
+            </a>
+        </div>
+
+        <!-- Middle Informational Grid -->
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
+            
+            <!-- Left Brand Block -->
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 justify-center md:justify-start">
+                    <img src="logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                        <div class="hidden md:block h-5 w-px bg-white/20"></div>
+                        <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+                    Hygienify Organization • St. Louis, MO
+                </p>
+            </div>
+
+            <!-- Center Directory Navigation -->
+            <div class="flex flex-col items-center">
+                <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
+                <ul class="space-y-4 text-slate-500 text-sm font-medium">
+                    <li><a href="about.html" class="hover:text-cyan-400 transition">About Us</a></li>
+                    <li><a href="programs.html" class="hover:text-cyan-400 transition">Programs</a></li>
+                    <li><a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a></li>
+                    <li><a href="goals.html" class="hover:text-cyan-400 transition">Our Goals</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Core Communications -->
+            <div class="flex flex-col items-center md:items-end justify-center">
+                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
+                <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
+                    hygienify.org@gmail.com
+                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+                </a>
+
+                <div>
+                    <a href="volunteer.html" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Institutional Regulatory Sub-Footer -->
+        <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
+            <div class="space-y-2 md:text-left">
+                <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
+                    &copy; 2026 Hygienify • Empowering Community Health
+                </p>
+                <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
+                    <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+                </p>
+            </div>
+            
+            <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
+                Governed by official 
+                <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
             </p>
         </div>
-        
-        <!-- FIXED: Responsive wrapping & letter spacing prevents cut-off on mobile viewports -->
-        <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
-            Governed by official 
-            <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
-        </p>
-    </div>
-</footer>
+    </footer>
 
-<div class="spotlight"></div>
+    <div class="spotlight"></div>
 
-<script>
-    // Scroll handling to offset navbar cleanly when banner is visible vs out of view
-    const banner = document.getElementById('announcement-banner');
-    
-    function updateNavPosition() {
-        if (!banner) return;
-        const bannerHeight = banner.offsetHeight;
-        if (window.scrollY > bannerHeight || banner.style.display === 'none') {
-            document.body.classList.remove('has-banner');
-        } else {
-            document.body.classList.add('has-banner');
+    <!-- 🔐 Supabase Core Engine Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
+
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
+          console.log('Verification successful! Moving to portal...');
+          window.location.href = 'portal.html'; 
         }
-    }
+      });
+    </script>
 
-    window.addEventListener('scroll', updateNavPosition);
-    window.addEventListener('resize', updateNavPosition);
-
-    // Dismiss banner action logic
-    document.getElementById('close-banner').addEventListener('click', () => {
-        banner.style.display = 'none';
-        updateNavPosition();
-    });
-
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("active");
+    <!-- Page Interface Interactions -->
+    <script>
+        // Scroll handling to offset navbar cleanly when banner is visible vs out of view
+        const banner = document.getElementById('announcement-banner');
+        
+        function updateNavPosition() {
+            if (!banner) return;
+            const bannerHeight = banner.offsetHeight;
+            if (window.scrollY > bannerHeight || banner.style.display === 'none') {
+                document.body.classList.remove('has-banner');
+            } else {
+                document.body.classList.add('has-banner');
             }
+        }
+
+        window.addEventListener('scroll', updateNavPosition);
+        window.addEventListener('resize', updateNavPosition);
+
+        // Dismiss banner action logic
+        document.getElementById('close-banner').addEventListener('click', () => {
+            banner.style.display = 'none';
+            updateNavPosition();
         });
-    }, { threshold: 0.1 });
 
-    document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
-
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-                const endValue = parseInt(target.getAttribute('data-target'));
-                let startValue = 0;
-                const duration = 2000;
-                if (isNaN(endValue) || endValue === 0) {
-                    target.textContent = endValue || 0;
-                    return;
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
                 }
-                const stepTime = Math.max(duration / endValue, 50);
-                const timer = setInterval(() => {
-                    startValue += 1;
-                    target.textContent = startValue;
-                    if (startValue >= endValue) { target.textContent = endValue; clearInterval(timer); }
-                }, stepTime);
-                statsObserver.unobserve(target); 
-            }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+        // Spotlight Mouse effect
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', e => {
+            spotlight.style.setProperty('--x', `${e.clientX}px`);
+            spotlight.style.setProperty('--y', `${e.clientY}px`);
         });
-    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
+        // Hamburger Mobile Menu controls
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuPath = document.getElementById('menu-path');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('active');
+            const isOpen = menu.classList.contains('active');
+            menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        });
 
-    const spotlight = document.querySelector('.spotlight');
-    window.addEventListener('mousemove', e => {
-        spotlight.style.setProperty('--x', `${e.clientX}px`);
-        spotlight.style.setProperty('--y', `${e.clientY}px`);
-    });
+        // --- 📊 Dynamic Sync Engine (Supabase-to-UI) ---
+        let BASE_KITS = 7250;
+        let TARGET_KITS = 10000;
+        let COST_PER_KIT = 5;
 
-    const btn = document.getElementById('menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    const menuPath = document.getElementById('menu-path');
-    btn.addEventListener('click', () => {
-        menu.classList.toggle('active');
-        const isOpen = menu.classList.contains('active');
-        menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
-        document.body.style.overflow = isOpen ? 'hidden' : 'auto';
-    });
-</script>
+        const slider = document.getElementById('impact-slider');
+        const sliderVal = document.getElementById('slider-val');
+        const trackerFraction = document.getElementById('tracker-fraction');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const outcomeDesc = document.getElementById('outcome-desc');
 
-<!-- 🔐 Supabase Core Engine Integration -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabaseUrl = 'https://dzqrlgtmsgclybxfcnyv.supabase.co';
-  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI';
+        function updateUIElements(donationValue = parseInt(slider.value)) {
+            const additionalKits = Math.floor(donationValue / COST_PER_KIT);
+            const totalKits = BASE_KITS + additionalKits;
+            const percentage = ((totalKits / TARGET_KITS) * 100).toFixed(1);
 
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+            sliderVal.textContent = `$${donationValue.toFixed(2)}`;
+            trackerFraction.textContent = `${totalKits.toLocaleString()} / ${TARGET_KITS.toLocaleString()} Kits`;
+            progressBarFill.style.width = `${percentage}%`;
+            
+            outcomeDesc.innerHTML = `A contribution of <span class="text-cyan-400 font-extrabold">$${donationValue}</span> provides <span class="text-cyan-400 font-extrabold">${additionalKits}</span> critical hygiene kits, pushing our progress to <span class="text-cyan-400 font-extrabold">${percentage}%</span>!`;
+        }
 
-  supabase.auth.onAuthStateChange((event, session) => {
-    if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
-      console.log('Verification successful! Moving to portal...');
-      window.location.href = 'portal.html'; 
-    }
-  });
-</script>
+        slider.addEventListener('input', (e) => {
+            updateUIElements(parseInt(e.target.value));
+        });
+
+        // Initialize Stats Counting Engine
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const endValue = parseInt(target.getAttribute('data-target'));
+                    let startValue = 0;
+                    const duration = 1500;
+                    if (isNaN(endValue) || endValue === 0) {
+                        target.textContent = endValue || 0;
+                        return;
+                    }
+                    
+                    const steps = Math.min(endValue, 50);
+                    const increment = Math.ceil(endValue / steps);
+                    const stepTime = duration / steps;
+                    
+                    const timer = setInterval(() => {
+                        startValue += increment;
+                        if (startValue >= endValue) {
+                            target.textContent = endValue.toLocaleString();
+                            clearInterval(timer);
+                        } else {
+                            target.textContent = startValue.toLocaleString();
+                        }
+                    }, stepTime);
+                    statsObserver.unobserve(target); 
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // Hydrates default values onto elements and queries Supabase Table row #1
+        async function loadLiveCampaignStats() {
+            try {
+                const { data, error } = await supabase
+                    .from('campaign_stats')
+                    .select('*')
+                    .eq('id', 1)
+                    .single();
+
+                if (data && !error) {
+                    console.log("Successfully retrieved live stats from Supabase:", data);
+                    
+                    // Rewrite local state definitions
+                    BASE_KITS = data.current_progress;
+                    TARGET_KITS = data.target_goal;
+                    COST_PER_KIT = data.cost_per_kit;
+
+                    // Dynamically set properties for count up sliders on page scroll
+                    document.getElementById('stat-kits').setAttribute('data-target', data.current_progress);
+                    document.getElementById('stat-students').setAttribute('data-target', data.total_students_helped);
+                    document.getElementById('stat-volunteers').setAttribute('data-target', data.total_volunteers);
+                } else if (error) {
+                    console.warn("Failed retrieving live record. Using local baseline fallback. Error details:", error.message);
+                }
+            } catch (err) {
+                console.error("Unknown network exception occurred fetching database stats:", err);
+            } finally {
+                // Instantly sync visual elements
+                updateUIElements();
+                
+                // Mount observers for elements on layout tree
+                document.querySelectorAll('.stat-number').forEach((el) => statsObserver.observe(el));
+            }
+        }
+
+        // Initialize fetching on page load
+        window.addEventListener('DOMContentLoaded', loadLiveCampaignStats);
+    </script>
 </body>
 </html>

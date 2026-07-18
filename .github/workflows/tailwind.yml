@@ -1,11 +1,10 @@
-name: Build Tailwind CSS Production File 
+name: Build Tailwind CSS Production File
 
 on:
   push:
     branches:
       - main # Change this to 'master' if your primary branch is named master
 
-# 🔑 THIS FIXES THE PERMISSION ERROR: Grants the script permission to write/push files
 permissions:
   contents: write
 
@@ -22,11 +21,13 @@ jobs:
         with:
           node-version: 20
 
+      # 🛠️ Automatically build a clean workspace configuration
       - name: Initialize NPM
         run: npm init -y
 
-      - name: Install Tailwind
-        run: npm install -D tailwindcss
+      # 🔒 FIXES VERSION CRASH: Explicitly locks down Tailwind v3 compilation rules
+      - name: Install Tailwind v3
+        run: npm install -D tailwindcss@3
 
       - name: Build Production CSS
         run: npx tailwindcss -i ./input.css -o ./output.css --minify

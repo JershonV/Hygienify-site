@@ -81,6 +81,19 @@
         }
 
         .menu-card:active { transform: scale(0.95); background: rgba(34, 211, 238, 0.1); }
+
+        /* --- MOUSE TRACKING SPOTLIGHT EFFECT --- */
+        .spotlight {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            pointer-events: none; 
+            z-index: -1;
+            background: radial-gradient(600px circle at var(--x, 0px) var(--y, 0px), rgba(34, 211, 238, 0.07), transparent 80%);
+            will-change: background;
+        }
         
         .menu-card.active {
             background: rgba(34, 211, 238, 0.1); 
@@ -371,6 +384,16 @@
 
         document.querySelectorAll(".reveal").forEach(el => {
             revealObserver.observe(el);
+        });
+</script>
+
+    <div class="spotlight"></div>
+
+    <script>
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.setProperty('--x', `${e.clientX}px`);
+            spotlight.style.setProperty('--y', `${e.clientY}px`);
         });
     </script>
 </body>

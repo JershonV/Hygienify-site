@@ -30,26 +30,19 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 md:p-6 relative">
 
-<!-- 🖥️ DESKTOP ONLY: Fixed to viewport, elevated with z-[100] so the relative widget below doesn't block clicks -->
-<a href="index.html" onclick="window.location.href='index.html';" class="hidden md:flex fixed top-8 left-8 z-[100] items-center justify-center p-2.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 pointer-events-auto" title="Return to Home">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-    </svg>
-</a>
-
+<!-- Fully Optimized Safe Zone Home Navigation Link with Instant Touch Execution -->
 <!-- 📦 WIDGET CONTAINER CARD -->
-<!-- Keeps 'relative' so all internal elements stack properly, but sits safely beneath the button layer -->
-<div class="w-full max-w-2xl widget-glass p-8 md:p-16 shadow-2xl relative mt-4 md:mt-0">
-        
-        <!-- 📱 MOBILE ONLY: Uniform square minimalist icon style to match portal page -->
-        <div class="block md:hidden mb-6">
-            <a href="index.html" onclick="window.location.href='index.html';" class="inline-flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 active:bg-cyan-500/20 active:text-cyan-400 transition-all duration-200" title="Return to Home">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                </svg>
-            </a>
-        </div>
-        
+<div id="auth-card" class="w-full max-w-2xl widget-glass p-6 md:p-16 shadow-2xl relative">
+
+    <!-- 🏠 HOME NAVIGATION LINK: Flows inside the widget on mobile, absolute pinned on desktop -->
+    <div class="flex md:block mb-6 md:mb-0">
+        <a href="index.html" ontouchstart="window.location.href='index.html';" class="relative md:absolute md:top-10 md:left-10 z-50 flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 group" title="Return to Home">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            </svg>
+        </a>
+    </div>
+       
         <div class="mb-8 text-center">
             <span class="text-xs font-black uppercase tracking-[0.5em] text-cyan-400 mb-3 block">Account Registration</span>
             <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Create Account</h2>

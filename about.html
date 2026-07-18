@@ -372,6 +372,35 @@
         document.querySelectorAll(".reveal").forEach(el => {
             revealObserver.observe(el);
         });
+            <script>
+        // Scroll Engine Reveal Setup
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
+                }
+            });
+        }, { threshold: 0.05 });
+
+        document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+        // Interactive Spotlight Tracker
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', e => {
+            spotlight.style.setProperty('--x', `${e.clientX}px`);
+            spotlight.style.setProperty('--y', `${e.clientY}px`);
+        });
+
+        // Responsive Mobile Overlay Menu
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuPath = document.getElementById('menu-path');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('active');
+            const isOpen = menu.classList.contains('active');
+            menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        });
     </script>
 </body>
 </html>

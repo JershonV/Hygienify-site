@@ -1,4 +1,4 @@
-name: Build Tailwind CSS Production File
+name: Build Tailwind CSS Production File 
 
 on:
   push:

@@ -5,6 +5,10 @@ on:
     branches:
       - main # Change this to 'master' if your primary branch is named master
 
+# 🔑 THIS FIXES THE PERMISSION ERROR: Grants the script permission to write/push files
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +22,6 @@ jobs:
         with:
           node-version: 20
 
-      # 🛠️ THIS FIXES IT: Automatically initialize npm if package.json is missing
       - name: Initialize NPM
         run: npm init -y
 

@@ -1,0 +1,33 @@
+name: Build Tailwind CSS Production File
+
+on:
+  push:
+    branches:
+      - main # Change this if your primary branch is called 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Tailwind
+        run: npm install -D tailwindcss
+
+      - name: Build Production CSS
+        run: npx tailwindcss -i ./input.css -o ./output.css --minify
+
+      - name: Commit and Push Compiled CSS
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output.css
+          git diff-index --quiet HEAD || git commit -m "⚡ Automated Production CSS Compile [skip ci]"
+          git push

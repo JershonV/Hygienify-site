@@ -1,9 +1,9 @@
-name: Build Tailwind CSS Production File 
+name: Build Tailwind CSS Production File
 
 on:
   push:
     branches:
-      - main # Change this if your primary branch is called 'master'
+      - main # Change this to 'master' if your primary branch is named master
 
 jobs:
   build:
@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      # 🛠️ THIS FIXES IT: Automatically initialize npm if package.json is missing
+      - name: Initialize NPM
+        run: npm init -y
 
       - name: Install Tailwind
         run: npm install -D tailwindcss

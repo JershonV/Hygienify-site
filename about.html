@@ -336,10 +336,7 @@
             <a href="bylaws.html" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
         </p>
     </div>
-</footer>
-
-        <div class="spotlight"></div>
-    
+</footer>    
     <script>
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('mobile-menu');
@@ -374,20 +371,6 @@
 
         document.querySelectorAll(".reveal").forEach(el => {
             revealObserver.observe(el);
-        });
-                // Spotlight Mouse effect with requestAnimationFrame optimization
-        const spotlight = document.querySelector('.spotlight');
-        let ticking = false;
-        
-        window.addEventListener('mousemove', e => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    spotlight.style.setProperty('--x', `${e.clientX}px`);
-                    spotlight.style.setProperty('--y', `${e.clientY}px`);
-                    ticking = false;
-                });
-                ticking = true;
-            }
         });
     </script>
 </body>

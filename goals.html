@@ -44,6 +44,15 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+                .widget-glass:hover, .footer-widget:hover {
+            --hover-lift: -12px;
+            border-color: rgba(34, 211, 238, 0.5);
+            background: rgba(34, 211, 238, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+
+
         .text-gradient {
             background: linear-gradient(to right, #22d3ee, #3b82f6);
             -webkit-background-clip: text;

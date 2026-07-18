@@ -372,6 +372,20 @@
         document.querySelectorAll(".reveal").forEach(el => {
             revealObserver.observe(el);
         });
+                // Spotlight Mouse effect with requestAnimationFrame optimization
+        const spotlight = document.querySelector('.spotlight');
+        let ticking = false;
+        
+        window.addEventListener('mousemove', e => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    spotlight.style.setProperty('--x', `${e.clientX}px`);
+                    spotlight.style.setProperty('--y', `${e.clientY}px`);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
     </script>
 </body>
 </html>

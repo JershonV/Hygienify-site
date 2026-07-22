@@ -295,14 +295,15 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
             // 🛡️ UPSERT FIXED: We search on user_id to decide whether to update or create.
             // Leaving the numeric 'id' completely alone lets your database auto-increment it natively!
-            const { error: dbError } = await supabaseClient
-                .from('volunteers')
-                .upsert({ 
-                    user_id: authenticatedUserInstance.id,
-                    name: volunteerName, 
-                    bio: volunteerBio, 
-                    image_url: finalAvatarDataString
-                }, { onConflict: 'user_id' }); // Ensures protection works through our new user_id key
+const { error: dbError } = await supabaseClient
+    .from('volunteers')
+    .upsert({ 
+        user_id: authenticatedUserInstance.id,
+        email: authenticatedUserInstance.email.toLowerCase(), // 👈 ADD THIS LINE
+        name: volunteerName, 
+        bio: volunteerBio, 
+        image_url: finalAvatarDataString
+    }, { onConflict: 'user_id' });
 
             if (dbError) throw dbError;
 

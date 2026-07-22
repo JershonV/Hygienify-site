@@ -139,29 +139,23 @@
 </div>
 
 <header class="pt-40 pb-12 px-8 max-w-7xl mx-auto">
-    <div class="widget-glass p-8 md:p-12 text-left flex flex-col justify-center reveal">
-        <div class="relative w-full max-w-2xl space-y-4">
-            
-            <!-- 1. LEFT-ALIGNED TITLE -->
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-none text-white">
+    <!-- HERO BANNER (Matches Volunteer Hero Format 1:1) -->
+    <div class="widget-glass p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 reveal">
+        <!-- Ambient Glow -->
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] opacity-60 asset-blend"></div>
+        
+        <!-- LEFT SIDE: Title & Subtitle -->
+        <div class="space-y-4 relative z-10 max-w-2xl text-left">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-white leading-none">
                 Our <span class="text-gradient">Team.</span>
             </h1>
-
-            <!-- 2. TAGLINE (Now under title, left-aligned) -->
-            <div>
-                <p class="text-slate-500 text-[10px] md:text-xs font-black tracking-[0.4em] uppercase opacity-80">
-                    Hygiene • Seminars • Community
-                </p>
-            </div>
-
-            <!-- 3. DESCRIPTION TEXT (Left-aligned under tagline) -->
-            <div class="pt-2">
-                <p class="text-slate-300 text-base md:text-lg font-normal italic opacity-90 leading-relaxed">
-                    The core driving force managing distributions, seminar infrastructure, and resource operations.
-                </p>
-            </div>
-
+            <p class="text-xl text-slate-400 font-light italic leading-relaxed">
+                The core driving force managing distributions, seminar infrastructure, and resource operations.
+            </p>
         </div>
+
+        <!-- RIGHT SIDE: Optional Action / Secondary Text (Matches Volunteer right-side alignment) -->
+        <!-- Note: You can place a button here if needed, or leave it ready for a CTA -->
     </div>
 </header>
 

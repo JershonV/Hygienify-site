@@ -205,23 +205,31 @@
     </div>
 </div>
 
-    <main class="pt-48 pb-20 px-8 max-w-6xl mx-auto">
-<div class="widget-glass p-12 md:p-20 text-center relative overflow-hidden mb-12 isolate transform-gpu">
-            <div class="absolute -top-24 -left-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-[100px]"></div>
+<main class="pt-40 pb-20 px-8 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <!-- STANDARDIZED HERO CTA HEADER WIDGET -->
+        <div class="md:col-span-12 widget-glass p-12 md:p-16 text-center relative overflow-hidden mb-8 isolate transform-gpu reveal">
+            <!-- Subtle Ambient Glow -->
+            <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] opacity-60 asset-blend"></div>
             
-            <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-none text-white">
-                Become a <br><span class="text-gradient">Leader.</span>
-            </h1>
-            
-            <p class="text-xl md:text-2xl text-slate-400 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-                We are looking for dedicated St. Louis students and community members to help us scale our impact. 
-            </p>
+            <div class="relative z-10 space-y-6">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-white leading-none">
+                    Become a <br class="hidden sm:inline"><span class="text-gradient">Leader.</span>
+                </h1>
+                
+                <p class="text-xl text-slate-400 font-light max-w-2xl mx-auto italic">
+                    "We are looking for dedicated St. Louis students and community members to help us scale our impact."
+                </p>
 
-            <div class="space-y-6">
-                <a href="https://forms.gle/DgtbVQFJjL7G3cGJ8" target="_blank" class="btn-action">
-                    Open Volunteer Application
-                </a>
-                <p class="text-xs font-bold text-slate-500 tracking-[0.2em] uppercase">Powered by Google Forms for secure processing</p>
+                <div class="pt-4 space-y-4 flex flex-col items-center justify-center">
+                    <a href="https://forms.gle/DgtbVQFJjL7G3cGJ8" target="_blank" class="btn-action">
+                        Open Volunteer Application
+                    </a>
+                    <p class="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">
+                        Powered by Google Forms for secure processing
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -305,15 +313,16 @@
         </div>
 
         <!-- Center Directory Navigation -->
-        <div class="flex flex-col items-center">
-            <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-            <ul class="space-y-4 text-slate-500 text-sm font-medium">
-                <li><a href="/Hygienify-site/about" class="hover:text-cyan-400 transition">About Us</a></li>
-                <li><a href="/Hygienify-site/programs" class="hover:text-cyan-400 transition">Programs</a></li>
-                <li><a href="/Hygienify-site/volunteer" class="hover:text-cyan-400 transition">Volunteer</a></li>
-                <li><a href="/Hygienify-site/goals" class="hover:text-cyan-400 transition">Our Goals</a></li>
-            </ul>
-        </div>
+<div class="flex flex-col items-center text-center">
+    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
+    <ul class="space-y-4 text-slate-500 text-sm font-medium flex flex-col items-center">
+        <li><a href="/Hygienify-site/about" class="hover:text-cyan-400 transition">About Us</a></li>
+        <li><a href="/Hygienify-site/programs" class="hover:text-cyan-400 transition">Programs</a></li>
+        <li><a href="/Hygienify-site/volunteer" class="hover:text-cyan-400 transition">Volunteer</a></li>
+        <li><a href="/Hygienify-site/goals" class="hover:text-cyan-400 transition">Our Goals</a></li>
+        <li><a href="/Hygienify-site/faq" class="hover:text-cyan-400 transition">FAQ</a></li>
+    </ul>
+</div>
 
         <!-- Right Core Communications -->
         <div class="flex flex-col items-center md:items-end justify-center">

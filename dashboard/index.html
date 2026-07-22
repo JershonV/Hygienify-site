@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Dashboard | Hygienify</title>
-    <link class="w-6 h-6" rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <link class="w-6 h-6" rel="icon" type="image/svg+xml" href="/Hygienify-site/logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -53,7 +53,7 @@
     <!-- 📱/💻 SIDEBAR NAVIGATION -->
     <aside class="w-full md:w-64 md:h-screen dashboard-glass border-b md:border-b-0 md:border-r border-white/5 p-5 flex flex-row md:flex-col justify-between items-center md:items-stretch z-50 fixed bottom-0 md:top-0 md:bottom-auto">
         <div class="hidden md:flex items-center gap-3 mb-10 px-2">
-            <img src="logo_new2.svg" alt="Logo" class="w-6 h-6">
+            <img src="/Hygienify-site/logo_new2.svg" alt="Logo" class="w-6 h-6">
             <div>
                 <h1 class="font-extrabold text-white tracking-tight text-sm leading-none">Hygienify</h1>
                 <span class="text-[9px] uppercase tracking-[0.2em] text-cyan-400 font-extrabold block mt-1">Portal v2.0</span>
@@ -61,7 +61,7 @@
         </div>
 
         <nav class="flex flex-row md:flex-col justify-around md:justify-start w-full gap-1">
-            <a href="dashboard.html" class="flex items-center justify-center md:justify-start gap-3 px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-bold text-xs uppercase tracking-wider transition-all w-full md:w-auto">
+            <a href="/Hygienify-site/dashboard" class="flex items-center justify-center md:justify-start gap-3 px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-bold text-xs uppercase tracking-wider transition-all w-full md:w-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
@@ -293,7 +293,7 @@
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
                 if (error || !session) {
-                    window.location.replace('portal.html');
+                    window.location.replace('/Hygienify-site/portal');
                     return;
                 }
 
@@ -859,7 +859,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
-            window.location.replace('portal.html');
+            window.location.replace('/Hygienify-site/portal');
         });
 
         // Initialize and lock down active engine session tracking

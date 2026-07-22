@@ -81,36 +81,56 @@
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const forgotForm = document.getElementById('forgotForm');
 
-    forgotForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = document.getElementById('resetEmail').value.trim().toLowerCase();
-        const submitBtn = document.getElementById('submitBtn');
+forgotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+    const submitBtn = document.getElementById('submitBtn');
 
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Sending Link...";
-        
-        try {
-            // Target exact HTML page for GitHub Pages compatibility
-            const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password.html`;
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Verifying...";
+    
+    try {
+        // 1. Call secure backend RPC function (bypasses RLS safely)
+        const { data: status, error: checkError } = await supabaseClient
+            .rpc('check_reset_eligibility', { lookup_email: email });
 
-            const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: redirectUrl
-            });
-
-            if (resetError) {
-                alert(`❌ Error sending email: ${resetError.message}`);
-            } else {
-                alert("🎉 Password reset link sent! Check your inbox for instructions.");
-                document.getElementById('resetEmail').value = '';
-            }
-
-        } catch (err) {
-            console.error(err);
-            alert("💥 An unexpected error occurred.");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Send Reset Link";
+        if (checkError) {
+            alert(`❌ Error verifying email: ${checkError.message}`);
+            return;
         }
-    });
+
+        if (status === 'NOT_ALLOWED') {
+            alert("⛔ Access Denied: This email address is not on our pre-approved list.");
+            return;
+        }
+
+        if (status === 'NO_ACCOUNT') {
+            alert("⚠️ No account found: This email is pre-approved, but you haven't created a volunteer profile yet.");
+            return;
+        }
+
+        // 2. Email is verified — Send Reset Link
+        submitBtn.innerText = "Sending Link...";
+        const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password.html`;
+
+        const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectUrl
+        });
+
+        if (resetError) {
+            alert(`❌ Error sending email: ${resetError.message}`);
+        } else {
+            alert("🎉 Password reset link sent! Check your inbox for instructions.");
+            document.getElementById('resetEmail').value = '';
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("💥 An unexpected error occurred.");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send Reset Link";
+    }
+});
 </script>

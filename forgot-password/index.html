@@ -71,7 +71,7 @@
 
 </div>
 
-<!-- 🧠 SUPABASE RECOVERY LOGIC -->
+<!-- 🧠 SECURE SUPABASE RECOVERY LOGIC (RPC LOOKUP + REGISTERED USER CHECK) -->
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -88,22 +88,51 @@
         const submitBtn = document.getElementById('submitBtn');
 
         submitBtn.disabled = true;
-        submitBtn.innerText = "Sending Link...";
+        submitBtn.innerText = "Verifying...";
         
         try {
-            // Point the user to your upcoming reset-password folder after clicking email link
+            // 1. SECURE CHECK: Call RPC function (Table stays hidden from anon)
+            const { data: isAllowed, error: allowedError } = await supabaseClient
+                .rpc('is_email_allowed', { lookup_email: email });
+
+            if (allowedError) {
+                alert(`❌ Verification Error: ${allowedError.message}`);
+                return;
+            }
+
+            if (!isAllowed) {
+                alert("⛔ Access Denied: This email address is not on our pre-approved volunteers list.");
+                return;
+            }
+
+            // 2. CHECK IF USER HAS CREATED AN ACCOUNT
+            const { error: otpError } = await supabaseClient.auth.signInWithOtp({
+                email: email,
+                options: {
+                    shouldCreateUser: false
+                }
+            });
+
+            if (otpError) {
+                alert("⚠️ No account found: This email is pre-approved, but you haven't created an account yet. Please sign up first.");
+                return;
+            }
+
+            // 3. SEND PASSWORD RESET EMAIL
+            submitBtn.innerText = "Sending Link...";
             const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password/`;
 
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl
             });
 
-            if (error) {
-                alert(`❌ Error: ${error.message}`);
+            if (resetError) {
+                alert(`❌ Error sending email: ${resetError.message}`);
             } else {
-                alert("🎉 Reset email sent! Please check your inbox for instructions.");
+                alert("🎉 Password reset email sent! Check your inbox for instructions.");
                 document.getElementById('resetEmail').value = '';
             }
+
         } catch (err) {
             console.error(err);
             alert("💥 An unexpected error occurred.");
@@ -113,6 +142,3 @@
         }
     });
 </script>
-
-</body>
-</html>

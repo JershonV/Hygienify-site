@@ -368,8 +368,7 @@ if (isAdmin) {
             existingProfile.status = 'Active';
         }
     }
-}
-                } else {
+            } else {
                     globalUserStatus = data.status || "Pending Approval";
                     badge.textContent = globalUserStatus;
 
@@ -497,10 +496,6 @@ if (isAdmin) {
                 }, { onConflict: 'user_id' });
                 
                 if (error) throw error;
-                
-               // 1. Decode admin email and safely format user email
-const ADMIN_EMAIL = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=").toLowerCase();
-const userEmail = currentUser?.email?.toLowerCase() || "";
 
 // 2. Build profile object
 existingProfile = { 
@@ -510,9 +505,9 @@ existingProfile = {
     status: statusToApply 
 };
 
-// 3. Determine globalUserStatus safely
-const isAdmin = userEmail === ADMIN_EMAIL || existingProfile?.status === 'Admin';
-globalUserStatus = isAdmin ? 'Admin' : statusToApply;
+// Determine globalUserStatus safely using variables declared at top of try block
+        globalUserStatus = isAdmin ? 'Admin' : statusToApply;
+        
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
                 document.getElementById('displayName').textContent = fullNameValue;
                 document.getElementById('displayBio').textContent = bioTextValue;

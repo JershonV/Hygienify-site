@@ -71,7 +71,7 @@
 
 </div>
 
-<!-- 🧠 SECURE SUPABASE RECOVERY LOGIC (RPC LOOKUP + REGISTERED USER CHECK) -->
+<!-- 🧠 SECURE SUPABASE RECOVERY LOGIC (2-STEP DATABASE VERIFICATION) -->
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -91,34 +91,27 @@
         submitBtn.innerText = "Verifying...";
         
         try {
-            // 1. SECURE CHECK: Call RPC function (Table stays hidden from anon)
-            const { data: isAllowed, error: allowedError } = await supabaseClient
-                .rpc('is_email_allowed', { lookup_email: email });
+            // 1. CALL SECURE DATABASE CHECK
+            const { data: status, error: checkError } = await supabaseClient
+                .rpc('check_reset_eligibility', { lookup_email: email });
 
-            if (allowedError) {
-                alert(`❌ Verification Error: ${allowedError.message}`);
+            if (checkError) {
+                alert(`❌ Verification Error: ${checkError.message}`);
                 return;
             }
 
-            if (!isAllowed) {
+            // 2. EVALUATE RESULTS
+            if (status === 'NOT_ALLOWED') {
                 alert("⛔ Access Denied: This email address is not on our pre-approved volunteers list.");
                 return;
             }
 
-            // 2. CHECK IF USER HAS CREATED AN ACCOUNT
-            const { error: otpError } = await supabaseClient.auth.signInWithOtp({
-                email: email,
-                options: {
-                    shouldCreateUser: false
-                }
-            });
-
-            if (otpError) {
-                alert("⚠️ No account found: This email is pre-approved, but you haven't created an account yet. Please sign up first.");
+            if (status === 'NO_ACCOUNT') {
+                alert("⚠️ No account found: This email is pre-approved, but you haven't created a volunteer profile yet. Please sign up first.");
                 return;
             }
 
-            // 3. SEND PASSWORD RESET EMAIL
+            // 3. SEND PASSWORD RESET EMAIL IF STATUS IS 'ELIGIBLE'
             submitBtn.innerText = "Sending Link...";
             const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password/`;
 
@@ -129,7 +122,7 @@
             if (resetError) {
                 alert(`❌ Error sending email: ${resetError.message}`);
             } else {
-                alert("🎉 Password reset email sent! Check your inbox for instructions.");
+                alert("🎉 Password reset link sent! Check your inbox for instructions.");
                 document.getElementById('resetEmail').value = '';
             }
 

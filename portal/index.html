@@ -190,9 +190,9 @@
             if (data.user) {
                 authenticatedUserInstance = data.user;
                 const loggedInEmail = data.user.email.toLowerCase();
-                const ADMIN_EMAIL = "jershonvinodh@gmail.com";
+                const ALLOWED_ADMIN = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=");
 
-                if (loggedInEmail === ADMIN_EMAIL) {
+                if (loggedInEmail === ALLOWED_ADMIN) {
                     window.location.href = "/Hygienify-site/admin";
                     return;
                 }

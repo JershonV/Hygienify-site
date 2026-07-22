@@ -9,7 +9,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
@@ -20,20 +19,36 @@
         ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
 
         .nav-glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .asset-blend {
+            mix-blend-mode: screen;
+            image-rendering: -webkit-optimize-contrast;
+        }
 
+        .logo-blend {
+            filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 20px rgba(34, 211, 238, 0.3));
+        }
+
+        /* --- FIXED WIDGET GLASS --- */
         .widget-glass {
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 1.5rem;
+            border-radius: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
                         border-color 0.4s ease, 
                         background 0.4s ease, 
-                        box-shadow 0.4s ease; 
+                        box-shadow 0.4s ease,
+                        opacity 1.2s ease; 
         }
 
         .widget-glass:hover {
+            transform: translateY(-8px) !important; 
             border-color: rgba(34, 211, 238, 0.3) !important;
-            background: rgba(34, 211, 238, 0.03) !important;
+            background: rgba(34, 211, 238, 0.05) !important;
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
         }
 
         .text-gradient {
@@ -42,7 +57,26 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Mouse Tracking Spotlight */
+        /* MOBILE WIDGET MENU STYLES */
+        #mobile-menu { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; visibility: hidden; }
+        #mobile-menu.active { opacity: 1; pointer-events: auto; visibility: visible; }
+        
+        .menu-card {
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px); 
+            border-radius: 1.5rem; 
+            transition: all 0.3s ease;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #f8fafc;
+            text-decoration: none;
+        }
+
+        .menu-card:active { transform: scale(0.95); background: rgba(34, 211, 238, 0.1); }
+
+        /* --- MOUSE TRACKING SPOTLIGHT EFFECT --- */
         .spotlight {
             position: fixed; 
             top: 0; 
@@ -54,17 +88,43 @@
             background: radial-gradient(600px circle at var(--x, 0px) var(--y, 0px), rgba(34, 211, 238, 0.07), transparent 80%);
             will-change: background;
         }
+        
+        .menu-card.active {
+            background: rgba(34, 211, 238, 0.1); 
+            border-color: rgba(34, 211, 238, 0.4);
+            color: #22d3ee;
+            box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.05);
+        }
 
-        /* Accordion Custom Styling */
-        details summary::-webkit-details-marker { display: none; }
-        details[open] summary .chevron { transform: rotate(180deg); color: #22d3ee; }
-        details[open] { border-color: rgba(34, 211, 238, 0.4); background: rgba(34, 211, 238, 0.02); }
+        .nav-link.active { color: #22d3ee !important; }
 
-        /* Reveal Effects */
+        /* --- FOOTER COMPONENT STYLES --- */
+        .footer-widget {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-widget:hover {
+            border-color: rgba(34, 211, 238, 0.3);
+            background: rgba(34, 211, 238, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .qr-container {
+            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.2));
+            transition: all 0.4s ease;
+        }
+
+        .footer-widget:hover .qr-container {
+            filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.5));
+        }
+
+        /* --- REVEAL EFFECTS --- */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(40px);
             will-change: transform, opacity;
         }
 
@@ -72,162 +132,210 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* ACCORDION SUMMARY CHEVRON */
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary .chevron { transform: rotate(180deg); color: #22d3ee; }
+        details[open] { border-color: rgba(34, 211, 238, 0.4); background: rgba(34, 211, 238, 0.03); }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- Mouse Spotlight -->
-    <div class="spotlight"></div>
-
-    <!-- Navigation Header -->
-    <nav class="fixed top-0 left-0 w-full z-50 nav-glass">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="index.html" class="flex items-center space-x-3">
-                <img src="/Hygienify-site/logo_new2.svg" alt="Hygienify Logo" class="h-9 w-auto">
-                <span class="text-xl font-bold tracking-tight text-white">Hygienify</span>
-                <span class="text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">Non-Profit</span>
-            </a>
-            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-                <a href="about.html" class="hover:text-cyan-400 transition">About Us</a>
-                <a href="programs.html" class="hover:text-cyan-400 transition">Programs</a>
-                <a href="volunteer.html" class="hover:text-cyan-400 transition">Volunteer</a>
-                <a href="faq.html" class="text-cyan-400 font-semibold">FAQ</a>
+<nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="/Hygienify-site/" class="flex items-center gap-3">
+            <img src="/Hygienify-site/logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                <div class="hidden md:block h-5 w-px bg-white/20"></div>
+                <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
             </div>
-            <a href="volunteer.html" class="hidden md:inline-flex items-center px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/20">
-                Join The Mission
-            </a>
+        </a>
+        
+        <div class="hidden md:flex gap-10 font-bold text-sm tracking-widest uppercase">
+            <a href="/Hygienify-site/" class="nav-link text-slate-400 hover:text-white transition">Home</a>
+            <a href="/Hygienify-site/about" class="nav-link text-slate-400 hover:text-white transition">About</a>
+            <a href="/Hygienify-site/programs" class="nav-link text-slate-400 hover:text-white transition">Programs</a>
+            <a href="/Hygienify-site/volunteer" class="nav-link text-slate-400 hover:text-white transition">Volunteer</a>
+            <a href="/Hygienify-site/goals" class="nav-link text-slate-400 hover:text-white transition">Goals</a>
+            <a href="/Hygienify-site/faq" class="nav-link text-cyan-400 transition">FAQ</a>
         </div>
-    </nav>
 
-    <!-- Page Hero Section -->
-    <main class="pt-32 pb-20 px-6 max-w-5xl mx-auto w-full flex-grow">
-        <header class="text-center mb-16 reveal">
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-                Frequently Asked <span class="text-gradient">Questions</span>
-            </h1>
-            <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto">
-                Have questions about our mission, donations, or volunteering? Find answers to commonly asked questions below.
-            </p>
-        </header>
+        <div class="flex items-center gap-4">
+            <a href="/Hygienify-site/donate" class="hidden md:block bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-bold text-sm transition">DONATE</a>
+            
+            <button id="menu-btn" class="md:hidden text-white flex items-center gap-2 z-[120] focus:outline-none">
+                <span id="btn-label" class="text-[10px] font-black uppercase tracking-[0.2em]">Menu</span>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="menu-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
 
-        <!-- FAQ Accordion Sections -->
-        <div class="space-y-12">
+<div id="mobile-menu" class="fixed inset-0 z-[105] bg-[#020617]/95 backdrop-blur-3xl flex items-center justify-center p-6">
+    <div class="w-full max-w-md grid grid-cols-2 gap-4">
+        <a href="/Hygienify-site/" class="menu-card h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">01</span>
+            <span class="text-base font-medium">Home</span>
+        </a>
+        
+        <a href="/Hygienify-site/about" class="menu-card h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">02</span>
+            <span class="text-base font-medium">About</span>
+        </a>
+        
+        <a href="/Hygienify-site/programs" class="menu-card h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">03</span>
+            <span class="text-base font-medium">Programs</span>
+        </a>
+        
+        <a href="/Hygienify-site/volunteer" class="menu-card h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">04</span>
+            <span class="text-base font-medium">Volunteer</span>
+        </a>
 
-            <!-- Section 1: General & Mission -->
-            <section class="reveal">
-                <h2 class="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                    <span>📋</span> General & Mission
-                </h2>
+        <a href="/Hygienify-site/goals" class="menu-card h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">05</span>
+            <span class="text-base font-medium">Our Goals</span>
+        </a>
+
+        <a href="/Hygienify-site/faq" class="menu-card active h-28 flex-col gap-1">
+            <span class="text-[10px] opacity-40 uppercase tracking-widest">06</span>
+            <span class="text-base font-medium">FAQ</span>
+        </a>
+        
+        <a href="/Hygienify-site/donate" class="menu-card h-16 col-span-2 bg-cyan-600 border-none text-white font-black uppercase text-sm tracking-widest">
+            Donate
+        </a>
+    </div>
+</div>
+
+    <main class="pt-40 pb-20 px-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <!-- Hero Card -->
+            <div class="md:col-span-12 widget-glass p-12 min-h-[300px] flex-col md:flex-row items-center gap-12 overflow-hidden relative reveal">
+                <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] opacity-60 asset-blend"></div>
+                <div class="flex-1 space-y-4 relative z-10">
+                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-gradient">Questions & Answers.</h1>
+                    <p class="text-2xl md:text-3xl text-slate-400 font-light leading-snug max-w-2xl">
+                        Find clarity regarding our mission, tax-exempt status, volunteer opportunities, and donations.
+                    </p>
+                </div>
+                <img src="/Hygienify-site/logo_new2.svg" class="w-48 h-48 object-contain logo-blend asset-blend opacity-80" alt="Symbol">
+            </div>
+
+            <!-- SECTION 1: GENERAL & MISSION -->
+            <div class="md:col-span-12 widget-glass p-10 min-h-[auto] reveal">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-cyan-400 font-bold uppercase tracking-widest text-xs">📋 General & Mission</span>
+                </div>
                 <div class="space-y-4">
-                    
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             What is your organization’s core mission?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             Our primary purpose is to improve local public health in the St. Louis area by assembling hygiene kits and other medical supplies and distributing them to communities in need. This corporation may also educate future generations about hygiene, health, and other related topics. Through recruiting and training volunteers, holding fundraisers, and engaging with other charitable organizations, it hopes to create meaningful change in the St. Louis area.
                         </p>
                     </details>
 
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             Is your non-profit officially tax-exempt?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             This corporation is organized exclusively for charitable and educational purposes, within the meaning of section 501(c)(3) of the Internal Revenue Code. We are currently awaiting 501(c)(3) approval.
                         </p>
                     </details>
 
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             Where can I find financial reports?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             We value total transparency, so you can view our annual reports and financial breakdowns directly on our 
-                            <a href="bylaws.html" class="text-cyan-400 underline underline-offset-4 hover:text-cyan-300 transition">Bylaws Page</a> 
+                            <a href="/Hygienify-site/bylaws" class="text-cyan-400 underline underline-offset-4 hover:text-white transition">Bylaws Page</a> 
                             or request them by emailing 
-                            <a href="mailto:hygienify.org@gmail.com" class="text-cyan-400 underline underline-offset-4 hover:text-cyan-300 transition">hygienify.org@gmail.com</a>.
+                            <a href="mailto:hygienify.org@gmail.com" class="text-cyan-400 underline underline-offset-4 hover:text-white transition">hygienify.org@gmail.com</a>.
                         </p>
                     </details>
-
                 </div>
-            </section>
+            </div>
 
-            <!-- Section 2: Donations & Taxes -->
-            <section class="reveal">
-                <h2 class="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                    <span>💰</span> Donations & Taxes
-                </h2>
+            <!-- SECTION 2: DONATIONS & TAXES -->
+            <div class="md:col-span-12 widget-glass p-10 min-h-[auto] reveal">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-cyan-400 font-bold uppercase tracking-widest text-xs">💰 Donations & Taxes</span>
+                </div>
                 <div class="space-y-4">
-                    
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             Are my financial donations tax-deductible?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             Yes, all financial contributions are tax-deductible to the full extent allowed by law in the United States. However, this is only available after our 501(c)(3) application has been approved.
                         </p>
                     </details>
 
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             How do I get receipts?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             A donation receipt is mailed upon special request. Keep in mind, a receipt may be needed for tax deduction purposes.
                         </p>
                     </details>
 
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             Can I donate physical goods?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
-                            While we prefer monetary donations, you may choose to donate physical items, such as the ones located on our 
-                            <a href="programs.html" class="text-cyan-400 underline underline-offset-4 hover:text-cyan-300 transition">Programs Page</a>.
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
+                            While we prefer monetary donations, you may choose to donate physical items, such as the ones located on the 
+                            <a href="/Hygienify-site/programs" class="text-cyan-400 underline underline-offset-4 hover:text-white transition">Programs Page</a>.
                         </p>
                     </details>
-
                 </div>
-            </section>
+            </div>
 
-            <!-- Section 3: Getting Involved -->
-            <section class="reveal">
-                <h2 class="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
-                    <span>🤝</span> Getting Involved
-                </h2>
+            <!-- SECTION 3: GETTING INVOLVED -->
+            <div class="md:col-span-12 widget-glass p-10 min-h-[auto] reveal">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-cyan-400 font-bold uppercase tracking-widest text-xs">🤝 Getting Involved</span>
+                </div>
                 <div class="space-y-4">
-                    
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             How do I volunteer here?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
-                            You must first submit the Google Form on our 
-                            <a href="volunteer.html" class="text-cyan-400 underline underline-offset-4 hover:text-cyan-300 transition">Volunteer Page</a> 
-                            to apply and be accepted. Then, you can browse open shifts and sign up instantly through our online Volunteer Portal after creating an account on our webpage.
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
+                            You must first submit the Google Form on the 
+                            <a href="/Hygienify-site/volunteer" class="text-cyan-400 underline underline-offset-4 hover:text-white transition">Volunteer Page</a> 
+                            to apply and be accepted. Then, you can browse open shifts and sign up instantly through our online Volunteer Portal, after creating an account on our webpage.
                         </p>
                     </details>
 
-                    <details class="widget-glass p-6 group cursor-pointer transition-all duration-300">
-                        <summary class="flex justify-between items-center text-lg font-semibold text-slate-100 select-none">
+                    <details class="border border-white/10 rounded-2xl p-6 cursor-pointer transition-all duration-300">
+                        <summary class="flex justify-between items-center text-xl font-bold text-white select-none">
                             Can youth sign up too?
-                            <svg class="chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <span class="chevron text-cyan-400 text-xl transition-transform duration-300">↓</span>
                         </summary>
-                        <p class="mt-4 text-slate-300 text-sm leading-relaxed border-t border-slate-800/80 pt-4">
+                        <p class="mt-4 text-slate-400 text-base leading-relaxed border-t border-white/5 pt-4">
                             Yes, volunteers under 13 are welcome but must be accompanied by a parent or legal guardian during their shift.
                         </p>
                     </details>
-
                 </div>
-            </section>
+            </div>
 
         </div>
     </main>
@@ -319,26 +427,53 @@
             <a href="/Hygienify-site/bylaws" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
         </p>
     </div>
-</footer>
+</footer>   
 
-    <!-- Interactive Scripts -->
     <script>
-        // Mouse Tracking Spotlight
-        window.addEventListener('mousemove', (e) => {
-            document.documentElement.style.setProperty('--x', `${e.clientX}px`);
-            document.documentElement.style.setProperty('--y', `${e.clientY}px`);
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuPath = document.getElementById('menu-path');
+        const btnLabel = document.getElementById('btn-label');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('active');
+            const isOpen = menu.classList.contains('active');
+            menuPath.setAttribute('d', isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7");
+            btnLabel.textContent = isOpen ? "Close" : "Menu";
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
         });
 
-        // Scroll Reveal Animation
-        const observer = new IntersectionObserver((entries) => {
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.menu-card, .nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            }
+        });
+
+        // REVEAL OBSERVER
+        const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
+                    entry.target.classList.add("active");
                 }
             });
-        }, { threshold: 0.1 });
+        }, { 
+            threshold: 0.1
+        });
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        document.querySelectorAll(".reveal").forEach(el => {
+            revealObserver.observe(el);
+        });
+    </script>
+
+    <div class="spotlight"></div>
+
+    <script>
+        const spotlight = document.querySelector('.spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.setProperty('--x', `${e.clientX}px`);
+            spotlight.style.setProperty('--y', `${e.clientY}px`);
+        });
     </script>
 </body>
 </html>

@@ -1,225 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hygienify - Reset Password</title>
-  
-  <!-- Supabase JS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hygienify — Reset Password</title>
+    
+    <link rel="icon" type="image/svg+xml" href="/Hygienify-site/logo_new2.svg">
+    
+    <!-- Tailwind CSS & Plus Jakarta Sans Font -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    :root {
-      --bg-color: #080c14;
-      --card-bg: #0f172a;
-      --accent-cyan: #00a8e8;
-      --accent-cyan-hover: #0090c8;
-      --text-white: #ffffff;
-      --text-muted: #94a3b8;
-      --border-color: rgba(255, 255, 255, 0.1);
-    }
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #020617; 
+            color: #f8fafc; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #164e63; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+        .nav-glass { 
+            background: rgba(2, 6, 23, 0.85); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        
+        .asset-blend {
+            mix-blend-mode: screen;
+            image-rendering: -webkit-optimize-contrast;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-white);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+        .logo-blend {
+            filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 20px rgba(34, 211, 238, 0.3));
+        }
 
-    .container {
-      width: 100%;
-      max-width: 420px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 32px 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
+        .founder-blend {
+            filter: brightness(1.05) contrast(1.05) drop-shadow(0 0 40px rgba(34, 211, 238, 0.4));
+        }
 
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+        /* --- FIXED WIDGET GLASS --- */
+        .widget-glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        border-color 0.4s ease, 
+                        background 0.4s ease, 
+                        box-shadow 0.4s ease,
+                        opacity 1.2s ease; 
+        }
 
-    .header h1 {
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-    }
+        .widget-glass:hover {
+            transform: translateY(-8px) !important; 
+            border-color: rgba(34, 211, 238, 0.3) !important;
+            background: rgba(34, 211, 238, 0.05) !important;
+            box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
+        }
 
-    .header p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    input[type="email"] {
-      width: 100%;
-      padding: 12px 16px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-white);
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input[type="email"]:focus {
-      border-color: var(--accent-cyan);
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
-      border-radius: 8px;
-      border: none;
-      background: var(--accent-cyan);
-      color: var(--text-white);
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .btn-submit:hover {
-      background: var(--accent-cyan-hover);
-    }
-
-    .btn-submit:active {
-      transform: scale(0.98);
-    }
-
-    .status-msg {
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      text-align: center;
-      display: none;
-    }
-
-    .status-msg.success {
-      display: block;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid #10b981;
-      color: #34d399;
-    }
-
-    .status-msg.error {
-      display: block;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid #ef4444;
-      color: #f87171;
-    }
-
-    .back-link {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-    }
-
-    .back-link:hover {
-      color: var(--accent-cyan);
-    }
-  </style>
+        .text-gradient {
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6">
 
-  <div class="container">
-    <div class="header">
-      <h1>Forgot Password?</h1>
-      <p>Enter your volunteer account email and we'll send you a password reset link.</p>
+    <!-- 📦 WIDGET CONTAINER CARD -->
+    <div id="auth-card" class="w-full max-w-lg widget-glass p-6 md:p-12 shadow-2xl relative">
+
+        <!-- 🏠 HOME NAVIGATION LINK: Flows inside the widget on mobile, absolute pinned on desktop -->
+        <div class="flex md:block mb-6 md:mb-0">
+            <a href="/Hygienify-site/" ontouchstart="window.location.href='/Hygienify-site/';" class="relative md:absolute md:top-8 md:left-8 z-50 flex items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 text-slate-400 hover:text-cyan-400 transition-all duration-300 group" title="Return to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- HEADER SECTION -->
+        <div class="text-center mt-2 md:mt-4 mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Forgot <span class="text-gradient">Password?</span></h1>
+            <p class="text-slate-400 text-sm mt-2">Enter your volunteer email below and we'll send you a link to reset your account.</p>
+        </div>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <form id="forgot-password-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Volunteer Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    placeholder="name@example.com" 
+                    required 
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all text-sm"
+                />
+            </div>
+
+            <button 
+                type="submit" 
+                id="submit-btn" 
+                class="w-full py-3.5 px-6 rounded-xl font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20 active:scale-[0.98] transition-all text-sm cursor-pointer"
+            >
+                Send Reset Link
+            </button>
+        </form>
+
+        <!-- STATUS MESSAGE ALERT -->
+        <div id="status-msg" class="hidden mt-6 p-4 rounded-xl text-xs font-medium text-center transition-all"></div>
+
+        <!-- FOOTER LINKS -->
+        <div class="mt-8 text-center border-t border-white/5 pt-6">
+            <a href="/Hygienify-site/login/" class="text-xs text-slate-400 hover:text-cyan-400 transition-colors">
+                ← Back to Volunteer Login
+            </a>
+        </div>
+
     </div>
 
-    <form id="forgot-password-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input 
-          type="email" 
-          id="email" 
-          placeholder="volunteer@example.com" 
-          required 
-        />
-      </div>
+    <!-- SUPABASE FUNCTIONALITY -->
+    <script>
+        // 1. Initialize Supabase
+        const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      <button type="submit" class="btn-submit" id="submit-btn">
-        Send Reset Link
-      </button>
-    </form>
+        const form = document.getElementById('forgot-password-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const statusMsg = document.getElementById('status-msg');
 
-    <div id="status-msg" class="status-msg"></div>
+        // 2. Form Submission Handler
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
 
-    <a href="login.html" class="back-link">← Back to Login</a>
-  </div>
+            // UI Loading state
+            submitBtn.innerText = 'Sending Link...';
+            submitBtn.disabled = true;
+            statusMsg.className = 'hidden';
 
-  <script>
-    // ----------------------------------------------------
-    // 1. INITIALIZE SUPABASE
-    // (Replace with your actual Project URL & Anon Key)
-    // ----------------------------------------------------
-    const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            // Point reset link to reset-password page
+            const resetRedirectUrl = `${window.location.origin}/Hygienify-site/reset-password/`;
 
-    const form = document.getElementById('forgot-password-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const statusMsg = document.getElementById('status-msg');
+            const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: resetRedirectUrl
+            });
 
-    // ----------------------------------------------------
-    // 2. HANDLE SUBMISSION
-    // ----------------------------------------------------
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-
-      // UI Loading state
-      submitBtn.innerText = 'Sending...';
-      submitBtn.disabled = true;
-      statusMsg.className = 'status-msg';
-      statusMsg.innerText = '';
-
-      // Set the page where the email link should send the volunteer to
-      const resetRedirectUrl = `${window.location.origin}/reset-password.html`;
-
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: resetRedirectUrl
-      });
-
-      if (error) {
-        statusMsg.classList.add('error');
-        statusMsg.innerText = error.message;
-        submitBtn.innerText = 'Send Reset Link';
-        submitBtn.disabled = false;
-      } else {
-        statusMsg.classList.add('success');
-        statusMsg.innerText = 'Check your email! We sent you a password reset link.';
-        submitBtn.innerText = 'Link Sent!';
-      }
-    });
-  </script>
+            if (error) {
+                statusMsg.className = 'mt-6 p-4 rounded-xl text-xs font-medium text-center bg-red-500/10 border border-red-500/20 text-red-400 block';
+                statusMsg.innerText = error.message;
+                submitBtn.innerText = 'Send Reset Link';
+                submitBtn.disabled = false;
+            } else {
+                statusMsg.className = 'mt-6 p-4 rounded-xl text-xs font-medium text-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 block';
+                statusMsg.innerText = 'Reset link sent! Please check your email inbox.';
+                submitBtn.innerText = 'Link Sent!';
+            }
+        });
+    </script>
 </body>
 </html>

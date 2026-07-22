@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Hygienify</title>
-    <link class="w-8 h-8 object-contain" rel="icon" type="image/svg+xml" href="logo_new2.svg">
+    <link class="w-8 h-8 object-contain" rel="icon" type="image/svg+xml" href="/Hygienify-site/logo_new2.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -92,7 +92,7 @@
     <aside class="hidden md:flex flex-col w-64 h-screen sticky top-0 premium-sidebar p-5 flex-shrink-0 justify-between z-40">
         <div class="space-y-8">
             <div class="flex items-center gap-3 px-2">
-                <img src="logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain">
+                <img src="/Hygienify-site/logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain">
                 <div>
                     <h1 class="text-sm font-extrabold tracking-tight text-white">Hygienify</h1>
                     <span class="text-[10px] text-violet-400 font-bold uppercase tracking-wider">System Executive</span>
@@ -171,7 +171,7 @@
     <div class="flex-1 flex flex-col min-w-0 pb-24 md:pb-0">
  <header class="border-b border-white/[0.04] bg-slate-950/40 backdrop-blur-md px-6 py-4 flex justify-between items-center sticky top-0 z-30">
     <div class="flex items-center gap-3">
-        <img src="logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain md:hidden">
+        <img src="/Hygienify-site/logo_new2.svg" alt="Hygienify Logo" class="w-8 h-8 object-contain md:hidden">
         <h2 id="view-title" class="text-base font-bold text-white tracking-tight">Dashboard Overview</h2>
     </div>
             
@@ -196,7 +196,7 @@
                     </div>
                 </div>
 
-                <a href="dashboard.html" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600/10 to-violet-500/5 border border-violet-500/20 text-violet-300 hover:text-white hover:border-violet-500/50 transition-all duration-300 text-xs font-semibold">
+                <a href="/Hygienify-site/dashboard" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600/10 to-violet-500/5 border border-violet-500/20 text-violet-300 hover:text-white hover:border-violet-500/50 transition-all duration-300 text-xs font-semibold">
                     <span>Volunteer Portal</span>
                 </a>
                 
@@ -676,12 +676,12 @@
         async function securityAudit() {
             try {
                 const { data: { session }, error } = await supabase.auth.getSession();
-                if (error || !session) { window.location.href = "portal.html"; return; }
+                if (error || !session) { window.location.href = "/Hygienify-site/portal"; return; }
                 
                 const activeEmail = session.user.email.toLowerCase();
                 if (activeEmail !== ALLOWED_ADMIN.toLowerCase()) {
                     alert("⛔ Firewall Warning: System Access Terminated.");
-                    window.location.href = "portal.html";
+                    window.location.href = "/Hygienify-site/portal";
                     return;
                 }
                 
@@ -1637,7 +1637,7 @@
             } catch (err) {
                 console.error(err);
             } finally {
-                window.location.href = "portal.html";
+                window.location.href = "/Hygienify-site/portal";
             }
         };
 

@@ -88,32 +88,11 @@
         const submitBtn = document.getElementById('submitBtn');
 
         submitBtn.disabled = true;
-        submitBtn.innerText = "Verifying...";
+        submitBtn.innerText = "Sending Link...";
         
         try {
-            // 1. CALL SECURE DATABASE CHECK
-            const { data: status, error: checkError } = await supabaseClient
-                .rpc('check_reset_eligibility', { lookup_email: email });
-
-            if (checkError) {
-                alert(`❌ Verification Error: ${checkError.message}`);
-                return;
-            }
-
-            // 2. EVALUATE RESULTS
-            if (status === 'NOT_ALLOWED') {
-                alert("⛔ Access Denied: This email address is not on our pre-approved volunteers list.");
-                return;
-            }
-
-            if (status === 'NO_ACCOUNT') {
-                alert("⚠️ No account found: This email is pre-approved, but you haven't created a volunteer profile yet. Please sign up first.");
-                return;
-            }
-
-            // 3. SEND PASSWORD RESET EMAIL IF STATUS IS 'ELIGIBLE'
-            submitBtn.innerText = "Sending Link...";
-            const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password/`;
+            // Target exact HTML page for GitHub Pages compatibility
+            const redirectUrl = `${window.location.origin}/Hygienify-site/reset-password.html`;
 
             const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
                 redirectTo: redirectUrl

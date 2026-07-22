@@ -338,16 +338,37 @@
                 const standingDisplay = document.getElementById('standingStatusDisplay');
                 badge.classList.remove('opacity-0');
 
-                if (currentUser.email === 'jershonvinodh@gmail.com' || data.name === 'Jershon Vinodh') {
-                    globalUserStatus = "Admin";
-                    badge.textContent = "Admin";
-                    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
-                    if(standingDisplay) standingDisplay.innerHTML = `<span class="text-cyan-400 font-extrabold tracking-widest">🛡️ Global Administrator</span>`;
-                    
-                    if (data.status !== 'Active' && data.status !== 'Admin') {
-                        await supabase.from('volunteers').update({ status: 'Active' }).eq('user_id', currentUser.id);
-                        existingProfile.status = 'Active';
-                    }
+// 1. Decoded helper variables
+const ADMIN_EMAIL = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=").toLowerCase();
+
+// 2. Safely get user email & status
+const userEmail = currentUser?.email?.toLowerCase() || "";
+const userRole = data?.role?.toLowerCase() || ""; 
+
+// 3. Check if user is Admin via email OR database role
+const isAdmin = userEmail === ADMIN_EMAIL || userRole === "admin" || data?.status === "Admin";
+
+if (isAdmin) {
+    globalUserStatus = "Admin";
+    badge.textContent = "Admin";
+    badge.className = "mx-auto sm:mx-0 w-max text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded";
+    
+    if (standingDisplay) {
+        standingDisplay.innerHTML = `<span class="text-cyan-400 font-extrabold tracking-widest">🛡️ Global Administrator</span>`;
+    }
+    
+    // Auto-activate profile if status was inactive
+    if (data?.status !== 'Active' && data?.status !== 'Admin') {
+        await supabase
+            .from('volunteers')
+            .update({ status: 'Active' })
+            .eq('user_id', currentUser.id);
+            
+        if (existingProfile) {
+            existingProfile.status = 'Active';
+        }
+    }
+}
                 } else {
                     globalUserStatus = data.status || "Pending Approval";
                     badge.textContent = globalUserStatus;
@@ -451,13 +472,21 @@
             submitBtn.disabled = true;
             submitBtn.textContent = "Saving...";
 
-            try {
-                let statusToApply = "Pending Approval";
-                if (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') {
-                    statusToApply = 'Active';
-                } else if (existingProfile && existingProfile.status) {
-                    statusToApply = existingProfile.status;
-                }
+    try {
+    let statusToApply = "Pending Approval";
+    
+    // 1. Base64 decoded admin email check
+    const ADMIN_EMAIL = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=").toLowerCase();
+    const userEmail = currentUser?.email?.toLowerCase() || "";
+
+    // 2. Determine admin status safely (check email or existing database profile status)
+    const isAdmin = userEmail === ADMIN_EMAIL || existingProfile?.status === 'Admin';
+
+    if (isAdmin) {
+        statusToApply = 'Active';
+    } else if (existingProfile && existingProfile.status) {
+        statusToApply = existingProfile.status;
+    }
                 
                 const { error } = await supabase.from('volunteers').upsert({
                     user_id: currentUser.id,
@@ -469,9 +498,21 @@
                 
                 if (error) throw error;
                 
-                existingProfile = { name: fullNameValue, bio: bioTextValue, image_url: base64AvatarStr, status: statusToApply };
-                globalUserStatus = (currentUser.email === 'jershonvinodh@gmail.com' || fullNameValue === 'Jershon Vinodh') ? 'Admin' : statusToApply;
+               // 1. Decode admin email and safely format user email
+const ADMIN_EMAIL = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=").toLowerCase();
+const userEmail = currentUser?.email?.toLowerCase() || "";
 
+// 2. Build profile object
+existingProfile = { 
+    name: fullNameValue, 
+    bio: bioTextValue, 
+    image_url: base64AvatarStr, 
+    status: statusToApply 
+};
+
+// 3. Determine globalUserStatus safely
+const isAdmin = userEmail === ADMIN_EMAIL || existingProfile?.status === 'Admin';
+globalUserStatus = isAdmin ? 'Admin' : statusToApply;
                 document.getElementById('userWelcome').textContent = `Welcome back, ${fullNameValue}!`;
                 document.getElementById('displayName').textContent = fullNameValue;
                 document.getElementById('displayBio').textContent = bioTextValue;
@@ -748,8 +789,15 @@
                     return;
                 }
 
-                const isAdmin = currentUser.email === 'jershonvinodh@gmail.com' || profile.name === 'Jershon Vinodh';
-                const freshStatus = isAdmin ? "Admin" : (profile.status || "Pending Approval");
+                // 1. Decode admin email and safely evaluate user email
+const ADMIN_EMAIL = atob("amVyc2hvbnZpbm9kaEBnbWFpbC5jb20=").toLowerCase();
+const userEmail = currentUser?.email?.toLowerCase() || "";
+
+// 2. Safely determine admin state (checking decoded email or existing database status)
+const isAdmin = userEmail === ADMIN_EMAIL || profile?.status === "Admin";
+
+// 3. Set freshStatus based on verified admin state
+const freshStatus = isAdmin ? "Admin" : (profile?.status || "Pending Approval");
 
                 if (freshStatus === "Pending Approval") {
                     alert("⏳ Access Denied: Your registration is currently pending administration review.");

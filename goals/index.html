@@ -389,36 +389,76 @@
             }
         });
 
-        // Simple database pull logic
-        async function getSimpleStats() {
-            // Updated to safely reference the global window.supabaseClientInstance namespace
-            const { data } = await window.supabaseClientInstance.from('campaign_stats').select('*').eq('id', 1).maybeSingle();
-            if (data) {
-                const progress = data.current_progress || 0;
-                const target = data.target_goal || 1000;
-                const calculatedPercent = Math.min(Math.round((progress / target) * 100), 100);
-                
-                // Update numerical values dynamically
-                document.getElementById('total-kits').textContent = `${target.toLocaleString()} Kits`;
-                document.getElementById('goal-percentage').textContent = `${calculatedPercent}%`;
-                document.getElementById('progress-bar').style.width = `${calculatedPercent}%`;
-                
-                // Update status text dynamically based on milestones
-                const statusElement = document.getElementById('goal-status');
-                if (calculatedPercent >= 100) {
-                    statusElement.textContent = "Goal Reached!";
-                } else if (calculatedPercent >= 75) {
-                    statusElement.textContent = "Final Stretch";
-                } else if (calculatedPercent >= 50) {
-                    statusElement.textContent = "Halfway There!";
-                } else if (calculatedPercent >= 15) {
-                    statusElement.textContent = "Making Progress";
-                } else {
-                    statusElement.textContent = "Getting Started";
-                }
+// Helper function to update the UI elements whenever data changes
+        function applyStatsUpdate(data) {
+            const progress = data.current_progress || 0;
+            const target = data.target_goal || 1000;
+            const calculatedPercent = Math.min(Math.round((progress / target) * 100), 100);
+            
+            // Update numerical values dynamically
+            document.getElementById('total-kits').textContent = `${target.toLocaleString()} Kits`;
+            document.getElementById('goal-percentage').textContent = `${calculatedPercent}%`;
+            document.getElementById('progress-bar').style.width = `${calculatedPercent}%`;
+            
+            // Update status text dynamically based on milestones
+            const statusElement = document.getElementById('goal-status');
+            if (calculatedPercent >= 100) {
+                statusElement.textContent = "Goal Reached!";
+            } else if (calculatedPercent >= 75) {
+                statusElement.textContent = "Final Stretch";
+            } else if (calculatedPercent >= 50) {
+                statusElement.textContent = "Halfway There!";
+            } else if (calculatedPercent >= 15) {
+                statusElement.textContent = "Making Progress";
+            } else {
+                statusElement.textContent = "Getting Started";
             }
         }
-        document.addEventListener('DOMContentLoaded', getSimpleStats);
+
+        // Hydrates default values and sets up Realtime Event Listeners
+        async function loadLiveCampaignStats() {
+            try {
+                // 1. Get initial baseline data payload from campaign_stats
+                const { data, error } = await window.supabaseClientInstance
+                    .from('campaign_stats')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle(); // Safe fall-through
+
+                if (data && !error) {
+                    console.log("Successfully retrieved live stats from Supabase:", data);
+                    applyStatsUpdate(data);
+                } else {
+                    console.warn("Failed retrieving live record. Error details:", error ? error.message : "No data");
+                }
+
+                // 2. Subscribe to real-time updates of row id #1
+                window.supabaseClientInstance
+                    .channel('live-campaign-tracker')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'campaign_stats',
+                            filter: 'id=eq.1'
+                        },
+                        (payload) => {
+                            console.log('Realtime change received!', payload.new);
+                            applyStatsUpdate(payload.new);
+                        }
+                    )
+                    .subscribe();
+
+            } catch (err) {
+                console.error("Critical error in loadLiveCampaignStats:", err);
+            }
+        }
+
+        // Initialize Fetch once DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLiveCampaignStats();
+        });
     </script>
     <!-- SPOTLIGHT LAYER -->
     <div class="spotlight"></div>

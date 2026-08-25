@@ -167,20 +167,6 @@
 </section>
 
 <!-- === START DONOR WALL SECTION === -->
-<div class="widget-glass p-8 mt-8 max-w-2xl mx-auto rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-white font-bold text-xl tracking-wide">Recent Public Supporters</h3>
-        <span class="text-xs text-cyan-400 bg-cyan-950/50 px-3 py-1 rounded-full border border-cyan-800/50 shadow-inner">Live Updates</span>
-    </div>
-    
-    <div id="donor-list" class="space-y-3">
-        <!-- Loading state -->
-        <div class="flex justify-center items-center py-8">
-            <p class="text-slate-400 text-sm animate-pulse">Loading supporters...</p>
-        </div>
-    </div>
-</div>
-
 <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -189,53 +175,42 @@
     
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    async function loadPublicDonors() {
+    async function debugLoadDonors() {
+        const donorContainer = document.getElementById('donor-list');
+        donorContainer.innerHTML = `<p class="text-yellow-400 text-sm animate-pulse">Connecting to Supabase...</p>`;
+
         try {
-            const donorContainer = document.getElementById('donor-list');
-            
-            const { data, error } = await supabase
+            const { data, error, status } = await supabase
                 .from('public_donors')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(10);
+                .select('*');
 
             if (error) {
-                console.error("Error fetching donors:", error.message);
-                donorContainer.innerHTML = `<p class="text-slate-500 text-sm italic text-center py-4">Unable to load supporters at the moment.</p>`;
+                donorContainer.innerHTML = `
+                    <div class="bg-red-500/10 border border-red-500/30 p-4 rounded-xl text-red-300 text-xs">
+                        <strong>Supabase Error (${status}):</strong><br>${error.message}<br><br>
+                        <em>Hint: Check if table 'public_donors' exists and RLS policies allow public reads.</em>
+                    </div>`;
                 return;
             }
 
             if (!data || data.length === 0) {
-                donorContainer.innerHTML = `<p class="text-slate-400 text-sm italic py-4 text-center">Be the first public supporter to join the wall!</p>`;
+                donorContainer.innerHTML = `<p class="text-slate-400 text-sm italic py-4 text-center">Connected successfully, but the table is empty!</p>`;
                 return;
             }
 
-            // Render the donors list with clean styling
             donorContainer.innerHTML = data.map(donor => `
-                <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all duration-200">
-                    <span class="text-white font-medium text-sm">${escapeHtml(donor.donor_name)}</span>
-                    <span class="text-cyan-400 font-bold text-sm">$${Number(donor.amount).toLocaleString()}</span>
+                <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
+                    <span class="text-white font-medium text-sm">${donor.donor_name || 'Unnamed'}</span>
+                    <span class="text-cyan-400 font-bold text-sm">$${donor.amount || 0}</span>
                 </div>
             `).join('');
 
         } catch (err) {
-            console.error("Critical error loading donors:", err);
-            document.getElementById('donor-list').innerHTML = `<p class="text-slate-500 text-sm italic text-center py-4">Error loading wall.</p>`;
+            donorContainer.innerHTML = `<p class="text-red-400 text-xs">Critical JS Exception: ${err.message}</p>`;
         }
     }
 
-    // Simple security helper to prevent HTML injection
-    function escapeHtml(str) {
-        if (!str) return 'Anonymous Supporter';
-        return str.replace(/[&<>'"]/g, 
-            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-        );
-    }
-
-    // Run when the DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-        loadPublicDonors();
-    });
+    document.addEventListener('DOMContentLoaded', debugLoadDonors);
 </script>
 <!-- === END DONOR WALL SECTION === -->
 

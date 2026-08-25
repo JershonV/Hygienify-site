@@ -152,23 +152,26 @@
                 Every financial asset donated directly translates into hygiene kits, soap, dental products, and baseline medical-grade sanitary goods for distributed outreach to shelters and unhoused communities across the St. Louis metropolitan area.
             </p>
 
-            <!-- CALL TO ACTION BUTTON WITH GLOW -->
-            <div class="inline-block relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r #22d3ee to #3b82f6 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
-                <a href="<div>
-  <div data-zeffy-embed data-form-url="/embed/donation-form/hygienify-2026-hygiene-campaign"></div>
-  <div data-zeffy-embed-fallback style="display:none;">
-    <div style="position:relative;overflow:hidden;height:450px;width:100%;"><iframe title='Donation form powered by Zeffy' style='position: absolute; border: 0; top:0;left:0;bottom:0;right:0;width:100%;height:100%' data-zeffy-embed-src='https://www.zeffy.com/embed/donation-form/hygienify-2026-hygiene-campaign' allowpaymentrequest allowTransparency="true"></iframe></div>
-  </div>
-  <script
-    src="https://www.zeffy.com/embed/v2/zeffy-embed.js"
-    onerror="document.querySelectorAll('[data-zeffy-embed-fallback]').forEach(function(el){el.style.display='block';el.querySelectorAll('iframe[data-zeffy-embed-src]').forEach(function(f){f.src=f.getAttribute('data-zeffy-embed-src');});});">
-  </script>
-</div>" class="relative block bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-sm tracking-widest uppercase px-12 py-5 rounded-full transition duration-300">
-                    Execute Secure Donation
-                </a>
+<!-- CALL TO ACTION BUTTON WITH GLOW -->
+    <div class="inline-block relative group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
+        <a href="#donation-form-section" class="relative block bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-sm tracking-widest uppercase px-12 py-5 rounded-full transition duration-300">
+            Execute Secure Donation
+        </a>
+    </div>
+
+    <!-- ZEFFY EMBED CONTAINER -->
+    <div id="donation-form-section" class="mt-8">
+        <div data-zeffy-embed data-form-url="/embed/donation-form/hygienify-2026-hygiene-campaign"></div>
+        <div data-zeffy-embed-fallback style="display:none;">
+            <div style="position:relative;overflow:hidden;height:450px;width:100%;">
+                <iframe title="Donation form powered by Zeffy" style="position: absolute; border: 0; top:0; left:0; bottom:0; right:0; width:100%; height:100%" data-zeffy-embed-src="https://www.zeffy.com/embed/donation-form/hygienify-2026-hygiene-campaign" allowpaymentrequest allowTransparency="true"></iframe>
             </div>
-        </section>
+        </div>
+        <script src="https://www.zeffy.com/embed/v2/zeffy-embed.js" onerror="document.querySelectorAll('[data-zeffy-embed-fallback]').forEach(function(el){el.style.display='block';el.querySelectorAll('iframe[data-zeffy-embed-src]').forEach(function(f){f.src=f.getAttribute('data-zeffy-embed-src');});});">
+        </script>
+    </div>
+</section>
 
         <!-- TWO COLUMN DISCLOSURE LAYOUT FOR IRS REVIEWERS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

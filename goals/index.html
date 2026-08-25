@@ -366,7 +366,7 @@
     </div>
 </footer>
 
-    <script>
+<script>
         // Menu Toggle Logic
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('mobile-menu');
@@ -389,14 +389,19 @@
             }
         });
 
-// Helper function to update the UI elements whenever data changes
+        // Helper function to update the UI elements whenever data changes
         function applyStatsUpdate(data) {
-            const progress = data.current_progress || 0;
-            const target = data.target_goal || 1000;
+            // Log incoming data structure to check field names
+            console.log("Applying stats update payload:", data);
+            
+            // Note: If your columns are named differently in Supabase, adjust them here 
+            // (e.g., data.kits_collected vs data.current_progress)
+            const progress = data.current_progress !== undefined ? data.current_progress : (data.progress || 0);
+            const target = data.target_goal !== undefined ? data.target_goal : (data.target || 1000);
             const calculatedPercent = Math.min(Math.round((progress / target) * 100), 100);
             
             // Update numerical values dynamically
-            document.getElementById('total-kits').textContent = `${target.toLocaleString()} Kits`;
+            document.getElementById('total-kits').textContent = `${progress.toLocaleString()} / ${target.toLocaleString()} Kits`;
             document.getElementById('goal-percentage').textContent = `${calculatedPercent}%`;
             document.getElementById('progress-bar').style.width = `${calculatedPercent}%`;
             
@@ -418,22 +423,31 @@
         // Hydrates default values and sets up Realtime Event Listeners
         async function loadLiveCampaignStats() {
             try {
+                console.log("Attempting initial fetch from Supabase...");
+                
                 // 1. Get initial baseline data payload from campaign_stats
                 const { data, error } = await window.supabaseClientInstance
                     .from('campaign_stats')
                     .select('*')
                     .eq('id', 1)
-                    .maybeSingle(); // Safe fall-through
+                    .maybeSingle();
 
-                if (data && !error) {
-                    console.log("Successfully retrieved live stats from Supabase:", data);
+                if (error) {
+                    console.error("Supabase fetch error:", error.message);
+                    document.getElementById('goal-status').textContent = "DB Error: " + error.message;
+                    return;
+                }
+
+                if (data) {
+                    console.log("Successfully retrieved initial stats:", data);
                     applyStatsUpdate(data);
                 } else {
-                    console.warn("Failed retrieving live record. Error details:", error ? error.message : "No data");
+                    console.warn("No record found with id = 1 in campaign_stats table.");
+                    document.getElementById('goal-status').textContent = "No Record Found (id=1)";
                 }
 
                 // 2. Subscribe to real-time updates of row id #1
-                window.supabaseClientInstance
+                const channel = window.supabaseClientInstance
                     .channel('live-campaign-tracker')
                     .on(
                         'postgres_changes',
@@ -444,11 +458,14 @@
                             filter: 'id=eq.1'
                         },
                         (payload) => {
-                            console.log('Realtime change received!', payload.new);
+                            console.log('Realtime change received successfully!', payload.new);
                             applyStatsUpdate(payload.new);
                         }
                     )
-                    .subscribe();
+                    .subscribe((status, err) => {
+                        console.log("Realtime subscription status:", status);
+                        if (err) console.error("Realtime subscription error:", err);
+                    });
 
             } catch (err) {
                 console.error("Critical error in loadLiveCampaignStats:", err);
@@ -460,6 +477,7 @@
             loadLiveCampaignStats();
         });
     </script>
+    
     <!-- SPOTLIGHT LAYER -->
     <div class="spotlight"></div>
 

@@ -1,3 +1,8 @@
+To display public donors automatically from Zeffy, you need to rely on Zeffy’s native donor wall feature, as Zeffy does not provide a direct public API or client-side JavaScript SDK to query donation history directly into a custom HTML container like Supabase.
+
+Here is the updated code replacing the broken Supabase module script with Zeffy's embedded donor wall widget container:
+
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,17 +86,16 @@
 <body>
 
     <!-- 💡 Navigation Bar -->
-<nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <!-- Swapped outer div to an 'a' tag here -->
-        <a href="/" class="flex items-center gap-3">
-            <img src="/logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
-            </div>
-        </a>
+    <nav class="fixed main-navigation w-full z-[110] nav-glass px-6 md:px-8 py-4 md:py-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3">
+                <img src="/logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                    <div class="hidden md:block h-5 w-px bg-white/20"></div>
+                    <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+                </div>
+            </a>
 
             <div class="hidden md:flex gap-12 font-bold text-sm tracking-widest uppercase">
                 <a href="/" class="nav-link text-slate-400 hover:text-white transition">Home</a>
@@ -145,79 +149,48 @@
     <!-- Main Content Container -->
     <main class="max-w-4xl mx-auto px-6 pb-32 space-y-8">
 
-        
         <!-- MAIN INVITATION CARD -->
         <section class="widget-glass p-8 md:p-12 text-center reveal">
             <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-4">Make a Public Contribution</h2>
             <p class="text-slate-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-8">
                 Every financial asset donated directly translates into hygiene kits, soap, dental products, and baseline medical-grade sanitary goods for distributed outreach to shelters and unhoused communities across the St. Louis metropolitan area.
             </p>
-            
-<!-- ZEFFY EMBED CONTAINER -->
-    <div id="donation-form-section" class="mt-8">
-        <div data-zeffy-embed data-form-url="/embed/donation-form/hygienify-2026-hygiene-campaign"></div>
-        <div data-zeffy-embed-fallback style="display:none;">
-            <div style="position:relative;overflow:hidden;height:450px;width:100%;">
-                <iframe title="Donation form powered by Zeffy" style="position: absolute; border: 0; top:0; left:0; bottom:0; right:0; width:100%; height:100%" data-zeffy-embed-src="https://www.zeffy.com/embed/donation-form/hygienify-2026-hygiene-campaign" allowpaymentrequest allowTransparency="true"></iframe>
-            </div>
-        </div>
-        <script src="https://www.zeffy.com/embed/v2/zeffy-embed.js" onerror="document.querySelectorAll('[data-zeffy-embed-fallback]').forEach(function(el){el.style.display='block';el.querySelectorAll('iframe[data-zeffy-embed-src]').forEach(function(f){f.src=f.getAttribute('data-zeffy-embed-src');});});">
-        </script>
-    </div>
-</section>
 
-<!-- === START DONOR WALL SECTION === -->
-<script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-    const SUPABASE_URL = "https://dzqrlgtmsgclybxfcnyv.supabase.co"
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6cXJsZ3Rtc2djbHlieGZjbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDIxMzMsImV4cCI6MjA5NDUxODEzM30.FAVJVqMsBDJa4qRPn6au2O0H3Bt4Vx8DNBzZPkDaDPI"
-    
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-    async function debugLoadDonors() {
-        const donorContainer = document.getElementById('donor-list');
-        donorContainer.innerHTML = `<p class="text-yellow-400 text-sm animate-pulse">Connecting to Supabase...</p>`;
-
-        try {
-            const { data, error, status } = await supabase
-                .from('public_donors')
-                .select('*');
-
-            if (error) {
-                donorContainer.innerHTML = `
-                    <div class="bg-red-500/10 border border-red-500/30 p-4 rounded-xl text-red-300 text-xs">
-                        <strong>Supabase Error (${status}):</strong><br>${error.message}<br><br>
-                        <em>Hint: Check if table 'public_donors' exists and RLS policies allow public reads.</em>
-                    </div>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                donorContainer.innerHTML = `<p class="text-slate-400 text-sm italic py-4 text-center">Connected successfully, but the table is empty!</p>`;
-                return;
-            }
-
-            donorContainer.innerHTML = data.map(donor => `
-                <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                    <span class="text-white font-medium text-sm">${donor.donor_name || 'Unnamed'}</span>
-                    <span class="text-cyan-400 font-bold text-sm">$${donor.amount || 0}</span>
+            <!-- ZEFFY EMBED CONTAINER -->
+            <div id="donation-form-section" class="mt-8">
+                <div data-zeffy-embed data-form-url="/embed/donation-form/hygienify-2026-hygiene-campaign"></div>
+                <div data-zeffy-embed-fallback style="display:none;">
+                    <div style="position:relative;overflow:hidden;height:450px;width:100%;">
+                        <iframe title="Donation form powered by Zeffy" style="position: absolute; border: 0; top:0; left:0; bottom:0; right:0; width:100%; height:100%" data-zeffy-embed-src="https://www.zeffy.com/embed/donation-form/hygienify-2026-hygiene-campaign" allowpaymentrequest allowTransparency="true"></iframe>
+                    </div>
                 </div>
-            `).join('');
+                <script src="https://www.zeffy.com/embed/v2/zeffy-embed.js" onerror="document.querySelectorAll('[data-zeffy-embed-fallback]').forEach(function(el){el.style.display='block';el.querySelectorAll('iframe[data-zeffy-embed-src]').forEach(function(f){f.src=f.getAttribute('data-zeffy-embed-src');});});">
+                </script>
+            </div>
+        </section>
 
-        } catch (err) {
-            donorContainer.innerHTML = `<p class="text-red-400 text-xs">Critical JS Exception: ${err.message}</p>`;
-        }
-    }
+        <!-- === START ZEFFY DONOR LEADERBOARD SECTION === -->
+        <section class="widget-glass p-8 md:p-12 text-center reveal">
+            <div class="text-xs font-black tracking-[0.2em] text-cyan-400 uppercase mb-2">Community Impact</div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-4">Donor Wall & Leaderboard</h2>
+            <p class="text-slate-400 text-sm leading-relaxed max-w-xl mx-auto mb-8">
+                Honoring our supporters who publicly opted to showcase their contributions in support of our St. Louis outreach.
+            </p>
 
-    document.addEventListener('DOMContentLoaded', debugLoadDonors);
-</script>
-<!-- === END DONOR WALL SECTION === -->
+            <!-- Embedded Zeffy Donor Wall Container -->
+            <div class="relative overflow-hidden rounded-2xl min-h-[400px] w-full bg-slate-900/40">
+                <div data-zeffy-embed data-form-url="/embed/donor-wall/hygienify-2026-hygiene-campaign"></div>
+                <div data-zeffy-embed-fallback style="display:none;">
+                    <div style="position:relative;overflow:hidden;height:500px;width:100%;">
+                        <iframe title="Donor Wall powered by Zeffy" style="position: absolute; border: 0; top:0; left:0; bottom:0; right:0; width:100%; height:100%" data-zeffy-embed-src="https://www.zeffy.com/embed/donor-wall/hygienify-2026-hygiene-campaign" allowTransparency="true"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- === END ZEFFY DONOR LEADERBOARD SECTION === -->
 
         <!-- TWO COLUMN DISCLOSURE LAYOUT FOR IRS REVIEWERS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <!-- COLUMN 1: TAX EXEMPTION STATUS STATUS PENDING STATEMENT -->
             <section class="widget-glass p-8 reveal">
                 <div class="text-xs font-black tracking-[0.2em] text-amber-400 uppercase mb-3">Regulatory Policy Notice</div>
                 <h3 class="text-xl font-bold text-white mb-3">501(c)(3) Tax Status </h3>
@@ -226,7 +199,6 @@
                 </p>
             </section>
 
-            <!-- COLUMN 2: DONOR SUBSTANTIATION & BENEFITS EXCLUSION -->
             <section class="widget-glass p-8 reveal reveal-delay-1">
                 <div class="text-xs font-black tracking-[0.2em] text-cyan-400 uppercase mb-3">Donor Substantiation Rule</div>
                 <h3 class="text-xl font-bold text-white mb-3">No Premium Exchanges</h3>
@@ -234,107 +206,94 @@
                     In strict accordance with IRS disclosure mandates, all capital allocations given through this portal constitute direct philanthropic public support. No commercial products, physical goods, services, admissions, or other intangible private benefits are rendered, bartered, or distributed in exchange for financial contributions made to Hygienify.
                 </p>
             </section>
-
         </div>
 
     </main>
 
     <!-- Footer -->
-<footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
-    <!-- Top Interactive Dashboard Row -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-
-        <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
-            <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
-                <img src="/qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
-            </div>
-            <div>
-                <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
-                <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
-            </div>
-        </div>
-
-        <a href="/donate" 
-           class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
-            <div class="flex-1 pr-0 md:pr-16">
-                <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
-                <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
-                <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
-            </div>
-            <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
-                &rarr;
-            </div>
-        </a>
-    </div>
-
-    <!-- Middle Informational Grid -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
-        
-        <!-- Left Brand Block -->
-        <div class="space-y-6">
-            <div class="flex items-center gap-3 justify-center md:justify-start">
-                <img src="/logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
-                    <div class="hidden md:block h-5 w-px bg-white/20"></div>
-                    <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+    <footer class="pt-24 pb-12 px-8 border-t border-white/5 bg-[#020617]">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+            <div class="footer-widget reveal p-8 flex flex-row items-center gap-8">
+                <div class="qr-container p-2 bg-white rounded-2xl shrink-0">
+                    <img src="/qr-code.png" class="w-[100px] h-[100px] rounded-lg" alt="QR Code">
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-xl mb-1">Mobile Access</h4>
+                    <p class="text-slate-400 text-sm max-w-[180px] leading-snug">Scan to explore our mission on your mobile device.</p>
                 </div>
             </div>
-            <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
-                Hygienify Organization • St. Louis, MO
-            </p>
+
+            <a href="/donate" class="footer-widget reveal reveal-delay-1 p-8 flex flex-col md:flex-row items-start md:items-center justify-between group">
+                <div class="flex-1 pr-0 md:pr-16">
+                    <span class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em]">Support Us</span>
+                    <h4 class="text-white font-extrabold text-2xl mt-1 mb-2">Hygienify the STL</h4>
+                    <p class="text-slate-400 text-sm max-w-[280px] leading-snug">Help us provide hygiene kits to students in need.</p>
+                </div>
+                <div class="mt-6 md:mt-0 w-14 h-14 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:bg-cyan-500 group-hover:text-black transition-all duration-300 shrink-0">
+                    &rarr;
+                </div>
+            </a>
         </div>
 
-        <!-- Center Directory Navigation -->
-<div class="flex flex-col items-center text-center">
-    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
-    <ul class="space-y-4 text-slate-500 text-sm font-medium flex flex-col items-center">
-        <li><a href="/about" class="hover:text-cyan-400 transition">About Us</a></li>
-        <li><a href="/programs" class="hover:text-cyan-400 transition">Programs</a></li>
-        <li><a href="/volunteer" class="hover:text-cyan-400 transition">Volunteer</a></li>
-        <li><a href="/goals" class="hover:text-cyan-400 transition">Our Goals</a></li>
-        <li><a href="/faq" class="hover:text-cyan-400 transition">FAQ</a></li>
-    </ul>
-</div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-center md:text-left border-t border-white/5 pt-16">
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 justify-center md:justify-start">
+                    <img src="/logo_new2.svg" class="w-10 h-10 object-contain" alt="Logo">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl font-extrabold tracking-tighter text-white">Hygienify</span>
+                        <div class="hidden md:block h-5 w-px bg-white/20"></div>
+                        <span class="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/80">Non-Profit</span>
+                    </div>
+                </div>
+                <p class="text-slate-600 font-bold text-[10px] tracking-[0.5em] uppercase">
+                    Hygienify Organization • St. Louis, MO
+                </p>
+            </div>
 
-        <!-- Right Core Communications -->
-        <div class="flex flex-col items-center md:items-end justify-center">
-            <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
-            <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
-                hygienify.org@gmail.com
-                <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
-            </a>
+            <div class="flex flex-col items-center text-center">
+                <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-xs">Organization</h4>
+                <ul class="space-y-4 text-slate-500 text-sm font-medium flex flex-col items-center">
+                    <li><a href="/about" class="hover:text-cyan-400 transition">About Us</a></li>
+                    <li><a href="/programs" class="hover:text-cyan-400 transition">Programs</a></li>
+                    <li><a href="/volunteer" class="hover:text-cyan-400 transition">Volunteer</a></li>
+                    <li><a href="/goals" class="hover:text-cyan-400 transition">Our Goals</a></li>
+                    <li><a href="/faq" class="hover:text-cyan-400 transition">FAQ</a></li>
+                </ul>
+            </div>
 
-            <div>
-                <a href="/volunteer" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
+            <div class="flex flex-col items-center md:items-end justify-center">
+                <p class="text-slate-500 text-[10px] font-black tracking-[0.4em] uppercase mb-3">Get in Touch</p>
+                <a href="mailto:hygienify.org@gmail.com" class="text-slate-300 hover:text-white transition-all group relative mb-8">
+                    hygienify.org@gmail.com
+                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-cyan-500/50 transition-all duration-500 group-hover:w-full"></span>
+                </a>
+
+                <div>
+                    <a href="/volunteer" class="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase hover:bg-cyan-400 hover:text-black transition-all">Join the Mission</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Bottom Institutional Regulatory Sub-Footer -->
-    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
-        <div class="space-y-2 md:text-left">
-            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
-                &copy; 2026 Hygienify • Empowering Community Health
-            </p>
-            <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
-                <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+        <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
+            <div class="space-y-2 md:text-left">
+                <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.5em] opacity-50">
+                    &copy; 2026 Hygienify • Empowering Community Health
+                </p>
+                <p class="text-[10px] text-slate-500 font-medium tracking-normal normal-case max-w-md">
+                    <span class="text-slate-400 font-semibold tracking-wider uppercase text-[9px] mr-1">Privacy Pledge:</span> We securely handle your information. Hygienify will never sell, rent, trade, or share donor or volunteer personal data with third parties.
+                </p>
+            </div>
+            
+            <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
+                Governed by official 
+                <a href="/bylaws" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
             </p>
         </div>
-        
-        <!-- FIXED: Responsive wrapping & letter spacing prevents cut-off on mobile viewports -->
-        <p class="text-[9px] font-bold uppercase tracking-[0.15em] md:tracking-[0.3em] text-slate-500 whitespace-normal md:whitespace-nowrap">
-            Governed by official 
-            <a href="/bylaws" class="text-cyan-400/70 hover:text-cyan-400 transition mx-1 underline underline-offset-4">Corporate Bylaws & Internal Policies</a>
-        </p>
-    </div>
-</footer>
+    </footer>
     
-    <!-- Interactive Mouse Spotlight Effect Overlay -->
     <div class="spotlight"></div>
 
     <script>
-        // Scroll Engine Reveal Setup
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -345,14 +304,12 @@
 
         document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
 
-        // Interactive Spotlight Tracker
         const spotlight = document.querySelector('.spotlight');
         window.addEventListener('mousemove', e => {
             spotlight.style.setProperty('--x', `${e.clientX}px`);
             spotlight.style.setProperty('--y', `${e.clientY}px`);
         });
 
-        // Responsive Mobile Overlay Menu
         const btn = document.getElementById('menu-btn');
         const menu = document.getElementById('mobile-menu');
         const menuPath = document.getElementById('menu-path');
